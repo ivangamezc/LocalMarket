@@ -63,7 +63,7 @@ const { title } = Astro.props;
             import { cartItems } from '../store/cartStore.js';
 
             // --- 1. LÓGICA DEL CARRITO ---
-            const updateCart = (items) => {
+            const updateCart = (items: any) => {
                 const countElement = document.getElementById('cart-count');
                 if (countElement) countElement.innerText = items.length.toString();
             };
