@@ -17,8 +17,10 @@ const { title } = Astro.props;
         <title>{title}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     </head>
-    <body class="bg-[#333333] text-white antialiased min-h-screen relative">
+    <body class="bg-[#333333] text-white antialiased min-h-screen relative overflow-x-hidden">
         
+        <canvas id="tech-bg" class="fixed inset-0 -z-20 opacity-50 pointer-events-none"></canvas>
+
         <div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
 
@@ -55,77 +57,141 @@ const { title } = Astro.props;
             </div>
         </div>
 
+        <div id="custom-cursor" class="fixed w-8 h-8 border border-[#facc15] rounded-full pointer-events-none z-[999] transition-transform duration-100 ease-out opacity-0 hidden md:block"></div>
+
         <script>
             import { cartItems } from '../store/cartStore.js';
 
-            // 1. Lógica del Carrito
-            cartItems.subscribe(items => {
+            // --- 1. LÓGICA DEL CARRITO ---
+            const updateCart = (items) => {
                 const countElement = document.getElementById('cart-count');
-                if (countElement) {
-                    countElement.innerText = items.length.toString();
-                }
-            });
+                if (countElement) countElement.innerText = items.length.toString();
+            };
 
-            // 2. Lógica de Scroll Reveal
+            // --- 2. SCROLL REVEAL ---
             const setupReveal = () => {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('active');
-                            observer.unobserve(entry.target); // Solo anima una vez
+                            observer.unobserve(entry.target);
                         }
                     });
                 }, { threshold: 0.1 });
-
                 document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
             };
 
-            // Ejecutar al cargar la página
-            setupReveal();
+            // --- 3. CURSOR CUSTOM ---
+            const setupCursor = () => {
+                const cursor = document.getElementById('custom-cursor');
+                document.addEventListener('mousemove', (e) => {
+                    if (cursor) {
+                        cursor.style.opacity = "1";
+                        cursor.style.left = `${e.clientX - 16}px`;
+                        cursor.style.top = `${e.clientY - 16}px`;
+                    }
+                });
+
+                const interactivos = document.querySelectorAll('a, button, .product-item');
+                interactivos.forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor?.classList.add('scale-150', 'bg-[#facc15]/20'));
+                    el.addEventListener('mouseleave', () => cursor?.classList.remove('scale-150', 'bg-[#facc15]/20'));
+                });
+            };
+
+            // --- 4. FONDO DE PARTÍCULAS ---
+            const canvas = document.getElementById('tech-bg') as HTMLCanvasElement;
+            const ctx = canvas?.getContext('2d');
+            let particles: any[] = [];
+            const mouse = { x: 0, y: 0, active: false };
+
+            const initParticles = () => {
+                if (!canvas || !ctx) return;
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                particles = [];
+                for (let i = 0; i < 110; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: Math.random() * 0.4 - 0.2,
+                        vy: Math.random() * 0.4 - 0.2,
+                        size: 1.5
+                    });
+                }
+            };
+
+            const drawParticles = () => {
+                if (!ctx || !canvas) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((p, i) => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    if (mouse.active) {
+                        const dx = mouse.x - p.x;
+                        const dy = mouse.y - p.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < 150) {
+                            const force = (150 - dist) / 150;
+                            p.x -= (dx / dist) * force * 8;
+                            p.y -= (dy / dist) * force * 8;
+                        }
+                    }
+
+                    ctx.fillStyle = "rgba(250, 204, 21, 0.7)";
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if (d < 160) {
+                            ctx.strokeStyle = `rgba(250, 204, 21, ${0.15 - d/160})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                        }
+                    }
+                });
+                requestAnimationFrame(drawParticles);
+            };
+
+            const startAll = () => {
+                cartItems.subscribe(updateCart);
+                setupReveal();
+                setupCursor();
+                initParticles();
+            };
+
+            window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+            window.addEventListener('resize', initParticles);
             
-            // Para que funcione con las navegaciones de Astro
-            document.addEventListener('astro:after-swap', setupReveal);
+            startAll();
+            drawParticles();
+
+            document.addEventListener('astro:after-swap', startAll);
         </script>
-
-		<div id="custom-cursor" class="fixed w-8 h-8 border border-[#facc15] rounded-full pointer-events-none z-[999] transition-transform duration-100 ease-out opacity-0 hidden md:block"></div>
-
-		<script>
-			const cursor = document.getElementById('custom-cursor');
-
-			document.addEventListener('mousemove', (e) => {
-				if (cursor) {
-				cursor.style.opacity = "1";
-				// Posicionamos el círculo centrado en el ratón
-				cursor.style.left = `${e.clientX - 16}px`;
-				cursor.style.top = `${e.clientY - 16}px`;
-				}
-			});
-
-			// Efecto cuando pasas sobre algo clicable
-			const interactivos = document.querySelectorAll('a, button, .product-item');
-			interactivos.forEach(el => {
-				el.addEventListener('mouseenter', () => {
-				cursor?.classList.add('scale-150', 'bg-[#facc15]/20');
-				});
-				el.addEventListener('mouseleave', () => {
-				cursor?.classList.remove('scale-150', 'bg-[#facc15]/20');
-				});
-			});
-		</script>
-
     </body>
 </html>
 
 <style is:global>
-    /* Estilos para las animaciones al hacer scroll */
     .reveal {
         opacity: 0;
-        transform: translateY(40px);
+        transform: translateY(30px);
         transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1);
     }
-
     .reveal.active {
         opacity: 1;
         transform: translateY(0);
+    }
+    html {
+        scroll-behavior: smooth;
+        cursor: none;
+    }
+    @media (max-width: 768px) {
+        html { cursor: auto; }
     }
 </style>
