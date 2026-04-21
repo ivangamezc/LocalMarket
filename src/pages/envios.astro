@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const tarifas = [
+    { zona: "Península (España/Portugal)", metodo: "Standard Ground", tiempo: "24-48H", coste: "GRATIS" },
+    { zona: "Islas Baleares / Canarias", metodo: "Air Freight", tiempo: "3-5 Días", coste: "9.90€" },
+    { zona: "Europa (Zona 1)", metodo: "International Express", tiempo: "5-7 Días", coste: "15.00€" },
+    { zona: "Resto del Mundo", metodo: "Global Cargo", tiempo: "10-15 Días", coste: "25.00€" },
+];
+---
+
+<Layout title="Logística de Envíos | LOCALMKT">
+    <section class="px-6 py-24 max-w-5xl mx-auto min-h-screen">
+        
+        <div class="reveal mb-20 text-center md:text-left">
+            <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em] block mb-4">Módulo de Distribución</span>
+            <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none">
+                Logística <br/> de <span class="text-[#facc15]">Envío.</span>
+            </h1>
+        </div>
+
+        <div class="reveal grid md:grid-cols-3 gap-1 mb-20 bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
+            <div class="p-8 text-center border-b md:border-b-0 md:border-r border-white/10 hover:bg-white/[0.02] transition-colors">
+                <span class="text-2xl mb-4 block">📦</span>
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-[#facc15] mb-2">Tracking Realtime</h4>
+                <p class="text-xs text-gray-500 uppercase">Seguimiento encriptado vía SMS/Email.</p>
+            </div>
+            <div class="p-8 text-center border-b md:border-b-0 md:border-r border-white/10 hover:bg-white/[0.02] transition-colors">
+                <span class="text-2xl mb-4 block">🛡️</span>
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-[#facc15] mb-2">Packaging Blindado</h4>
+                <p class="text-xs text-gray-500 uppercase">Doble capa de protección industrial.</p>
+            </div>
+            <div class="p-8 text-center hover:bg-white/[0.02] transition-colors">
+                <span class="text-2xl mb-4 block">⚡</span>
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-[#facc15] mb-2">Priority Hub</h4>
+                <p class="text-xs text-gray-500 uppercase">Salida del centro en menos de 12h.</p>
+            </div>
+        </div>
+
+        <div class="reveal overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-[#facc15]/30">
+                        <th class="py-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Zona de Destino</th>
+                        <th class="py-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Método</th>
+                        <th class="py-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Tiempo Est.</th>
+                        <th class="py-6 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-[#facc15]">Coste</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-[11px] uppercase tracking-widest font-bold">
+                    {tarifas.map((t) => (
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-8 px-4 text-white group-hover:text-[#facc15] transition-colors">{t.zona}</td>
+                            <td class="py-8 px-4 text-gray-400 font-light">{t.metodo}</td>
+                            <td class="py-8 px-4 text-gray-400 font-light">{t.tiempo}</td>
+                            <td class="py-8 px-4 text-[#facc15] italic">{t.coste}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="reveal mt-20 p-8 border border-dashed border-white/20 rounded-2xl">
+            <p class="text-[9px] text-gray-500 leading-loose uppercase tracking-[0.2em]">
+                <span class="text-white font-black">AVISO ARANCELARIO:</span> LOS ENVÍOS FUERA DE LA UNIÓN EUROPEA PUEDEN ESTAR SUJETOS A TASAS ADUANERAS SEGÚN LA REGULACIÓN LOCAL. LOCALMKT NO SE HACE RESPONSABLE DE ESTOS CARGOS ADICIONALES NI DE RETENCIONES EN EL NODO DE DESTINO.
+            </p>
+        </div>
+
+    </section>
+</Layout>
