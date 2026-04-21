@@ -12,6 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.1.7"
+    "@nanostores/preact": "^1.1.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "astro": "^6.1.7",
+    "nanostores": "^1.2.0",
+    "tailwindcss": "^4.2.2"
   }
 }

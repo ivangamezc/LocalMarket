@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import products from '../../data/products.json';
+
+export async function getStaticPaths() {
+  return products.map((product) => ({
+    params: { id: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+---
+
+<Layout title={`${product.nombre} | LocalMarket`}>
+  <section class="px-8 py-12 max-w-7xl mx-auto flex flex-col justify-center">
+    <a href="/" class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/50 hover:text-[#facc15] mb-12">
+      ← Volver al catálogo
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div class="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10">
+        <img src={product.imagen} alt={product.nombre} class="w-full h-full object-cover" />
+      </div>
+
+      <div>
+        <span class="text-[#facc15] text-[11px] font-black uppercase tracking-[0.5em] mb-4 block">{product.cat}</span>
+        <h1 class="text-6xl font-black uppercase italic mb-6">{product.nombre}</h1>
+        <p class="text-gray-400 text-xl font-light mb-10">{product.descripcion}</p>
+        <span class="text-4xl font-black italic block mb-12">{product.precio}€</span>
+
+        <button 
+          id="add-to-cart-btn"
+          data-id={product.id}
+          data-nombre={product.nombre}
+          data-precio={product.precio}
+          class="w-full md:w-auto px-12 py-5 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-2xl hover:bg-white transition-all shadow-xl"
+        >
+          Añadir al Carrito
+        </button>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { addCartItem } from '../../store/cartStore.js';
+
+  const setupBtn = () => {
+    const btn = document.getElementById('add-to-cart-btn');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const item = {
+        id: btn.getAttribute('data-id'),
+        nombre: btn.getAttribute('data-nombre'),
+        precio: btn.getAttribute('data-precio')
+      };
+      
+      console.log("Botón: Añadiendo producto", item);
+      addCartItem(item);
+
+      // Feedback visual
+      btn.innerText = "¡AÑADIDO!";
+      btn.style.backgroundColor = "white";
+      setTimeout(() => {
+        btn.innerText = "AÑADIR AL CARRITO";
+        btn.style.backgroundColor = "#facc15";
+      }, 1000);
+    });
+  };
+
+  // Esto asegura que funcione incluso al navegar
+  setupBtn();
+  document.addEventListener('astro:after-swap', setupBtn);
+</script>

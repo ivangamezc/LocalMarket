@@ -1,23 +1,67 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
 	</head>
-	<body>
-		<slot />
+	<body class="bg-[#333333] text-white antialiased min-h-screen relative">
+		
+		<div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+		<div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
+
+		<nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6">
+			<div class="flex items-center justify-between w-full max-w-5xl px-8 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
+				<div class="text-xl font-black tracking-tighter uppercase italic">
+					LOCAL<span class="text-[#facc15]">MKT</span>
+				</div>
+				<div class="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">
+					<a href="/" class="hover:text-[#facc15] transition-colors">Colecciones</a>
+					<a href="#" class="hover:text-[#facc15] transition-colors">Drops</a>
+				</div>
+				<div class="flex items-center gap-5">
+					<a href="/carrito" class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center">
+						<span class="text-xs">🛒</span>
+						<span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm shadow-sm">
+							0
+						</span>
+					</a>
+				</div>
+		</nav>
+
+		<main class="relative z-10 pt-32">
+			<slot />
+		</main>
+
+		<Footer />
+
+		<script>
+			import { cartItems } from '../store/cartStore.js';
+
+			// Suscribirse a los cambios
+			cartItems.subscribe(items => {
+				const countElement = document.getElementById('cart-count');
+				if (countElement) {
+					countElement.innerText = items.length.toString();
+					console.log("Navbar: Contador actualizado a", items.length);
+				}
+			});
+		</script>
 	</body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+<style is:global>
+    /* Tus estilos de antes... */
 </style>

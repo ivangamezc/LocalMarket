@@ -1,0 +1,116 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Tu Carrito | LocalMarket">
+  <section class="px-8 py-20 max-w-5xl mx-auto min-h-screen">
+    
+    <div class="flex items-center gap-3 mb-12 animate-reveal">
+      <span class="w-12 h-[1px] bg-[#facc15]"></span>
+      <h1 class="text-5xl font-black uppercase italic tracking-tighter text-white">Tu Carrito</h1>
+    </div>
+
+    <div id="cart-container" class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      
+      <div class="lg:col-span-2 space-y-6" id="cart-items-list">
+        </div>
+
+      <div class="lg:col-span-1">
+        <div class="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 sticky top-32">
+          <h2 class="text-xs font-black uppercase tracking-[0.3em] text-[#facc15] mb-8">Resumen de pedido</h2>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex justify-between text-sm text-gray-400">
+              <span>Subtotal</span>
+              <span id="subtotal">0.00€</span>
+            </div>
+            <div class="flex justify-between text-sm text-gray-400">
+              <span>Envío</span>
+              <span class="text-green-500 font-bold uppercase text-[10px]">Gratis</span>
+            </div>
+            <div class="border-t border-white/5 pt-4 flex justify-between text-xl font-black italic text-white">
+              <span>TOTAL</span>
+              <span id="total-price" class="text-[#facc15]">0.00€</span>
+            </div>
+          </div>
+
+          <button class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95">
+            Finalizar Compra
+          </button>
+          
+          <a href="/" class="block text-center mt-6 text-[9px] uppercase tracking-widest text-white/30 hover:text-white transition-colors">
+            ← Continuar comprando
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="empty-cart-msg" class="hidden text-center py-32 border border-dashed border-white/10 rounded-[3rem]">
+        <p class="text-gray-500 italic mb-8 tracking-widest uppercase text-xs">Tu selección está vacía</p>
+        <a href="/" class="px-10 py-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white hover:text-black transition-all uppercase text-[10px] font-black tracking-widest">
+            Explorar catálogo
+        </a>
+    </div>
+
+  </section>
+</Layout>
+
+<script>
+  import { cartItems, removeCartItem } from '../store/cartStore.js';
+
+  // 1. Vincular función de eliminar al navegador (usando 'any' para evitar quejas)
+  (window as any).deleteItem = (index: number) => {
+    removeCartItem(index);
+  };
+
+  const renderCart = () => {
+    const listElement = document.getElementById('cart-items-list');
+    const emptyMsg = document.getElementById('empty-cart-msg');
+    const container = document.getElementById('cart-container');
+    const totalDisplay = document.getElementById('total-price');
+    const subtotalDisplay = document.getElementById('subtotal');
+    
+    // Obtenemos los productos
+    const items = cartItems.get();
+
+    // Lógica de visualización
+    if (items.length === 0) {
+      container?.classList.add('hidden');
+      emptyMsg?.classList.remove('hidden');
+      return;
+    } else {
+      container?.classList.remove('hidden');
+      emptyMsg?.classList.add('hidden');
+    }
+
+    // Dibujar lista de productos
+    if (listElement) {
+      listElement.innerHTML = items.map((item: any, index: number) => `
+        <div class="flex items-center gap-6 bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] mb-4 group hover:border-white/20 transition-all">
+          <img src="${item.imagen}" class="w-20 h-20 object-cover rounded-2xl border border-white/10" />
+          <div class="flex-grow">
+            <h3 class="font-black uppercase italic text-sm text-white">${item.nombre}</h3>
+            <p class="text-[#facc15] font-mono text-xs mt-1 font-bold">${item.precio}€</p>
+          </div>
+          <button onclick="window.deleteItem(${index})" class="text-gray-500 hover:text-red-500 transition-colors text-[10px] font-black uppercase px-4">
+            Eliminar
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Calcular totales con tipos definidos para que el editor no sufra
+    const total = items.reduce((acc: number, item: any) => {
+      const priceStr = String(item.precio).replace('€', '').trim();
+      const priceNum = parseFloat(priceStr) || 0;
+      return acc + priceNum;
+    }, 0);
+
+    if (totalDisplay) totalDisplay.innerText = `${total.toFixed(2)}€`;
+    if (subtotalDisplay) subtotalDisplay.innerText = `${total.toFixed(2)}€`;
+  };
+
+  // Suscribirse y ejecutar
+  cartItems.subscribe(renderCart);
+  renderCart();
+</script>
