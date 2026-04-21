@@ -3,53 +3,134 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import products from '../data/products.json';
 
-const productos = [
-	{ nombre: "Cargo Pant V1", precio: "95.00", cat: "Techwear" },
-	{ nombre: "Oversize Hoodie", precio: "80.00", cat: "Urban Essentials" },
-	{ nombre: "Utility Vest", precio: "120.00", cat: "Limited Edition" },
-];
+const categories = ["Todos", ...new Set(products.map(p => p.cat))];
 ---
 
 <Layout title="LocalMarket | Urban Elegance">
-	<section class="px-8 py-20 max-w-7xl mx-auto">
-		
-		<div class="relative z-10 mb-20">
-			<div class="flex items-center gap-3 mb-10">
-				<span class="w-16 h-[1px] bg-[#facc15]"></span>
-				<span class="text-[#facc15] text-[11px] font-black uppercase tracking-[0.5em]">Urban Standards</span>
-			</div>
+    <section class="px-8 py-20 max-w-7xl mx-auto">
+        
+        <div class="relative z-10 mb-20">
+            <div class="flex items-center gap-3 mb-10">
+                <span class="w-16 h-[1px] bg-[#facc15]"></span>
+                <span class="text-[#facc15] text-[11px] font-black uppercase tracking-[0.5em]">Urban Standards</span>
+            </div>
 
-			<h1 class="text-7xl md:text-[10rem] font-black tracking-[-0.05em] leading-[0.85] uppercase italic mb-12
-					   bg-gradient-to-r from-gray-400 via-gray-100 to-[#facc15] bg-clip-text text-transparent opacity-95">
-				ESTILO <br/> RESILIENTE.
-			</h1>
+            <h1 class="text-7xl md:text-[10rem] font-black tracking-[-0.05em] leading-[0.85] uppercase italic mb-12
+                        bg-gradient-to-r from-gray-400 via-gray-100 to-[#facc15] bg-clip-text text-transparent opacity-95">
+                ESTILO <br/> RESILIENTE.
+            </h1>
 
-			<div class="max-w-md">
-				<p class="text-gray-400 text-lg mb-10 font-light leading-relaxed">
-					Diseño industrial para el día a día. Nuestra tienda local redefine la moda urbana con materiales de alta calidad y cortes precisos.
-				</p>
-				
-				<div class="flex gap-4">
-					<button class="bg-white text-black px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-[#facc15] transition-colors rounded-sm">
-						Nueva Colección
-					</button>
-					<button class="border border-white/20 backdrop-blur-md px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-white/10 transition-colors rounded-sm">
-						Ver Todo
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20">
-			{products.map((p, i) => (
-				<div class="animate-reveal" style={`animation-delay: ${0.4 + (i * 0.1)}s`}>
-					<Card 
-						id={p.id}  title={p.nombre} 
-						price={p.precio} 
-						category={p.cat} 
-						image={p.imagen} 
-					/>
-				</div>
-			))}
-		</div>
-	</section>
+            <div class="max-w-md">
+                <p class="text-gray-400 text-lg mb-10 font-light leading-relaxed">
+                    Diseño industrial para el día a día. Nuestra tienda local redefine la moda urbana con materiales de alta calidad y cortes precisos.
+                </p>
+                
+                <div class="flex gap-4">
+                    <button class="bg-white text-black px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-[#facc15] transition-colors rounded-sm">
+                        Nueva Colección
+                    </button>
+                    <button class="border border-white/20 backdrop-blur-md px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-white/10 transition-colors rounded-sm">
+                        Ver Todo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mb-16 justify-start animate-reveal" style="animation-delay: 0.3s">
+            {categories.map(cat => (
+                <button 
+                    class="filter-btn px-8 py-3 border border-white/10 rounded-full text-[10px] uppercase tracking-[0.3em] font-black transition-all hover:border-[#facc15] hover:text-[#facc15] [&.active]:bg-[#facc15] [&.active]:text-black [&.active]:border-[#facc15]"
+                    data-category={cat}
+                >
+                    {cat}
+                </button>
+            ))}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20" id="products-grid">
+            {products.map((p, i) => (
+                <div class="product-item animate-reveal" data-category={p.cat} style={`animation-delay: ${0.4 + (i * 0.1)}s`}>
+                    <Card 
+                        id={p.id}  title={p.nombre} 
+                        price={p.precio} 
+                        category={p.cat} 
+                        image={p.imagen} 
+                    />
+                </div>
+            ))}
+        </div>
+
+        <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-12 mt-40 pt-20 border-t border-white/5">
+            <div class="space-y-4">
+                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">01 / Logística</span>
+                <h3 class="text-2xl font-black italic uppercase">Envío Blindado</h3>
+                <p class="text-gray-500 text-xs tracking-widest leading-loose">ENTREGA URBANA GARANTIZADA EN 24H CON EMBALAJE REFORZADO.</p>
+            </div>
+            <div class="space-y-4 border-l border-white/5 md:pl-10">
+                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">02 / Calidad</span>
+                <h3 class="text-2xl font-black italic uppercase">Material Tech</h3>
+                <p class="text-gray-500 text-xs tracking-widest leading-loose">TEJIDOS TÉCNICOS RESISTENTES A LA ABRASIÓN Y CORTE LÁSER.</p>
+            </div>
+            <div class="space-y-4 border-l border-white/5 md:pl-10">
+                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">03 / Ética</span>
+                <h3 class="text-2xl font-black italic uppercase">Producción Local</h3>
+                <p class="text-gray-500 text-xs tracking-widest leading-loose">FABRICACIÓN RESPONSABLE KM 0 MINIMIZANDO LA HUELLA DE CARBONO.</p>
+            </div>
+        </div>
+
+        <div class="reveal mt-40 mb-20 py-20 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center">
+            <h2 class="text-4xl font-black italic uppercase mb-4">Únete al Drop.</h2>
+            <p class="text-gray-500 text-[10px] tracking-[0.5em] uppercase mb-10">Acceso prioritario a lanzamientos limitados</p>
+            <div class="max-w-md mx-auto flex gap-4 px-6">
+                <input type="email" placeholder="EMAIL@DIRECCION.COM" class="bg-transparent border-b border-white/20 flex-grow py-3 text-[10px] tracking-widest outline-none focus:border-[#facc15] transition-colors" />
+                <button class="text-[#facc15] text-[10px] font-black uppercase tracking-widest hover:translate-x-2 transition-transform">Enviar →</button>
+            </div>
+        </div>
+
+    </section>
 </Layout>
+
+<script>
+    const setupFilters = () => {
+        const buttons = document.querySelectorAll('.filter-btn');
+        const items = document.querySelectorAll('.product-item');
+
+        if (buttons[0]) buttons[0].classList.add('active');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-category');
+
+                items.forEach((item: any) => {
+                    const itemCat = item.getAttribute('data-category');
+                    
+                    if (filter === "Todos" || itemCat === filter) {
+                        item.style.display = "block";
+                        setTimeout(() => {
+                            item.style.opacity = "1";
+                            item.style.transform = "scale(1)";
+                        }, 10);
+                    } else {
+                        item.style.opacity = "0";
+                        item.style.transform = "scale(0.95)";
+                        setTimeout(() => {
+                            item.style.display = "none";
+                        }, 300);
+                    }
+                });
+            });
+        });
+    };
+
+    setupFilters();
+    document.addEventListener('astro:after-swap', setupFilters);
+</script>
+
+<style>
+    .product-item {
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>

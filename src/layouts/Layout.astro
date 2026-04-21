@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 
 interface Props {
-	title: string;
+    title: string;
 }
 
 const { title } = Astro.props;
@@ -11,66 +11,121 @@ const { title } = Astro.props;
 
 <!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>{title}</title>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-	</head>
-	<body class="bg-[#333333] text-white antialiased min-h-screen relative">
-		
-		<div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-		<div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>{title}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    </head>
+    <body class="bg-[#333333] text-white antialiased min-h-screen relative">
+        
+        <div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+        <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
 
-		<nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6">
-			<div class="flex items-center justify-between w-full max-w-5xl px-8 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
-				<div class="text-xl font-black tracking-tighter uppercase italic">
-					LOCAL<span class="text-[#facc15]">MKT</span>
-				</div>
-				<div class="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">
-					<a href="/" class="hover:text-[#facc15] transition-colors">Colecciones</a>
-					<a href="#" class="hover:text-[#facc15] transition-colors">Drops</a>
-				</div>
-				<div class="flex items-center gap-5">
-					<a href="/carrito" class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center">
-						<span class="text-xs">🛒</span>
-						<span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm shadow-sm">
-							0
-						</span>
-					</a>
-				</div>
-		</nav>
+        <nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6">
+            <div class="flex items-center justify-between w-full max-w-5xl px-8 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
+                <div class="text-xl font-black tracking-tighter uppercase italic">
+                    LOCAL<span class="text-[#facc15]">MKT</span>
+                </div>
+                <div class="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">
+                    <a href="/" class="hover:text-[#facc15] transition-colors">Colecciones</a>
+                    <a href="#" class="hover:text-[#facc15] transition-colors">Drops</a>
+                </div>
+                <div class="flex items-center gap-5">
+                    <a href="/carrito" class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center">
+                        <span class="text-xs">🛒</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm shadow-sm">
+                            0
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </nav>
 
-		<main class="relative z-10 pt-32">
-			<slot />
-		</main>
+        <main class="relative z-10 pt-32">
+            <slot />
+        </main>
 
-		<Footer />
+        <Footer />
+
+        <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] pointer-events-none opacity-0 transition-all duration-500 transform translate-y-10">
+            <div class="bg-white text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/20">
+                <span class="text-[#facc15] bg-black rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold">✓</span>
+                <p class="uppercase text-[10px] font-black tracking-[0.2em]">Producto añadido al kit</p>
+            </div>
+        </div>
+
+        <script>
+            import { cartItems } from '../store/cartStore.js';
+
+            // 1. Lógica del Carrito
+            cartItems.subscribe(items => {
+                const countElement = document.getElementById('cart-count');
+                if (countElement) {
+                    countElement.innerText = items.length.toString();
+                }
+            });
+
+            // 2. Lógica de Scroll Reveal
+            const setupReveal = () => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target); // Solo anima una vez
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+            };
+
+            // Ejecutar al cargar la página
+            setupReveal();
+            
+            // Para que funcione con las navegaciones de Astro
+            document.addEventListener('astro:after-swap', setupReveal);
+        </script>
+
+		<div id="custom-cursor" class="fixed w-8 h-8 border border-[#facc15] rounded-full pointer-events-none z-[999] transition-transform duration-100 ease-out opacity-0 hidden md:block"></div>
 
 		<script>
-			import { cartItems } from '../store/cartStore.js';
+			const cursor = document.getElementById('custom-cursor');
 
-			// Suscribirse a los cambios
-			cartItems.subscribe(items => {
-				const countElement = document.getElementById('cart-count');
-				if (countElement) {
-					countElement.innerText = items.length.toString();
-					console.log("Navbar: Contador actualizado a", items.length);
+			document.addEventListener('mousemove', (e) => {
+				if (cursor) {
+				cursor.style.opacity = "1";
+				// Posicionamos el círculo centrado en el ratón
+				cursor.style.left = `${e.clientX - 16}px`;
+				cursor.style.top = `${e.clientY - 16}px`;
 				}
+			});
+
+			// Efecto cuando pasas sobre algo clicable
+			const interactivos = document.querySelectorAll('a, button, .product-item');
+			interactivos.forEach(el => {
+				el.addEventListener('mouseenter', () => {
+				cursor?.classList.add('scale-150', 'bg-[#facc15]/20');
+				});
+				el.addEventListener('mouseleave', () => {
+				cursor?.classList.remove('scale-150', 'bg-[#facc15]/20');
+				});
 			});
 		</script>
 
-		<div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] pointer-events-none opacity-0 transition-all duration-500 transform translate-y-10">
-			<div class="bg-white text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/20">
-				<span class="text-[#facc15] bg-black rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold">✓</span>
-				<p class="uppercase text-[10px] font-black tracking-[0.2em]">Producto añadido al kit</p>
-			</div>
-		</div>
-
-	
-	</body>
+    </body>
 </html>
 
 <style is:global>
-    /* Tus estilos de antes... */
+    /* Estilos para las animaciones al hacer scroll */
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1);
+    }
+
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
 </style>
