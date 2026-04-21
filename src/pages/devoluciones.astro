@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pasos = [
+    {
+        num: "01",
+        titulo: "Solicitud de Ticket",
+        desc: "Accede a tu portal de cliente o contacta con el soporte adjuntando tu número de pedido ID-XXXX para iniciar el protocolo."
+    },
+    {
+        num: "02",
+        titulo: "Inspección de Unidad",
+        desc: "Asegúrate de que la prenda mantiene los precintos industriales. No aceptamos unidades con desgaste en exteriores o sin etiquetas."
+    },
+    {
+        num: "03",
+        titulo: "Embalaje y Envío",
+        desc: "Utiliza el embalaje original si es posible para asegurar la integridad del producto durante el tránsito de retorno."
+    },
+    {
+        num: "04",
+        titulo: "Reembolso de Créditos",
+        desc: "Tras la validación técnica en nuestra central (24/48h), se emitirá el reembolso al método de pago original."
+    }
+];
+---
+
+<Layout title="Protocolo de Devoluciones | LOCALMKT">
+    <section class="px-6 py-24 max-w-5xl mx-auto min-h-screen">
+        
+        <div class="reveal mb-20 border-l-4 border-[#facc15] pl-8">
+            <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">Garantía de Resiliencia</span>
+            <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none">
+                Protocolo de <br/> <span class="text-white/20">Devoluciones</span>
+            </h1>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-20">
+            {pasos.map((paso, i) => (
+                <div class="reveal group p-10 border border-white/5 bg-white/[0.01] rounded-3xl hover:border-[#facc15]/30 transition-all duration-500">
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="text-4xl font-black text-[#facc15]/20 group-hover:text-[#facc15] transition-colors duration-500">
+                            {paso.num}
+                        </span>
+                        <div class="w-8 h-[1px] bg-white/20 mt-5"></div>
+                    </div>
+                    <h3 class="text-xl font-bold uppercase tracking-widest mb-4 italic">{paso.titulo}</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed font-light">
+                        {paso.desc}
+                    </p>
+                </div>
+            ))}
+        </div>
+
+        <div class="reveal grid md:grid-cols-3 gap-6">
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                <h4 class="text-[#facc15] text-[10px] font-black tracking-widest uppercase mb-2">Plazo Temporal</h4>
+                <p class="text-xs uppercase font-bold">14 Días Naturales</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                <h4 class="text-[#facc15] text-[10px] font-black tracking-widest uppercase mb-2">Coste de Logística</h4>
+                <p class="text-xs uppercase font-bold">Gratuito en Península</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                <h4 class="text-[#facc15] text-[10px] font-black tracking-widest uppercase mb-2">Estado del Item</h4>
+                <p class="text-xs uppercase font-bold">Packaging Original</p>
+            </div>
+        </div>
+
+        <div class="reveal mt-20 text-center">
+            <p class="text-gray-500 text-xs uppercase tracking-[0.3em] mb-8">¿Dudas con el tallaje? Consulta la guía técnica antes de devolver.</p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="/faq" class="px-8 py-4 border border-white/20 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                    Preguntas Frecuentes
+                </a>
+                <a href="mailto:returns@localmarket.com" class="px-8 py-4 bg-[#facc15] text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">
+                    Iniciar Devolución Ahora
+                </a>
+            </div>
+        </div>
+
+    </section>
+</Layout>
