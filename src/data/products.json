@@ -1,34 +1,168 @@
 [
   {
     "id": "1",
-    "nombre": "Cargo Pant V1",
-    "precio": "95.00",
+    "nombre": "Nike Pantalón Corto Cargo Woven",
+    "precio": "45.00",
     "cat": "Techwear",
-    "imagen": "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=800",
+    "genero": "hombre",
+    "tipo": "pantalones",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_761405_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
     "descripcion": "Pantalones resistentes al agua con múltiples bolsillos tácticos."
   },
   {
     "id": "2",
-    "nombre": "Oversize Hoodie",
+    "nombre": "OAKLEY Oversize Hoodie",
     "precio": "80.00",
     "cat": "Urban Essentials",
-    "imagen": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800",
+    "genero": "hombre",
+    "tipo": "sudaderas",
+    "imagen": "https://assets2.oakley.com/cdn-record-files-pi/ffa5da4e-c27f-4a98-886a-af180118d734/b7074733-1454-4c8c-af45-b00c002c760c/FOA404727__9UD_omfr1.png?impolicy=OO_heroxl",
     "descripcion": "Sudadera de algodón orgánico con corte relajado y costuras reforzadas."
   },
   {
     "id": "3",
-    "nombre": "Utility Vest",
+    "nombre": "The North Face Chaleco Hybrid",
     "precio": "120.00",
     "cat": "Limited Edition",
-    "imagen": "https://images.unsplash.com/photo-1614031679232-0dae72990093?q=80&w=800",
+    "genero": "hombre",
+    "tipo": "chalecos",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_756369_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
     "descripcion": "Chaleco técnico con sistema de ajuste rápido y reflectores nocturnos."
   },
   {
     "id": "4",
-    "nombre": "Cyber Tee",
-    "precio": "45.00",
+    "nombre": "Hoodrich Camiseta Stade",
+    "precio": "65.00",
     "cat": "Graphic Series",
-    "imagen": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800",
-    "descripcion": "Camiseta con estampado reflectante de alta durabilidad."
+    "genero": "hombre",
+    "tipo": "camisetas",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_798322_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
+    "descripcion": "Esta camiseta holgada se inspira en el terreno de juego y está confeccionada en tejido de malla transpirable. Tiene cuello redondo y mangas cortas con detalles de rayas. Acabado con la marca Hoodrich en la espalda."
+  },
+  {
+    "id": "5",
+    "nombre": "Nike Camiseta Football Crop",
+    "precio": "35.00",
+    "cat": "Urban Essentials",
+    "genero": "mujer",
+    "tipo": "camisetas",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_798612_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
+    "descripcion": "Crop top técnico con tejido transpirable para máxima movilidad urbana."
+  },
+  {
+    "id": "6",
+    "nombre": "Nike Joggers Wide Leg Phoenix",
+    "precio": "85.00",
+    "cat": "Techwear",
+    "genero": "mujer",
+    "tipo": "pantalones",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_763911_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
+    "descripcion": "Pantalones anchos estilo paracaidista, ultraligeros y con ajuste en los tobillos."
+  },
+
+
+  {
+    "id": "7",
+    "nombre": "G-Shock GM-700G",
+    "precio": "210.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "relojes",
+    "imagen": "https://www.joyeriagimeno.es/2376-large_default/casio-g-shock-dorado-negro-.jpg",
+    "descripcion": "Descubre el G-STEEL GM-700, el más reciente miembro de la aclamada línea de relojes G-SHOCK analógico-digital con la icónica caja grande. Este modelo toma el sólido y sofisticado diseño de bisel de acero inoxidable."
+  },
+  {
+    "id": "8",
+    "nombre": "Cadena Silver",
+    "precio": "55.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "colgantes",
+    "imagen": "https://lostgenclub.com/cdn/shop/files/lazio-silver-chain_643c6fc8-0867-4028-bfa7-8f418a5f2520.jpg?v=1773427185&width=1225",
+    "descripcion": "Colgante de eslabones industriales en acero inoxidable 316L con cierre de seguridad micrométrico."
+  },
+  {
+    "id": "9",
+    "nombre": "RELOJ LOTUS",
+    "precio": "185.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "relojes",
+    "imagen": "https://static6.festinagroup.com/product/lotus/watches/detail/big/l18938_1.webp",
+    "descripcion": "Reloj digital con pantalla OLED retroiluminada y correa de polímero técnico reforzado."
+  },
+  {
+    "id": "10",
+    "nombre": "Collar Snake",
+    "precio": "145.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "colgantes",
+    "imagen": "https://res2025.bizseas.com/800x800/product/0/8/65bf56d981280.jpg?_v=8",
+    "descripcion": "Colgante minimalista inspirado en tornillería hexagonal de alta precisión. Acabado en mate."
+  },
+
+  {
+    "id": "11",
+    "nombre": "Nike Tech T-Shirt",
+    "precio": "50.00",
+    "cat": "Nike Performance",
+    "genero": "hombre",
+    "tipo": "camisetas",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_791117_b?qlt=92&w=950&h=1212&v=1&fmt=auto",
+    "descripcion": "Camiseta técnica de alto rendimiento con tecnología Dri-FIT para mantenerte seco."
+  },
+  {
+    "id": "12",
+    "nombre": "adidas Adicolor Teamgeist",
+    "precio": "45.00",
+    "cat": "Adidas Outdoor",
+    "genero": "unisex",
+    "tipo": "camisetas",
+    "imagen": "https://assets.adidas.com/images/h_2000,f_auto,q_auto,fl_lossy,c_fill,g_auto/968ee75edd46424a9acca24f4c6e0c14_9366/Camiseta_de_algodon_adidas_Adicolor_Teamgeist_Azul_KD4350_41_detail.jpg",
+    "descripcion": "Camiseta de la línea Adidas Outdoor, fabricada con materiales reciclados y costuras planas."
+  },
+  {
+    "id": "13",
+    "nombre": "Nike Air Max Pulse",
+    "precio": "160.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "zapatillas",
+    "imagen": "https://cdn.runrepeat.com/storage/gallery/product_primary/39771/nike-air-max-pulse-main-22259781-main.jpg",
+    "descripcion": "Inspiración urbana con amortiguación Air Max para máxima comodidad diaria."
+  },
+  {
+    "id": "14",
+    "nombre": "Adidas NMD R1",
+    "precio": "140.00",
+    "cat": "Calzado",
+    "genero": "hombre",
+    "tipo": "zapatillas",
+    "imagen": "https://assets.laboutiqueofficielle.com/w_1100,q_auto,f_auto/media/products/2025/10/22/adidas_483119_JS0746_20251029T135657_01.jpg",
+    "descripcion": "Zapatilla de estilo futurista con mediasuela Boost para un retorno de energía infinito."
+  },
+  {
+    "id": "15",
+    "nombre": "Nike ACG Beanie",
+    "precio": "30.00",
+    "cat": "Accesorios",
+    "genero": "unisex",
+    "tipo": "gorros",
+    "imagen": "https://cdn.skatedeluxe.com/thumb/TnFnkcKUe3F8RB0TBHhxYHTkj3o=/fit-in/600x700/filters:fill(white):brightness(-4)/product/177573-4-NikeACG-Peak.jpg?v=1",
+    "descripcion": "Gorro Nike All Conditions Gear, diseñado para retener el calor en entornos fríos."
+  },
+
+   {
+    "id": "16",
+    "nombre": "Hoodie Adidas Originals",
+    "precio": "90.00",
+    "cat": "sudadera",
+    "genero": "unisex",
+    "tipo": "ropa",
+    "imagen": "https://static.qns.digital/img/p/1/6/1/8/8/7/3/1618873-full_product.jpg",
+    "descripcion": " Es una fibra de celulosa pura valorada desde hace milenios por su suavidad, transpirabilidad y versatilidad. En la moda moderna de calle y deportiva, constituye la base de camisetas, sudaderas y vaqueros de primera calidad."
   }
+
 ]
+

@@ -16,7 +16,6 @@ const { title } = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <title>{title}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-        
     </head>
     <body class="bg-[#333333] text-white antialiased min-h-screen relative overflow-x-hidden">
         
@@ -25,26 +24,39 @@ const { title } = Astro.props;
         <div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
 
-        <nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6">
+        <nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6" aria-label="Navegación principal">
             <div class="flex items-center justify-between w-full max-w-5xl px-8 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
-                <div class="text-xl font-black tracking-tighter uppercase italic">
+                
+                <a 
+                    href="/" 
+                    class="text-xl font-black tracking-tighter uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-[#facc15] focus-visible:ring-offset-4 focus-visible:ring-offset-[#333333] rounded-sm transition-transform hover:scale-105"
+                    aria-label="Ir al inicio de LocalMarket"
+                >
                     LOCAL<span class="text-[#facc15]">MKT</span>
+                </a>
+
+                <div class="hidden md:flex gap-8 text-[10px] uppercase tracking-[0.4em] font-bold text-white/90">
+                    <a href="/ropa" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Ropa</a>
+                    <a href="/calzado" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Calzado</a>
+                    <a href="/accesorios" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Accesorios</a>
                 </div>
-                <div class="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">
-                    <a href="/" class="hover:text-[#facc15] transition-colors">Colecciones</a>
-                    <a href="#" class="hover:text-[#facc15] transition-colors">Drops</a>
-                </div>
+
                 <div class="flex items-center gap-5">
                     <div class="relative hidden sm:block">
                         <input 
                             type="text" 
                             id="global-search" 
                             placeholder="BUSCAR..." 
+                            aria-label="Buscar productos"
                             class="bg-transparent border-b border-white/10 py-1 px-2 text-[9px] tracking-[0.3em] uppercase outline-none focus:border-[#facc15] transition-all w-24 focus:w-40"
                         />
                     </div>
 
-                    <a href="/carrito" class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center">
+                    <a 
+                        href="/carrito" 
+                        aria-label="Ver carrito de compras"
+                        class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#facc15] focus-visible:ring-offset-2 focus-visible:ring-offset-[#333333]"
+                    >
                         <span class="text-xs">🛒</span>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm shadow-sm">
                             0
@@ -198,7 +210,7 @@ const { title } = Astro.props;
                 setupReveal();
                 setupCursor();
                 initParticles();
-                setupSearch(); // Inicializar buscador
+                setupSearch();
             };
 
             window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
