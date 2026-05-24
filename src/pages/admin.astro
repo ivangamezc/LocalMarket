@@ -1,0 +1,281 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabaseClient';
+
+// Cargamos los productos inicialmente para la lista en el servidor
+const { data: initialProducts } = await supabase
+    .from('productos')
+    .select('*')
+    .order('id', { ascending: false });
+---
+
+<Layout title="Dashboard de Gestión | LocalMarket">
+    <section class="px-8 pt-10 pb-20 max-w-5xl mx-auto min-h-screen">
+        
+        <div class="mb-12 text-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <span class="w-12 h-[1px] bg-[#facc15]"></span>
+                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Terminal de Control</span>
+                <span class="w-12 h-[1px] bg-[#facc15]"></span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black uppercase italic text-white pb-4" id="form-title">
+                Gestión de Inventario
+            </h1>
+        </div>
+
+        <div id="status-msg" class="hidden mb-8 p-6 rounded-2xl text-center border">
+            <p class="font-bold uppercase tracking-widest text-xs" id="status-text"></p>
+        </div>
+
+        <div class="mb-20">
+            <form id="admin-form" class="space-y-6 bg-[#1a1a1a] p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+                <input type="hidden" id="edit-mode" value="false">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">ID (Único)</label>
+                        <input type="text" id="prod-id" required placeholder="Ej: 51" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all read-only:opacity-50">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Nombre del Artículo</label>
+                        <input type="text" id="prod-nombre" required placeholder="Ej: Nike Tech Fleece" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Precio (€)</label>
+                        <input type="number" step="0.01" id="prod-precio" required placeholder="Ej: 89.99" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Género</label>
+                        <select id="prod-genero" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                            <option value="hombre">Hombre</option>
+                            <option value="mujer">Mujer</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Categoría</label>
+                        <select id="prod-cat" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                            <option value="Urban Essentials">Urban Essentials</option>
+                            <option value="Techwear">Techwear</option>
+                            <option value="Graphic Series">Graphic Series</option>
+                            <option value="Nike Performance">Nike Performance</option>
+                            <option value="Adidas Outdoor">Adidas Outdoor</option>
+                            <option value="Calzado">Calzado</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Accesorios">Accesorios</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Tipo</label>
+                        <select id="prod-tipo" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                            <option value="camisetas">Camisetas</option>
+                            <option value="sudaderas">Sudaderas</option>
+                            <option value="pantalones">Pantalones</option>
+                            <option value="chaquetas">Chaquetas</option>
+                            <option value="chalecos">Chalecos</option>
+                            <option value="zapatillas">Zapatillas</option>
+                            <option value="botas">Botas</option>
+                            <option value="relojes">Relojes</option>
+                            <option value="gafas">Gafas</option>
+                            <option value="gorros">Gorros</option>
+                            <option value="bolsos">Bolsos</option>
+                            <option value="colgantes">Colgantes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">URL Imagen</label>
+                    <input type="url" id="prod-imagen" required placeholder="https://..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Descripción</label>
+                    <textarea id="prod-desc" required rows="3" placeholder="Detalles técnicos..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none"></textarea>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" id="submit-btn" class="flex-[2] py-6 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-2xl hover:bg-white transition-all duration-300">
+                        Publicar Producto
+                    </button>
+                    <button type="button" id="cancel-edit" class="hidden flex-1 py-6 bg-white/5 text-white font-black uppercase text-xs tracking-[0.3em] rounded-2xl border border-white/10 hover:bg-red-500/20 transition-all duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden shadow-xl">
+            <div class="p-6 border-b border-white/10 bg-white/[0.02]">
+                <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/60">Artículos en Frankfurt (Cloud)</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="text-[9px] uppercase tracking-widest text-gray-500 border-b border-white/5">
+                        <tr>
+                            <th class="px-6 py-4 font-black">Producto</th>
+                            <th class="px-6 py-4 font-black">Precio</th>
+                            <th class="px-6 py-4 font-black text-right min-w-[200px]">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list-body">
+                        {initialProducts?.map((p) => (
+                            <tr class="border-b border-white/5 hover:bg-white/[0.01] transition-colors" id={`row-${p.id}`}>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src={p.imagen} class="w-12 h-12 rounded-xl object-cover bg-black" />
+                                        <div>
+                                            <p class="text-white font-bold text-sm uppercase italic">{p.nombre}</p>
+                                            <p class="text-[9px] text-gray-500 uppercase tracking-tighter">ID: {p.id} | {p.tipo}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-white font-black italic">{p.precio}€</td>
+                                <td class="px-6 py-4 text-right space-x-2">
+                                    <button 
+                                        class="edit-btn px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-500 hover:text-white transition-all"
+                                        data-product={JSON.stringify(p)}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button 
+                                        class="delete-btn px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-red-500 hover:text-white transition-all"
+                                        data-id={p.id}
+                                    >
+                                        Borrar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</Layout>
+
+<script>
+    import { supabase } from '../lib/supabaseClient';
+
+    const form = document.getElementById('admin-form') as HTMLFormElement;
+    const submitBtn = document.getElementById('submit-btn');
+    const cancelBtn = document.getElementById('cancel-edit');
+    const statusMsg = document.getElementById('status-msg');
+    const statusText = document.getElementById('status-text');
+    const editModeInput = document.getElementById('edit-mode') as HTMLInputElement;
+    const idInput = document.getElementById('prod-id') as HTMLInputElement;
+
+    const showMsg = (text: string, isError = false) => {
+        if (!statusMsg || !statusText) return;
+        statusMsg.classList.remove('hidden', 'bg-green-500/10', 'border-green-500/50', 'text-green-400', 'bg-red-500/10', 'border-red-500/50', 'text-red-400');
+        
+        if (isError) {
+            statusMsg.classList.add('bg-red-500/10', 'border-red-500/50', 'text-red-400');
+        } else {
+            statusMsg.classList.add('bg-green-500/10', 'border-green-500/50', 'text-green-400');
+        }
+        
+        statusText.innerText = text;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const resetForm = () => {
+        form.reset();
+        editModeInput.value = "false";
+        if (submitBtn) submitBtn.innerText = "Publicar Producto";
+        cancelBtn?.classList.add('hidden');
+        idInput.readOnly = false;
+        (document.getElementById('form-title') as HTMLElement).innerText = "Gestión de Inventario";
+    };
+
+    const setupDeleteButtons = () => {
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-id');
+                if (!confirm(`¿Estás seguro de eliminar el producto ${id}?`)) return;
+
+                const { error } = await supabase.from('productos').delete().eq('id', id);
+                
+                if (error) {
+                    showMsg("Error al eliminar: " + error.message, true);
+                } else {
+                    document.getElementById(`row-${id}`)?.remove();
+                    showMsg("Producto eliminado correctamente ✓");
+                }
+            });
+        });
+    };
+
+    const setupEditButtons = () => {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const p = JSON.parse(btn.getAttribute('data-product')!);
+                
+                idInput.value = p.id;
+                idInput.readOnly = true; // Cambiado a readOnly para que conserve el valor al enviar
+                (document.getElementById('prod-nombre') as HTMLInputElement).value = p.nombre;
+                (document.getElementById('prod-precio') as HTMLInputElement).value = p.precio;
+                (document.getElementById('prod-genero') as HTMLSelectElement).value = p.genero;
+                (document.getElementById('prod-cat') as HTMLSelectElement).value = p.cat || "Urban Essentials";
+                (document.getElementById('prod-tipo') as HTMLSelectElement).value = p.tipo;
+                (document.getElementById('prod-imagen') as HTMLInputElement).value = p.imagen;
+                (document.getElementById('prod-desc') as HTMLTextAreaElement).value = p.descripcion;
+
+                editModeInput.value = "true";
+                if (submitBtn) submitBtn.innerText = "Guardar Cambios";
+                cancelBtn?.classList.remove('hidden');
+                (document.getElementById('form-title') as HTMLElement).innerText = "Editando Producto";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    };
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const isEdit = editModeInput.value === "true";
+        
+        const payload = {
+            id: idInput.value,
+            nombre: (document.getElementById('prod-nombre') as HTMLInputElement).value,
+            precio: parseFloat((document.getElementById('prod-precio') as HTMLInputElement).value),
+            genero: (document.getElementById('prod-genero') as HTMLSelectElement).value,
+            cat: (document.getElementById('prod-cat') as HTMLSelectElement).value,
+            tipo: (document.getElementById('prod-tipo') as HTMLSelectElement).value,
+            imagen: (document.getElementById('prod-imagen') as HTMLInputElement).value,
+            descripcion: (document.getElementById('prod-desc') as HTMLTextAreaElement).value,
+        };
+
+        if (submitBtn) submitBtn.innerText = "GUARDANDO EN LA NUBE...";
+
+        let error;
+        if (isEdit) {
+            const res = await supabase.from('productos').update(payload).eq('id', payload.id);
+            error = res.error;
+        } else {
+            const res = await supabase.from('productos').insert([payload]);
+            error = res.error;
+        }
+
+        if (error) {
+            console.error("Error en Supabase:", error);
+            showMsg("Error: " + error.message, true);
+            if (submitBtn) submitBtn.innerText = isEdit ? "Guardar Cambios" : "Publicar Producto";
+        } else {
+            showMsg(isEdit ? "Cambios guardados con éxito ✓" : "Producto publicado con éxito ✓");
+            setTimeout(() => location.reload(), 1000); 
+        }
+    });
+
+    cancelBtn?.addEventListener('click', resetForm);
+
+    const init = () => {
+        setupDeleteButtons();
+        setupEditButtons();
+    };
+
+    init();
+    document.addEventListener('astro:after-swap', init);
+</script>

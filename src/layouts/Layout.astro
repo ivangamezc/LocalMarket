@@ -53,9 +53,14 @@ const currentPath = Astro.url.pathname;
                         </button>
                     </div>
 
+                    <a href="/mi-cuenta" id="profile-btn" class={`relative bg-white/10 p-2.5 rounded-xl border transition-all flex items-center justify-center ${currentPath.includes('/mi-cuenta') || currentPath.includes('/login') ? 'border-[#facc15] text-[#facc15]' : 'border-white/10 hover:bg-[#facc15] hover:text-black'}`} title="Mi Cuenta">
+                        <span class="text-xs">👤</span>
+                        <span id="profile-indicator" class="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full hidden"></span>
+                    </a>
+
                     <a href="/carrito" class={`relative bg-white/10 p-2.5 rounded-xl border transition-all flex items-center justify-center ${currentPath.includes('/carrito') ? 'border-[#facc15] text-[#facc15]' : 'border-white/10 hover:bg-[#facc15] hover:text-black'}`}>
                         <span class="text-xs">🛒</span>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm">0</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 flex items-center justify-center bg-[#facc15] text-black text-[9px] font-bold h-4 min-w-[16px] px-1 rounded-sm">0</span>
                     </a>
                 </div>
             </div>
@@ -157,11 +162,35 @@ const currentPath = Astro.url.pathname;
 
             // --- 4. CONFIGURACIÓN GENERAL ---
             const startAll = () => {
-                // Carrito
+                
+                // --- ARREGLO DEL CONTADOR DEL CARRITO ---
                 cartItems.subscribe(items => {
                     const el = document.getElementById('cart-count');
-                    if (el) el.innerText = items.length.toString();
+                    if (el) {
+                        // Sumamos la cantidad de todos los ítems
+                        const totalItems = items.reduce((total: number, item: any) => total + (item.cantidad || 1), 0);
+                        
+                        el.innerText = totalItems.toString();
+                        
+                        // Si no hay productos, ocultamos la burbuja amarilla
+                        if (totalItems === 0) {
+                            el.style.display = 'none';
+                        } else {
+                            el.style.display = 'flex';
+                        }
+                    }
                 });
+
+                // --- NUEVO: Comprobación del estado de sesión para el indicador del perfil ---
+                const profileIndicator = document.getElementById('profile-indicator');
+                if (profileIndicator) {
+                    const storedUser = localStorage.getItem('localmarket_user');
+                    if (storedUser) {
+                        profileIndicator.classList.remove('hidden'); // Muestra el punto verde
+                    } else {
+                        profileIndicator.classList.add('hidden'); // Lo oculta
+                    }
+                }
 
                 // Reset de Listeners (FIX)
                 document.removeEventListener('cart:add', handleCartAdd);
@@ -204,7 +233,7 @@ const currentPath = Astro.url.pathname;
         <style is:global>
             .reveal { opacity: 0; transform: translateY(30px); transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1); }
             .reveal.active { opacity: 1; transform: translateY(0); }
-            html { scroll-behavior: smooth; } /* AQUÍ ESTABA EL FALLO */
+            html { scroll-behavior: smooth; }
         </style>
     </body>
 </html>

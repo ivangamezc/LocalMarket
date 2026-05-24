@@ -1,0 +1,166 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Acceso | LocalMarket">
+    <section class="px-8 py-20 max-w-md mx-auto min-h-screen flex flex-col justify-center">
+        
+        <div class="mb-12 text-center animate-reveal">
+            <h1 class="text-4xl font-black uppercase italic text-white mb-2 transition-all duration-300" id="page-title">
+                Bienvenido
+            </h1>
+            <p class="text-xs text-gray-400 uppercase tracking-widest transition-all duration-300" id="page-subtitle">Accede a tu cuenta de LocalMarket</p>
+        </div>
+
+        <div class="relative bg-white/[0.02] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden animate-reveal h-[480px]" style="animation-delay: 0.1s;">
+            
+            <form id="login-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 transition-all duration-500 z-10 bg-[#1a1a1a]">
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Email</label>
+                        <input type="email" id="login-email" required placeholder="tu@email.com" class="w-full bg-black border border-white/10 rounded-xl px-4 py-4 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center ml-2 mb-1">
+                            <label class="text-[9px] font-black text-white uppercase tracking-[0.3em]">Contraseña</label>
+                            <a href="#" class="text-[9px] text-gray-500 hover:text-[#facc15] transition-colors">¿Olvidaste tu clave?</a>
+                        </div>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-black border border-white/10 rounded-xl px-4 py-4 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button type="submit" id="login-btn" class="w-full py-4 bg-white text-black font-black uppercase text-[10px] tracking-[0.3em] rounded-xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95">
+                        Iniciar Sesión
+                    </button>
+                    <div class="text-center mt-6">
+                        <span class="text-xs text-gray-500">¿No tienes cuenta?</span>
+                        <button type="button" id="show-register-btn" class="text-xs text-white font-bold ml-2 hover:text-[#facc15] transition-colors outline-none">Regístrate</button>
+                    </div>
+                </div>
+            </form>
+
+            <form id="register-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 transition-all duration-500 transform translate-x-full opacity-0 z-0 bg-[#1a1a1a]">
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Nombre completo</label>
+                        <input type="text" id="reg-name" required placeholder="Ej: Manuel" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Email</label>
+                        <input type="email" id="reg-email" required placeholder="tu@email.com" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Contraseña</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button type="submit" id="register-btn" class="w-full py-4 bg-[#facc15] text-black font-black uppercase text-[10px] tracking-[0.3em] rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(250,204,21,0.1)] active:scale-95">
+                        Crear Cuenta
+                    </button>
+                    <div class="text-center mt-6">
+                        <span class="text-xs text-gray-500">¿Ya tienes cuenta?</span>
+                        <button type="button" id="show-login-btn" class="text-xs text-white font-bold ml-2 hover:text-[#facc15] transition-colors outline-none">Inicia sesión</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </section>
+</Layout>
+
+<script>
+    const setupAuth = () => {
+        // Formularios
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        
+        // Botones de cambio de vista
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        
+        // Botones de submit
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+
+        // Textos superiores
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        // --- ANIMACIÓN: Mostrar Registro ---
+        showRegisterBtn?.addEventListener('click', () => {
+            if(pageTitle) pageTitle.innerText = "Crear Cuenta";
+            if(pageSubtitle) pageSubtitle.innerText = "Únete a LocalMarket hoy mismo";
+            
+            // Ocultar Login (lo movemos a la izquierda)
+            loginForm?.classList.add('-translate-x-full', 'opacity-0');
+            loginForm?.classList.remove('z-10');
+            loginForm?.classList.add('z-0');
+            
+            // Mostrar Registro (lo traemos desde la derecha)
+            registerForm?.classList.remove('translate-x-full', 'opacity-0', 'z-0');
+            registerForm?.classList.add('z-10');
+        });
+
+        // --- ANIMACIÓN: Mostrar Login ---
+        showLoginBtn?.addEventListener('click', () => {
+            if(pageTitle) pageTitle.innerText = "Bienvenido";
+            if(pageSubtitle) pageSubtitle.innerText = "Accede a tu cuenta de LocalMarket";
+            
+            // Ocultar Registro (lo devolvemos a la derecha)
+            registerForm?.classList.add('translate-x-full', 'opacity-0');
+            registerForm?.classList.remove('z-10');
+            registerForm?.classList.add('z-0');
+            
+            // Mostrar Login (lo traemos desde la izquierda)
+            loginForm?.classList.remove('-translate-x-full', 'opacity-0', 'z-0');
+            loginForm?.classList.add('z-10');
+        });
+
+        // --- ENVÍO: Formulario de Login ---
+        loginForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = (document.getElementById('login-email') as HTMLInputElement).value;
+            if (loginBtn) loginBtn.innerText = "ACCEDIENDO...";
+            
+            setTimeout(() => {
+                const userData = {
+                    email: email,
+                    name: email.split('@')[0], // Toma lo que hay antes del @ si no hay nombre guardado
+                    isLoggedIn: true
+                };
+                localStorage.setItem('localmarket_user', JSON.stringify(userData));
+                window.location.href = '/mi-cuenta';
+            }, 800);
+        });
+
+        // --- ENVÍO: Formulario de Registro ---
+        registerForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = (document.getElementById('reg-name') as HTMLInputElement).value;
+            const email = (document.getElementById('reg-email') as HTMLInputElement).value;
+            
+            if (registerBtn) registerBtn.innerText = "CREANDO CUENTA...";
+            
+            setTimeout(() => {
+                // Aquí guardamos el usuario con el nombre exacto que haya puesto
+                const userData = {
+                    email: email,
+                    name: name,
+                    address: "", // Dirección en blanco para que la rellene luego
+                    isLoggedIn: true
+                };
+                localStorage.setItem('localmarket_user', JSON.stringify(userData));
+                
+                // Redirigimos directamente al panel tras registrarse
+                window.location.href = '/mi-cuenta';
+            }, 800);
+        });
+    };
+
+    setupAuth();
+    document.addEventListener('astro:after-swap', setupAuth);
+</script>
