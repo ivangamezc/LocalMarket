@@ -204,6 +204,13 @@ if (error) {
 </script>
 
 <style>
+
+    #carousel-container {
+    /* Esto es lo que obliga al navegador a no cancelar el toque */
+    touch-action: pan-x; 
+    -webkit-overflow-scrolling: touch; /* Hace que el scroll sea fluido en iPhone/iPad */
+}
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
