@@ -159,15 +159,14 @@ if (error) {
         container.addEventListener('mouseenter', () => isPaused = true);
         container.addEventListener('mouseleave', () => isPaused = false);
 
-        // --- GESTIÓN UNIFICADA DE ARRASTRE (MOUSE + TOUCH) ---
+        // --- LÓGICA DE ARRASTRE ---
         let isDown = false;
         let startX: number;
         let scrollLeft: number;
 
         const startDragging = (e: any) => {
             isDown = true;
-            isPaused = true; // Pausar autoplay al tocar
-            // Detectar si es mouse o touch
+            isPaused = true; 
             const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
             startX = pageX - container.offsetLeft;
             scrollLeft = container.scrollLeft;
@@ -180,7 +179,7 @@ if (error) {
 
         const moveDragging = (e: any) => {
             if (!isDown) return;
-            e.preventDefault();
+            e.preventDefault(); // <-- Esto es lo que el {passive: false} permite hacer
             const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
             const x = pageX - container.offsetLeft;
             const walk = (x - startX) * 2;
@@ -193,10 +192,10 @@ if (error) {
         container.addEventListener('mouseup', stopDragging);
         container.addEventListener('mousemove', moveDragging);
 
-        // Eventos Touch (AQUÍ ESTABA EL FALLO)
-        container.addEventListener('touchstart', startDragging);
+        // Eventos Touch (Asegúrate de que tengan el { passive: false })
+        container.addEventListener('touchstart', startDragging, { passive: false });
         container.addEventListener('touchend', stopDragging);
-        container.addEventListener('touchmove', moveDragging);
+        container.addEventListener('touchmove', moveDragging, { passive: false });
     };
 
     setupHomeLive();
