@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const { title } = Astro.props;
+const currentPath = Astro.url.pathname; 
 ---
 
 <!doctype html>
@@ -16,51 +18,44 @@ const { title } = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <title>{title}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+        
+        <ClientRouter />
     </head>
     <body class="bg-[#333333] text-white antialiased min-h-screen relative overflow-x-hidden">
         
         <canvas id="tech-bg" class="fixed inset-0 -z-20 opacity-50 pointer-events-none"></canvas>
-
         <div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
 
         <nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-6" aria-label="Navegación principal">
             <div class="flex items-center justify-between w-full max-w-5xl px-8 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
                 
-                <a 
-                    href="/" 
-                    class="text-xl font-black tracking-tighter uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-[#facc15] focus-visible:ring-offset-4 focus-visible:ring-offset-[#333333] rounded-sm transition-transform hover:scale-105"
-                    aria-label="Ir al inicio de LocalMarket"
-                >
+                <a href="/" class="text-xl font-black tracking-tighter uppercase italic hover:scale-105 transition-transform outline-none">
                     LOCAL<span class="text-[#facc15]">MKT</span>
                 </a>
 
                 <div class="hidden md:flex gap-8 text-[10px] uppercase tracking-[0.4em] font-bold text-white/90">
-                    <a href="/ropa" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Ropa</a>
-                    <a href="/calzado" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Calzado</a>
-                    <a href="/accesorios" class="hover:text-[#facc15] transition-colors outline-none focus-visible:text-[#facc15]">Accesorios</a>
+                    <a href="/ropa" class={`transition-colors ${currentPath.includes('/ropa') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Ropa</a>
+                    <a href="/calzado" class={`transition-colors ${currentPath.includes('/calzado') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Calzado</a>
+                    <a href="/accesorios" class={`transition-colors ${currentPath.includes('/accesorios') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Accesorios</a>
                 </div>
 
                 <div class="flex items-center gap-5">
-                    <div class="relative hidden sm:block">
+                    <div class="relative hidden sm:block group">
                         <input 
                             type="text" 
                             id="global-search" 
                             placeholder="BUSCAR..." 
-                            aria-label="Buscar productos"
-                            class="bg-transparent border-b border-white/10 py-1 px-2 text-[9px] tracking-[0.3em] uppercase outline-none focus:border-[#facc15] transition-all w-24 focus:w-40"
+                            class="bg-transparent border-b border-white/10 py-1 px-2 text-[9px] tracking-[0.3em] uppercase outline-none focus:border-[#facc15] transition-all w-24 focus:w-48 pr-6"
                         />
+                        <button id="clear-search" class="absolute right-0 top-1/2 -translate-y-1/2 text-white/20 hover:text-[#facc15] opacity-0 transition-opacity pointer-events-none px-1">
+                            <span class="text-[10px]">✕</span>
+                        </button>
                     </div>
 
-                    <a 
-                        href="/carrito" 
-                        aria-label="Ver carrito de compras"
-                        class="relative bg-white/10 p-2.5 rounded-xl border border-white/10 hover:bg-[#facc15] hover:text-black transition-all group flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#facc15] focus-visible:ring-offset-2 focus-visible:ring-offset-[#333333]"
-                    >
+                    <a href="/carrito" class={`relative bg-white/10 p-2.5 rounded-xl border transition-all flex items-center justify-center ${currentPath.includes('/carrito') ? 'border-[#facc15] text-[#facc15]' : 'border-white/10 hover:bg-[#facc15] hover:text-black'}`}>
                         <span class="text-xs">🛒</span>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm shadow-sm">
-                            0
-                        </span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-[#facc15] text-black text-[9px] font-bold px-1.5 rounded-sm">0</span>
                     </a>
                 </div>
             </div>
@@ -79,56 +74,38 @@ const { title } = Astro.props;
             </div>
         </div>
 
-        <div id="custom-cursor" class="fixed w-8 h-8 border border-[#facc15] rounded-full pointer-events-none z-[999] transition-transform duration-100 ease-out opacity-0 hidden md:block"></div>
-
         <script>
-            import { cartItems } from '../store/cartStore.js';
+            import { cartItems, addCartItem } from '../store/cartStore.js';
 
-            // --- 1. LÓGICA DEL CARRITO ---
-            const updateCart = (items: any) => {
-                const countElement = document.getElementById('cart-count');
-                if (countElement) countElement.innerText = items.length.toString();
+            // --- 1. LÓGICA DEL TOAST ---
+            const showToast = () => {
+                const toast = document.getElementById('toast');
+                if (toast) {
+                    toast.classList.remove('opacity-0', 'translate-y-10');
+                    toast.classList.add('opacity-100', 'translate-y-0');
+                    setTimeout(() => {
+                        toast.classList.add('opacity-0', 'translate-y-10');
+                        toast.classList.remove('opacity-100', 'translate-y-0');
+                    }, 3000);
+                }
             };
 
-            // --- 2. SCROLL REVEAL ---
-            const setupReveal = () => {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('active');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
-                document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+            // --- 2. RECEPTOR DE EVENTOS (FIX X6) ---
+            const handleCartAdd = (event: any) => {
+                const { product } = event.detail;
+                addCartItem(product);
+                showToast();
             };
 
-            // --- 3. CURSOR CUSTOM ---
-            const setupCursor = () => {
-                const cursor = document.getElementById('custom-cursor');
-                document.addEventListener('mousemove', (e) => {
-                    if (cursor) {
-                        cursor.style.opacity = "1";
-                        cursor.style.left = `${e.clientX - 16}px`;
-                        cursor.style.top = `${e.clientY - 16}px`;
-                    }
-                });
-
-                const interactivos = document.querySelectorAll('a, button, .product-item');
-                interactivos.forEach(el => {
-                    el.addEventListener('mouseenter', () => cursor?.classList.add('scale-150', 'bg-[#facc15]/20'));
-                    el.addEventListener('mouseleave', () => cursor?.classList.remove('scale-150', 'bg-[#facc15]/20'));
-                });
-            };
-
-            // --- 4. FONDO DE PARTÍCULAS ---
-            const canvas = document.getElementById('tech-bg') as HTMLCanvasElement;
-            const ctx = canvas?.getContext('2d');
+            // --- 3. SISTEMA DE PARTÍCULAS ---
             let particles: any[] = [];
             const mouse = { x: 0, y: 0, active: false };
 
             const initParticles = () => {
+                const canvas = document.getElementById('tech-bg') as HTMLCanvasElement;
+                const ctx = canvas?.getContext('2d');
                 if (!canvas || !ctx) return;
+
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 particles = [];
@@ -141,104 +118,93 @@ const { title } = Astro.props;
                         size: 1.5
                     });
                 }
-            };
 
-            const drawParticles = () => {
-                if (!ctx || !canvas) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                particles.forEach((p, i) => {
-                    p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                const draw = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach((p, i) => {
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                    if (mouse.active) {
-                        const dx = mouse.x - p.x;
-                        const dy = mouse.y - p.y;
-                        const dist = Math.hypot(dx, dy);
-                        if (dist < 150) {
-                            const force = (150 - dist) / 150;
-                            p.x -= (dx / dist) * force * 8;
-                            p.y -= (dy / dist) * force * 8;
+                        if (mouse.active) {
+                            const dx = mouse.x - p.x;
+                            const dy = mouse.y - p.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < 150) {
+                                const force = (150 - dist) / 150;
+                                p.x -= (dx / dist) * force * 5;
+                                p.y -= (dy / dist) * force * 5;
+                            }
                         }
-                    }
 
-                    ctx.fillStyle = "rgba(250, 204, 21, 0.7)";
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
+                        ctx.fillStyle = "rgba(250, 204, 21, 0.7)";
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
 
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const p2 = particles[j];
-                        const d = Math.hypot(p.x - p2.x, p.y - p2.y);
-                        if (d < 160) {
-                            ctx.strokeStyle = `rgba(250, 204, 21, ${0.15 - d/160})`;
-                            ctx.lineWidth = 0.6;
-                            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                        }
-                    }
-                });
-                requestAnimationFrame(drawParticles);
-            };
-
-            // --- 5. LÓGICA DE BÚSQUEDA ---
-            const setupSearch = () => {
-                const searchInput = document.getElementById('global-search') as HTMLInputElement;
-                if (!searchInput) return;
-
-                searchInput.addEventListener('input', (e) => {
-                    const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
-                    const items = document.querySelectorAll('.product-item');
-                    
-                    items.forEach((item: any) => {
-                        const title = item.querySelector('h3')?.innerText.toLowerCase() || "";
-                        if (title.includes(searchTerm)) {
-                            item.style.display = "block";
-                            item.style.opacity = "1";
-                            item.style.transform = "scale(1)";
-                        } else {
-                            item.style.opacity = "0";
-                            item.style.transform = "scale(0.95)";
-                            setTimeout(() => { if(item.style.opacity === "0") item.style.display = "none" }, 300);
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const p2 = particles[j];
+                            const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                            if (d < 160) {
+                                ctx.strokeStyle = `rgba(250, 204, 21, ${0.15 - d/160})`;
+                                ctx.lineWidth = 0.6;
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                            }
                         }
                     });
-                });
+                    requestAnimationFrame(draw);
+                };
+                draw();
             };
 
+            // --- 4. CONFIGURACIÓN GENERAL ---
             const startAll = () => {
-                cartItems.subscribe(updateCart);
-                setupReveal();
-                setupCursor();
+                // Carrito
+                cartItems.subscribe(items => {
+                    const el = document.getElementById('cart-count');
+                    if (el) el.innerText = items.length.toString();
+                });
+
+                // Reset de Listeners (FIX)
+                document.removeEventListener('cart:add', handleCartAdd);
+                document.addEventListener('cart:add', handleCartAdd);
+
+                // Reveal
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+
+                // Búsqueda
+                const searchInput = document.getElementById('global-search') as HTMLInputElement;
+                const clearBtn = document.getElementById('clear-search');
+                searchInput?.addEventListener('input', (e) => {
+                    const term = (e.target as HTMLInputElement).value.toLowerCase();
+                    if (clearBtn) term.length > 0 ? clearBtn.classList.replace('opacity-0', 'opacity-100') : clearBtn.classList.replace('opacity-100', 'opacity-0');
+                    document.querySelectorAll('.product-item').forEach((item: any) => {
+                        const title = item.querySelector('h3')?.innerText.toLowerCase() || "";
+                        item.style.display = title.includes(term) ? "block" : "none";
+                    });
+                });
+                clearBtn?.addEventListener('click', () => { if(searchInput) { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); } });
+
                 initParticles();
-                setupSearch();
             };
 
             window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-            window.addEventListener('resize', initParticles);
             
             startAll();
-            drawParticles();
-
             document.addEventListener('astro:after-swap', startAll);
         </script>
 
         <style is:global>
-            .reveal {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1);
-            }
-            .reveal.active {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            html {
-                scroll-behavior: smooth;
-                cursor: none;
-            }
-            @media (max-width: 768px) {
-                html { cursor: auto; }
-            }
+            .reveal { opacity: 0; transform: translateY(30px); transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1); }
+            .reveal.active { opacity: 1; transform: translateY(0); }
+            html { scroll-behavior: smooth; } /* AQUÍ ESTABA EL FALLO */
         </style>
     </body>
 </html>

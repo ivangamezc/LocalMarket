@@ -1,0 +1,80 @@
+---
+---
+<section class="w-full bg-black/40 border-y border-white/5 py-4 overflow-hidden relative group">
+    <div class="absolute left-8 top-1/2 -translate-y-1/2 flex gap-2 z-10">
+        <div class="w-1.5 h-1.5 bg-[#facc15] rounded-full animate-pulse"></div>
+        <div class="w-1.5 h-1.5 bg-white/20 rounded-full"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-16">
+        <div id="log-container" class="font-mono text-[9px] tracking-widest text-white/40 uppercase flex gap-12 whitespace-nowrap">
+            <span class="text-[#facc15]">[SISTEMA]: INICIANDO PROTOCOLO DE TELEMETRÍA...</span>
+            <span>[NODO]: VILLANUEVA MESÍA ONLINE</span>
+            <span>[LOGÍSTICA]: SINCRONIZANDO STOCK CON NODO GRANADA</span>
+        </div>
+    </div>
+
+    <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#1a1a1a] to-transparent pointer-events-none"></div>
+    <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#1a1a1a] to-transparent pointer-events-none"></div>
+</section>
+
+<script>
+    const messages = [
+        "[SISTEMA]: PAQUETE #7812 ENVIADO A MÁLAGA",
+        "[NODO]: CONEXIÓN ESTABLECIDA CON VILLANUEVA MESÍA",
+        "[STOCK]: NIKE JOGGERS - REPOSICIÓN COMPLETADA",
+        "[LOGÍSTICA]: ENTRANTE DESDE NODO SUR DETECTADO",
+        "[SISTEMA]: CIFRADO DE TRANSACCIÓN SSL ACTIVO",
+        "[INFO]: NUEVO DROP DETECTADO EN SECCIÓN TECHWEAR",
+        "[NODO]: OPTIMIZANDO RUTA DE ENTREGA EN GRANADA",
+        "[SISTEMA]: PROTOCOLO DE ENVÍO BLINDADO ACTIVADO",
+        "[ESTADO]: TEMPERATURA DEL SERVIDOR 32°C - ÓPTIMO"
+    ];
+
+    const setupTelemetry = () => {
+        const container = document.getElementById('log-container');
+        if (!container) return;
+
+        // Función para añadir un log nuevo
+        const addLog = () => {
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            const span = document.createElement('span');
+            span.className = "opacity-0 transition-opacity duration-1000";
+            span.innerHTML = `<span class="text-[#facc15] font-black">//</span> ${msg}`;
+            
+            container.appendChild(span);
+            
+            // Animación de entrada
+            setTimeout(() => span.classList.remove('opacity-0'), 100);
+
+            // Mantener el scroll hacia la derecha para ver lo nuevo
+            // O dejar que el marquee fluya (en este caso lo movemos con scrollLeft)
+        };
+
+        // Movimiento infinito tipo Marquee
+        let scrollPos = 0;
+        const scroll = () => {
+            scrollPos += 0.5;
+            if (container) {
+                container.scrollLeft = scrollPos;
+                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth)) {
+                    // Si llegamos al final, añadimos más contenido para que no pare
+                    addLog();
+                }
+            }
+            requestAnimationFrame(scroll);
+        };
+
+        scroll();
+        // Añadir un log nuevo cada 3 segundos
+        setInterval(addLog, 3000);
+    };
+
+    setupTelemetry();
+    document.addEventListener('astro:after-swap', setupTelemetry);
+</script>
+
+<style>
+    #log-container::-webkit-scrollbar { display: none; }
+    #log-container { -ms-overflow-style: none; scrollbar-width: none; overflow-x: scroll; }
+</style>

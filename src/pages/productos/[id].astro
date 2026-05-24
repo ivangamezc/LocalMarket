@@ -13,31 +13,69 @@ const { product } = Astro.props;
 ---
 
 <Layout title={`${product.nombre} | LocalMarket`}>
-  <section class="px-8 py-12 max-w-7xl mx-auto flex flex-col justify-center">
-    <a href="/" class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/50 hover:text-[#facc15] mb-12">
+  <section class="px-8 py-12 max-w-7xl mx-auto flex flex-col justify-center min-h-screen">
+    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-white/50 hover:text-[#facc15] mb-12 transition-colors w-fit">
       ← Volver al catálogo
     </a>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-      <div class="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10">
-        <img src={product.imagen} alt={product.nombre} class="w-full h-full object-cover" />
+      
+      <div class="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 group bg-[#1a1a1a]">
+        <img src={product.imagen} alt={product.nombre} class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+        <div class="absolute top-8 left-8 z-20 bg-black/50 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full">
+            <span class="text-white text-[9px] font-mono tracking-[0.2em]">ID: {product.id.padStart(4, '0')}</span>
+        </div>
       </div>
 
       <div>
         <span class="text-[#facc15] text-[11px] font-black uppercase tracking-[0.5em] mb-4 block">{product.cat}</span>
-        <h1 class="text-6xl font-black uppercase italic mb-6">{product.nombre}</h1>
-        <p class="text-gray-400 text-xl font-light mb-10">{product.descripcion}</p>
-        <span class="text-4xl font-black italic block mb-12">{product.precio}€</span>
+        <h1 class="text-5xl md:text-6xl font-black uppercase italic mb-6 leading-none">{product.nombre}</h1>
+        <p class="text-gray-400 text-lg font-light mb-10 leading-relaxed">{product.descripcion}</p>
+        <span class="text-5xl font-black italic block mb-10 text-white">{product.precio}€</span>
+
+        <div class="mb-10">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Seleccionar Talla</span>
+            </div>
+            <div class="flex gap-4">
+                {['S', 'M', 'L', 'XL'].map((talla) => (
+                    <button class="flex-1 py-4 border border-white/10 rounded-xl text-xs font-bold text-gray-400 hover:border-[#facc15] hover:text-[#facc15] transition-all focus:border-[#facc15] focus:text-black focus:bg-[#facc15]">
+                        {talla}
+                    </button>
+                ))}
+            </div>
+        </div>
 
         <button 
           id="add-to-cart-btn"
           data-id={product.id}
           data-nombre={product.nombre}
           data-precio={product.precio}
-          class="w-full md:w-auto px-12 py-5 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-2xl hover:bg-white transition-all shadow-xl"
+          data-imagen={product.imagen}
+          class="w-full px-12 py-6 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-2xl hover:bg-white hover:shadow-[0_0_30px_rgba(250,204,21,0.4)] transition-all duration-300 mb-10"
         >
           Añadir al Carrito
         </button>
+
+        <div class="grid grid-cols-2 gap-6 p-6 border border-white/5 bg-white/[0.02] rounded-2xl">
+            <div class="space-y-1">
+                <span class="text-[9px] text-gray-500 uppercase tracking-widest">Disponibilidad</span>
+                <p class="text-xs font-bold text-green-500 uppercase">En Stock</p>
+            </div>
+            <div class="space-y-1">
+                <span class="text-[9px] text-gray-500 uppercase tracking-widest">Envío</span>
+                <p class="text-xs font-bold text-white uppercase">24/48H</p>
+            </div>
+            <div class="space-y-1">
+                <span class="text-[9px] text-gray-500 uppercase tracking-widest">Género</span>
+                <p class="text-xs font-bold text-white uppercase">{product.genero || 'Unisex'}</p>
+            </div>
+            <div class="space-y-1">
+                <span class="text-[9px] text-gray-500 uppercase tracking-widest">Garantía</span>
+                <p class="text-xs font-bold text-white uppercase">Oficial</p>
+            </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -50,27 +88,35 @@ const { product } = Astro.props;
     const btn = document.getElementById('add-to-cart-btn');
     if (!btn) return;
 
-    btn.addEventListener('click', () => {
+    // Clonamos el botón para matar eventos anteriores y evitar que se añada doble al navegar
+    const newBtn = btn.cloneNode(true) as HTMLButtonElement;
+    btn.parentNode?.replaceChild(newBtn, btn);
+
+    newBtn.addEventListener('click', () => {
+      // AQUÍ ESTABA EL BUG 2: Faltaba recuperar la imagen
       const item = {
-        id: btn.getAttribute('data-id'),
-        nombre: btn.getAttribute('data-nombre'),
-        precio: btn.getAttribute('data-precio')
+        id: newBtn.getAttribute('data-id'),
+        nombre: newBtn.getAttribute('data-nombre'),
+        precio: newBtn.getAttribute('data-precio'),
+        imagen: newBtn.getAttribute('data-imagen')
       };
       
-      console.log("Botón: Añadiendo producto", item);
+      console.log("Añadiendo producto desde detalle", item);
       addCartItem(item);
 
       // Feedback visual
-      btn.innerText = "¡AÑADIDO!";
-      btn.style.backgroundColor = "white";
+      const originalText = newBtn.innerText;
+      newBtn.innerText = "¡AÑADIDO AL CARRITO! ✓";
+      newBtn.style.backgroundColor = "white";
+      
       setTimeout(() => {
-        btn.innerText = "AÑADIR AL CARRITO";
-        btn.style.backgroundColor = "#facc15";
-      }, 1000);
+        newBtn.innerText = originalText;
+        newBtn.style.backgroundColor = "#facc15";
+      }, 1500);
     });
   };
 
-  // Esto asegura que funcione incluso al navegar
+  // Esto asegura que funcione incluso al navegar con View Transitions
   setupBtn();
   document.addEventListener('astro:after-swap', setupBtn);
 </script>

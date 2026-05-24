@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Enlace Directo | LOCALMKT CONTACT">
+    <section class="px-8 py-24 max-w-7xl mx-auto min-h-screen">
+        
+        <div class="reveal mb-24 text-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <span class="w-12 h-[1px] bg-[#facc15]"></span>
+                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Protocolo de Comunicación</span>
+                <span class="w-12 h-[1px] bg-[#facc15]"></span>
+            </div>
+            
+            <h1 class="text-6xl md:text-[9rem] font-black tracking-[-0.05em] leading-none uppercase italic bg-gradient-to-b from-gray-100 via-gray-400 to-[#333333] bg-clip-text text-transparent pb-4">
+                ESTABLECER <br/> CONTACTO.
+            </h1>
+            
+            <p class="mt-4 text-[10px] md:text-xs uppercase tracking-[0.6em] text-white/70 font-light max-w-2xl mx-auto leading-loose">
+                Nuestra central está operativa de lunes a viernes. Envía tus coordenadas de consulta y el equipo técnico responderá en el siguiente ciclo operativo.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-16 md:gap-24 mt-20">
+            
+            <div class="md:col-span-2 reveal border-t border-white/5 pt-12">
+                <form class="space-y-24"> 
+                    <div class="relative group">
+                        <label class="block text-[9px] font-black text-[#facc15] uppercase tracking-[0.4em] mb-6 opacity-80 group-focus-within:opacity-100 transition-opacity">
+                            01. Identificación
+                        </label>
+                        <input 
+                            type="text" 
+                            placeholder="TU NOMBRE COMPLETO" 
+                            class="w-full bg-transparent border-b border-white/20 pb-5 text-xs text-white tracking-widest outline-none focus:border-[#facc15] transition-all uppercase placeholder:text-gray-400"
+                            required
+                        />
+                    </div>
+
+                    <div class="relative group">
+                        <label class="block text-[9px] font-black text-[#facc15] uppercase tracking-[0.4em] mb-6 opacity-80 group-focus-within:opacity-100 transition-opacity">
+                            02. Canal de Retorno
+                        </label>
+                        <input 
+                            type="email" 
+                            placeholder="EMAIL@EJEMPLO.COM" 
+                            class="w-full bg-transparent border-b border-white/20 pb-5 text-xs text-white tracking-widest outline-none focus:border-[#facc15] transition-all uppercase placeholder:text-gray-400"
+                            required
+                        />
+                    </div>
+
+                    <div class="relative group">
+                        <label class="block text-[9px] font-black text-[#facc15] uppercase tracking-[0.4em] mb-6 opacity-80 group-focus-within:opacity-100 transition-opacity">
+                            03. Parámetros del Mensaje
+                        </label>
+                        <textarea 
+                            rows="5" 
+                            placeholder="ESCRIBE TU CONSULTA TÉCNICA..." 
+                            class="w-full bg-transparent border-b border-white/20 pb-5 text-xs text-white tracking-widest outline-none focus:border-[#facc15] transition-all uppercase placeholder:text-gray-400 resize-none"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="button" onclick="alert('Ticket enviado al sistema.')" class="group relative px-12 py-5 border border-[#facc15] text-[#facc15] font-black uppercase text-[10px] tracking-[0.3em] hover:bg-[#facc15] hover:text-black transition-all duration-300 rounded-sm">
+                            Enviar Ticket →
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="space-y-16 reveal border-t border-white/5 pt-12" style="animation-delay: 0.2s">
+                <div>
+                    <h4 class="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 italic text-[#facc15]">Línea Directa_</h4>
+                    <p class="text-xs text-gray-300 uppercase tracking-widest leading-loose hover:text-white transition-colors cursor-pointer">
+                        soporte@localmkt.com<br/>
+                        +34 900 112 233
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 italic text-[#facc15]">Sede Central_</h4>
+                    <p class="text-xs text-gray-300 uppercase tracking-widest leading-loose">
+                        Nodo Sur Logístico<br/>
+                        18360 Villanueva Mesía<br/>
+                        Granada, ES.
+                    </p>
+                    
+                    <div class="mt-8 rounded-xl overflow-hidden border border-white/10 h-48 relative group cursor-crosshair">
+                        <div class="absolute inset-0 bg-[#facc15]/20 mix-blend-overlay z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12702.502931221764!2d-4.024227099999999!3d37.21528625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd72728952da5f9b%3A0xe5452f4a3bebd4a4!2s18360%20Villanueva%20Mes%C3%ADa%2C%20Granada!5e0!3m2!1ses!2ses!4v1714496255152!5m2!1ses!2ses" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0; filter: grayscale(100%) invert(90%) contrast(120%);" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            class="absolute inset-0"
+                        ></iframe>
+                    </div>
+                </div>
+                
+                <div class="p-8 border border-white/5 bg-white/[0.02] rounded-2xl mt-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                        <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white">Sistemas Online</span>
+                    </div>
+                    <p class="text-[9px] text-gray-300 uppercase tracking-widest leading-relaxed">
+                        Servidores operativos y aceptando solicitudes entrantes de usuarios bajo encriptación SSL.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</Layout>

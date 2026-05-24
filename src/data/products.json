@@ -162,6 +162,17 @@
     "tipo": "ropa",
     "imagen": "https://static.qns.digital/img/p/1/6/1/8/8/7/3/1618873-full_product.jpg",
     "descripcion": " Es una fibra de celulosa pura valorada desde hace milenios por su suavidad, transpirabilidad y versatilidad. En la moda moderna de calle y deportiva, constituye la base de camisetas, sudaderas y vaqueros de primera calidad."
+  },
+
+  {
+    "id": "16",
+    "nombre": "Nike Chaqueta Phoenix",
+    "precio": "45.00",
+    "cat": "sudadera",
+    "genero": "mujer",
+    "tipo": "ropa",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_780556_a?qlt=92&w=750&h=957&v=1&fmt=auto",
+    "descripcion": " Con un ajuste holgado y un tejido Fleece ultrasuave, esta sudadera con capucha ofrece comodidad durante todo el día. La cremallera bidireccional ofrece diversas opciones de estilo."
   }
 
 ]

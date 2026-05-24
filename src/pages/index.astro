@@ -2,137 +2,236 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import products from '../data/products.json';
-
-const categories = ["Todos", ...new Set(products.map(p => p.cat))];
+import Lookbook from '../components/Lookbook.astro';
+import Telemetry from '../components/Telemetry.astro';
 ---
 
-<Layout title="LocalMarket | Urban Elegance">
-    <section class="px-8 py-20 max-w-7xl mx-auto">
+<Layout title="LocalMarket | Urban Standards">
+    <section class="px-8 py-20 max-w-7xl mx-auto overflow-hidden">
         
-        <!-- CABECERA CENTRADA (Estilo unificado con ropa.astro) -->
-        <div class="relative z-10 mb-24 text-center">
+        <div class="relative z-10 mb-32 text-center reveal">
             <div class="flex items-center justify-center gap-3 mb-6">
                 <span class="w-12 h-[1px] bg-[#facc15]"></span>
-                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Urban Standards</span>
+                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Urban Standards // v3.0</span>
                 <span class="w-12 h-[1px] bg-[#facc15]"></span>
             </div>
 
-            <h1 class="text-7xl md:text-[10rem] font-black tracking-[-0.05em] leading-[0.85] uppercase italic mb-8
-                        bg-gradient-to-b from-gray-100 via-gray-400 to-[#333333] bg-clip-text text-transparent pb-4">
+            <h1 class="text-7xl md:text-[11rem] font-black tracking-[-0.05em] leading-[0.8] uppercase italic mb-10
+                        bg-gradient-to-r from-white via-gray-100 to-[#facc15] bg-clip-text text-transparent pb-4">
                 LOCAL <br/> MARKET.
             </h1>
 
-            <div class="max-w-2xl mx-auto">
-                <p class="mt-4 text-[10px] md:text-xs uppercase tracking-[0.6em] text-white/40 font-light leading-loose mb-10">
-                    Diseño industrial para el día a día. Nuestra tienda local redefine la moda urbana con materiales de alta calidad y cortes precisos.
-                </p>
-                
-                <div class="flex gap-4">
-                    <button class="bg-white text-black px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-[#facc15] transition-colors rounded-sm">
-                        Nueva Colección
-                    </button>
-                    <button class="border border-white/20 backdrop-blur-md px-10 py-4 font-black uppercase text-[11px] tracking-widest hover:bg-white/10 transition-colors rounded-sm">
-                        Ver Todo
-                    </button>
+            <p class="max-w-2xl mx-auto text-[10px] md:text-xs uppercase tracking-[0.6em] text-white/40 font-light leading-loose">
+                Curando lo mejor de la producción local para el estilo de vida urbano moderno. <br/>
+                Tu fuente de confianza para productos auténticos y de alta calidad.
+            </p>
+        </div>
+        
+        <div class="relative group mb-12">
+            <div class="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none"></div>
+
+            <div 
+                id="carousel-container" 
+                class="flex gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing"
+            >
+                {products.map((p) => (
+                    <div class="product-item min-w-[300px] md:min-w-[340px]">
+                        <Card 
+                            id={p.id}  
+                            title={p.nombre} 
+                            price={p.precio} 
+                            category={p.cat} 
+                            image={p.imagen} 
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-6 mt-6 reveal">
+             <a href="/ropa" class="cat-link-primeGroup">
+                <span class="relative z-10">ROPA // ACCEDER</span>
+                <div class="scanner-effect"></div>
+             </a>
+             <a href="/calzado" class="cat-link-primeGroup">
+                <span class="relative z-10">CALZADO // ACCEDER</span>
+                <div class="scanner-effect"></div>
+             </a>
+             <a href="/accesorios" class="cat-link-primeGroup">
+                <span class="relative z-10">ACCESORIOS // ACCEDER</span>
+                <div class="scanner-effect"></div>
+             </a>
+        </div>
+
+        <div class="mt-48">
+            <Lookbook />
+        </div>
+
+        <div class="reveal mt-48">
+            <div class="flex items-center gap-4 mb-12">
+                <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/20 italic">Protocolos Operativos_</h2>
+                <div class="flex-grow h-[1px] bg-white/5"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-1 px-1 bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
+                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515]">
+                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">01_LOG</span>
+                    <div class="mb-8">
+                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Logística Avanzada</span>
+                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Envío <br/> Blindado_</h3>
+                    </div>
+                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Entrega urbana prioritaria en 24h. Sistema de embalaje reforzado contra impactos y sellado térmico.</p>
+                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
+                </div>
+
+                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515] border-x border-white/5">
+                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">02_TEC</span>
+                    <div class="mb-8">
+                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Estándares Tech</span>
+                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Material <br/> High-Grade_</h3>
+                    </div>
+                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Selección de polímeros y fibras técnicas resistentes a la abrasión. Certificación de durabilidad grado industrial.</p>
+                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
+                </div>
+
+                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515]">
+                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">03_ETH</span>
+                    <div class="mb-8">
+                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Nodo Granada</span>
+                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Producción <br/> Local_</h3>
+                    </div>
+                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Fabricación responsable KM 0. Sostenibilidad garantizada desde el centro neurálgico de Villanueva Mesía.</p>
+                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-4 mb-16 justify-start animate-reveal" style="animation-delay: 0.3s">
-            {categories.map(cat => (
-                <button 
-                    class="filter-btn px-8 py-3 border border-white/10 rounded-full text-[10px] uppercase tracking-[0.3em] font-black transition-all hover:border-[#facc15] hover:text-[#facc15] [&.active]:bg-[#facc15] [&.active]:text-black [&.active]:border-[#facc15]"
-                    data-category={cat}
-                >
-                    {cat}
-                </button>
-            ))}
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20" id="products-grid">
-            {products.map((p, i) => (
-                <div class="product-item animate-reveal" data-category={p.cat} style={`animation-delay: ${0.4 + (i * 0.1)}s`}>
-                    <Card 
-                        id={p.id}  title={p.nombre} 
-                        price={p.precio} 
-                        category={p.cat} 
-                        image={p.imagen} 
-                    />
-                </div>
-            ))}
-        </div>
-
-        <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-12 mt-40 pt-20 border-t border-white/5">
-            <div class="space-y-4">
-                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">01 / Logística</span>
-                <h3 class="text-2xl font-black italic uppercase">Envío Blindado</h3>
-                <p class="text-gray-500 text-xs tracking-widest leading-loose">ENTREGA URBANA GARANTIZADA EN 24H CON EMBALAJE REFORZADO.</p>
-            </div>
-            <div class="space-y-4 border-l border-white/5 md:pl-10">
-                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">02 / Calidad</span>
-                <h3 class="text-2xl font-black italic uppercase">Material Tech</h3>
-                <p class="text-gray-500 text-xs tracking-widest leading-loose">TEJIDOS TÉCNICOS RESISTENTES A LA ABRASIÓN Y CORTE LÁSER.</p>
-            </div>
-            <div class="space-y-4 border-l border-white/5 md:pl-10">
-                <span class="text-[#facc15] text-[10px] font-black tracking-[0.4em] uppercase">03 / Ética</span>
-                <h3 class="text-2xl font-black italic uppercase">Producción Local</h3>
-                <p class="text-gray-500 text-xs tracking-widest leading-loose">FABRICACIÓN RESPONSABLE KM 0 MINIMIZANDO LA HUELLA DE CARBONO.</p>
-            </div>
-        </div>
-
-        <div class="reveal mt-40 mb-20 py-20 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center">
-            <h2 class="text-4xl font-black italic uppercase mb-4">Únete al Drop.</h2>
-            <p class="text-gray-500 text-[10px] tracking-[0.5em] uppercase mb-10">Acceso prioritario a lanzamientos limitados</p>
+        <div class="reveal mt-48 mb-32 py-24 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center relative overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-[#facc15]"></div>
+            <h2 class="text-4xl md:text-6xl font-black italic uppercase text-white mb-6">Únete al Drop.</h2>
+            <p class="text-gray-500 text-[10px] tracking-[0.6em] uppercase mb-12">Protocolos exclusivos // acceso prioritario</p>
             <div class="max-w-md mx-auto flex gap-4 px-6">
-                <input type="email" placeholder="EMAIL@DIRECCION.COM" class="bg-transparent border-b border-white/20 flex-grow py-3 text-[10px] tracking-widest outline-none focus:border-[#facc15] transition-colors" />
-                <button class="text-[#facc15] text-[10px] font-black uppercase tracking-widest hover:translate-x-2 transition-transform">Enviar →</button>
+                <input type="email" placeholder="USER@TERMINAL.COM" class="bg-transparent border-b border-white/10 flex-grow py-4 text-[10px] tracking-widest outline-none focus:border-[#facc15] transition-colors text-white font-mono" />
+                <button class="text-[#facc15] text-[10px] font-black uppercase tracking-widest hover:translate-x-3 transition-transform">Transmitir →</button>
             </div>
+        </div>
+
+        <div class="mt-20 -mx-8 reveal">
+            <Telemetry />
         </div>
 
     </section>
 </Layout>
 
 <script>
-    const setupFilters = () => {
-        const buttons = document.querySelectorAll('.filter-btn');
-        const items = document.querySelectorAll('.product-item');
+    const setupHomeLive = () => {
+        const container = document.getElementById('carousel-container') as HTMLElement;
+        if (!container) return;
 
-        if (buttons[0]) buttons[0].classList.add('active');
+        let isPaused = false;
+        let speed = 0.5; // Movimiento suave y elegante
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        const autoPlay = () => {
+            if (!isPaused) {
+                container.scrollLeft += speed;
+                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth)) {
+                    container.scrollLeft = 0;
+                }
+            }
+            requestAnimationFrame(autoPlay);
+        };
+        autoPlay();
 
-                const filter = btn.getAttribute('data-category');
+        // Pausa al interactuar
+        container.addEventListener('mouseenter', () => isPaused = true);
+        container.addEventListener('mouseleave', () => isPaused = false);
 
-                items.forEach((item: any) => {
-                    const itemCat = item.getAttribute('data-category');
-                    
-                    if (filter === "Todos" || itemCat === filter) {
-                        item.style.display = "block";
-                        setTimeout(() => {
-                            item.style.opacity = "1";
-                            item.style.transform = "scale(1)";
-                        }, 10);
-                    } else {
-                        item.style.opacity = "0";
-                        item.style.transform = "scale(0.95)";
-                        setTimeout(() => {
-                            item.style.display = "none";
-                        }, 300);
-                    }
-                });
-            });
+        // Soporte Drag (Manual)
+        let isDown = false;
+        let startX: number;
+        let scrollLeft: number;
+
+        container.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
+        });
+        container.addEventListener('mouseleave', () => { isDown = false; });
+        container.addEventListener('mouseup', () => { isDown = false; });
+        container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            container.scrollLeft = scrollLeft - walk;
         });
     };
 
-    setupFilters();
-    document.addEventListener('astro:after-swap', setupFilters);
+    setupHomeLive();
+    document.addEventListener('astro:after-swap', setupHomeLive);
 </script>
 
 <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* BOTONES PRIME */
+    .cat-link-primeGroup {
+        position: relative;
+        padding: 18px 40px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.4em;
+        color: black;
+        background-color: #facc15;
+        border-radius: 4px;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        text-decoration: none;
+        display: inline-block;
+        overflow: hidden;
+        filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4));
+    }
+
+    .scanner-effect {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        transform: translateX(-100%);
+    }
+
+    .cat-link-primeGroup:hover .scanner-effect {
+        animation: scan 0.7s forwards;
+    }
+
+    @keyframes scan {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .cat-link-primeGroup:hover {
+        transform: translateY(-4px);
+        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6));
+    }
+
+    /* CARDS PRODUCTO */
     .product-item {
-        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: grayscale(0.2);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .product-item:hover {
+        filter: grayscale(0);
+        transform: translateY(-12px);
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+        animation: reveal-up 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+    }
+
+    @keyframes reveal-up {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>

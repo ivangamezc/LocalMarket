@@ -34,7 +34,10 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
-          <button class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95">
+          <button 
+            onclick="window.location.href='/confirmacion'"
+            class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95"
+          >
             Finalizar Compra
           </button>
           
@@ -58,7 +61,7 @@ import Layout from '../layouts/Layout.astro';
 <script>
   import { cartItems, removeCartItem } from '../store/cartStore.js';
 
-  // 1. Vincular función de eliminar al navegador (usando 'any' para evitar quejas)
+  // 1. Vincular función de eliminar al navegador
   (window as any).deleteItem = (index: number) => {
     removeCartItem(index);
   };
@@ -99,7 +102,7 @@ import Layout from '../layouts/Layout.astro';
       `).join('');
     }
 
-    // Calcular totales con tipos definidos para que el editor no sufra
+    // Calcular totales
     const total = items.reduce((acc: number, item: any) => {
       const priceStr = String(item.precio).replace('€', '').trim();
       const priceNum = parseFloat(priceStr) || 0;
