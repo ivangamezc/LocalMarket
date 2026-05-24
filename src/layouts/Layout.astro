@@ -82,7 +82,6 @@ const currentPath = Astro.url.pathname;
         <script>
             import { cartItems, addCartItem } from '../store/cartStore.js';
 
-            // --- 1. LÓGICA DEL TOAST ---
             const showToast = () => {
                 const toast = document.getElementById('toast');
                 if (toast) {
@@ -95,14 +94,12 @@ const currentPath = Astro.url.pathname;
                 }
             };
 
-            // --- 2. RECEPTOR DE EVENTOS (FIX X6) ---
             const handleCartAdd = (event: any) => {
                 const { product } = event.detail;
                 addCartItem(product);
                 showToast();
             };
 
-            // --- 3. SISTEMA DE PARTÍCULAS ---
             let particles: any[] = [];
             const mouse = { x: 0, y: 0, active: false };
 
@@ -160,43 +157,29 @@ const currentPath = Astro.url.pathname;
                 draw();
             };
 
-            // --- 4. CONFIGURACIÓN GENERAL ---
             const startAll = () => {
-                
-                // --- ARREGLO DEL CONTADOR DEL CARRITO ---
                 cartItems.subscribe(items => {
                     const el = document.getElementById('cart-count');
                     if (el) {
-                        // Sumamos la cantidad de todos los ítems
                         const totalItems = items.reduce((total: number, item: any) => total + (item.cantidad || 1), 0);
-                        
                         el.innerText = totalItems.toString();
-                        
-                        // Si no hay productos, ocultamos la burbuja amarilla
-                        if (totalItems === 0) {
-                            el.style.display = 'none';
-                        } else {
-                            el.style.display = 'flex';
-                        }
+                        el.style.display = totalItems === 0 ? 'none' : 'flex';
                     }
                 });
 
-                // --- NUEVO: Comprobación del estado de sesión para el indicador del perfil ---
                 const profileIndicator = document.getElementById('profile-indicator');
                 if (profileIndicator) {
                     const storedUser = localStorage.getItem('localmarket_user');
                     if (storedUser) {
-                        profileIndicator.classList.remove('hidden'); // Muestra el punto verde
+                        profileIndicator.classList.remove('hidden');
                     } else {
-                        profileIndicator.classList.add('hidden'); // Lo oculta
+                        profileIndicator.classList.add('hidden');
                     }
                 }
 
-                // Reset de Listeners (FIX)
                 document.removeEventListener('cart:add', handleCartAdd);
                 document.addEventListener('cart:add', handleCartAdd);
 
-                // Reveal
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -208,7 +191,6 @@ const currentPath = Astro.url.pathname;
                 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 
-                // Búsqueda
                 const searchInput = document.getElementById('global-search') as HTMLInputElement;
                 const clearBtn = document.getElementById('clear-search');
                 searchInput?.addEventListener('input', (e) => {
