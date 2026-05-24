@@ -142,8 +142,9 @@ if (error) {
         if (!container) return;
 
         let isPaused = false;
-        let speed = 0.5; // Movimiento suave y elegante
+        let speed = 0.5;
 
+        // AutoPlay suave
         const autoPlay = () => {
             if (!isPaused) {
                 container.scrollLeft += speed;
@@ -155,29 +156,47 @@ if (error) {
         };
         autoPlay();
 
-        // Pausa al interactuar
         container.addEventListener('mouseenter', () => isPaused = true);
         container.addEventListener('mouseleave', () => isPaused = false);
 
-        // Soporte Drag (Manual)
+        // --- GESTIÓN UNIFICADA DE ARRASTRE (MOUSE + TOUCH) ---
         let isDown = false;
         let startX: number;
         let scrollLeft: number;
 
-        container.addEventListener('mousedown', (e) => {
+        const startDragging = (e: any) => {
             isDown = true;
-            startX = e.pageX - container.offsetLeft;
+            isPaused = true; // Pausar autoplay al tocar
+            // Detectar si es mouse o touch
+            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+            startX = pageX - container.offsetLeft;
             scrollLeft = container.scrollLeft;
-        });
-        container.addEventListener('mouseleave', () => { isDown = false; });
-        container.addEventListener('mouseup', () => { isDown = false; });
-        container.addEventListener('mousemove', (e) => {
+        };
+
+        const stopDragging = () => {
+            isDown = false;
+            isPaused = false;
+        };
+
+        const moveDragging = (e: any) => {
             if (!isDown) return;
             e.preventDefault();
-            const x = e.pageX - container.offsetLeft;
+            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+            const x = pageX - container.offsetLeft;
             const walk = (x - startX) * 2;
             container.scrollLeft = scrollLeft - walk;
-        });
+        };
+
+        // Eventos Mouse
+        container.addEventListener('mousedown', startDragging);
+        container.addEventListener('mouseleave', stopDragging);
+        container.addEventListener('mouseup', stopDragging);
+        container.addEventListener('mousemove', moveDragging);
+
+        // Eventos Touch (AQUÍ ESTABA EL FALLO)
+        container.addEventListener('touchstart', startDragging);
+        container.addEventListener('touchend', stopDragging);
+        container.addEventListener('touchmove', moveDragging);
     };
 
     setupHomeLive();
