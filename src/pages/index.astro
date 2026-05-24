@@ -1,9 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import products from '../data/products.json';
 import Lookbook from '../components/Lookbook.astro';
 import Telemetry from '../components/Telemetry.astro';
+
+// 1. IMPORTAMOS EL CLIENTE DE SUPABASE
+import { supabase } from '../lib/supabaseClient';
+
+// 2. HACEMOS LA PETICIÓN A LA BASE DE DATOS
+const { data: products, error } = await supabase
+    .from('productos')
+    .select('*');
+
+if (error) {
+    console.error("Error al cargar productos desde Supabase:", error.message);
+}
 ---
 
 <Layout title="LocalMarket | Urban Standards">
@@ -35,7 +46,8 @@ import Telemetry from '../components/Telemetry.astro';
                 id="carousel-container" 
                 class="flex gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing"
             >
-                {products.map((p) => (
+                {/* 3. MAPEAMOS LOS DATOS DE SUPABASE. Usamos products?.map por si tarda en cargar */}
+                {products?.map((p) => (
                     <div class="product-item min-w-[300px] md:min-w-[340px]">
                         <Card 
                             id={p.id}  

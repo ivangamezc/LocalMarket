@@ -1,11 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import products from '../data/products.json';
+import { supabase } from '../lib/supabaseClient';
 
-const accesoriosProducts = products.filter(p => 
-    ["accesorios", "hardware", "limited edition"].includes(p.cat.toLowerCase())
-);
+// Consultamos a Supabase filtrando por los distintos tipos de hardware/accesorios
+const { data: accesoriosProducts, error } = await supabase
+    .from('productos')
+    .select('*')
+    .in('tipo', ['relojes', 'colgantes', 'gorros', 'bolsos', 'gafas']);
+
+if (error) {
+    console.error("Error cargando los accesorios:", error.message);
+}
 ---
 
 <Layout title="Hardware | LocalMarket">
@@ -40,7 +46,7 @@ const accesoriosProducts = products.filter(p =>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {accesoriosProducts.length > 0 ? (
+            {accesoriosProducts && accesoriosProducts.length > 0 ? (
                 accesoriosProducts.map((p) => (
                     <Card id={p.id} title={p.nombre} price={p.precio} category={p.cat} image={p.imagen} />
                 ))

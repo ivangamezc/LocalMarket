@@ -37,7 +37,7 @@
     "genero": "hombre",
     "tipo": "camisetas",
     "imagen": "https://i8.amplience.net/i/jpl/jd_798322_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
-    "descripcion": "Esta camiseta holgada se inspira en el terreno de juego y está confeccionada en tejido de malla transpirable. Tiene cuello redondo y mangas cortas con detalles de rayas. Acabado con la marca Hoodrich en la espalda."
+    "descripcion": "Camiseta de malla transpirable inspirada en el terreno de juego con estética urbana."
   },
   {
     "id": "5",
@@ -59,8 +59,6 @@
     "imagen": "https://i8.amplience.net/i/jpl/jd_763911_a?qlt=92&w=950&h=1212&v=1&fmt=auto",
     "descripcion": "Pantalones anchos estilo paracaidista, ultraligeros y con ajuste en los tobillos."
   },
-
-
   {
     "id": "7",
     "nombre": "G-Shock GM-700G",
@@ -69,7 +67,7 @@
     "genero": "unisex",
     "tipo": "relojes",
     "imagen": "https://www.joyeriagimeno.es/2376-large_default/casio-g-shock-dorado-negro-.jpg",
-    "descripcion": "Descubre el G-STEEL GM-700, el más reciente miembro de la aclamada línea de relojes G-SHOCK analógico-digital con la icónica caja grande. Este modelo toma el sólido y sofisticado diseño de bisel de acero inoxidable."
+    "descripcion": "Línea de relojes G-SHOCK analógico-digital con robusto bisel de acero inoxidable."
   },
   {
     "id": "8",
@@ -79,7 +77,7 @@
     "genero": "unisex",
     "tipo": "colgantes",
     "imagen": "https://lostgenclub.com/cdn/shop/files/lazio-silver-chain_643c6fc8-0867-4028-bfa7-8f418a5f2520.jpg?v=1773427185&width=1225",
-    "descripcion": "Colgante de eslabones industriales en acero inoxidable 316L con cierre de seguridad micrométrico."
+    "descripcion": "Colgante de eslabones industriales en acero inoxidable 316L con cierre micrométrico."
   },
   {
     "id": "9",
@@ -89,7 +87,7 @@
     "genero": "unisex",
     "tipo": "relojes",
     "imagen": "https://static6.festinagroup.com/product/lotus/watches/detail/big/l18938_1.webp",
-    "descripcion": "Reloj digital con pantalla OLED retroiluminada y correa de polímero técnico reforzado."
+    "descripcion": "Reloj digital con pantalla OLED retroiluminada y correa de polímero reforzado."
   },
   {
     "id": "10",
@@ -99,9 +97,8 @@
     "genero": "unisex",
     "tipo": "colgantes",
     "imagen": "https://res2025.bizseas.com/800x800/product/0/8/65bf56d981280.jpg?_v=8",
-    "descripcion": "Colgante minimalista inspirado en tornillería hexagonal de alta precisión. Acabado en mate."
+    "descripcion": "Colgante minimalista inspirado en tornillería hexagonal de alta precisión."
   },
-
   {
     "id": "11",
     "nombre": "Nike Tech T-Shirt",
@@ -120,7 +117,7 @@
     "genero": "unisex",
     "tipo": "camisetas",
     "imagen": "https://assets.adidas.com/images/h_2000,f_auto,q_auto,fl_lossy,c_fill,g_auto/968ee75edd46424a9acca24f4c6e0c14_9366/Camiseta_de_algodon_adidas_Adicolor_Teamgeist_Azul_KD4350_41_detail.jpg",
-    "descripcion": "Camiseta de la línea Adidas Outdoor, fabricada con materiales reciclados y costuras planas."
+    "descripcion": "Camiseta de algodón premium inspirada en los diseños clásicos de los años 2000."
   },
   {
     "id": "13",
@@ -140,7 +137,7 @@
     "genero": "hombre",
     "tipo": "zapatillas",
     "imagen": "https://assets.laboutiqueofficielle.com/w_1100,q_auto,f_auto/media/products/2025/10/22/adidas_483119_JS0746_20251029T135657_01.jpg",
-    "descripcion": "Zapatilla de estilo futurista con mediasuela Boost para un retorno de energía infinito."
+    "descripcion": "Zapatilla de estilo futurista con mediasuela Boost para un gran retorno de energía."
   },
   {
     "id": "15",
@@ -152,28 +149,354 @@
     "imagen": "https://cdn.skatedeluxe.com/thumb/TnFnkcKUe3F8RB0TBHhxYHTkj3o=/fit-in/600x700/filters:fill(white):brightness(-4)/product/177573-4-NikeACG-Peak.jpg?v=1",
     "descripcion": "Gorro Nike All Conditions Gear, diseñado para retener el calor en entornos fríos."
   },
-
-   {
+  {
     "id": "16",
     "nombre": "Hoodie Adidas Originals",
     "precio": "90.00",
-    "cat": "sudadera",
+    "cat": "Urban Essentials",
     "genero": "unisex",
-    "tipo": "ropa",
+    "tipo": "sudaderas",
     "imagen": "https://static.qns.digital/img/p/1/6/1/8/8/7/3/1618873-full_product.jpg",
-    "descripcion": " Es una fibra de celulosa pura valorada desde hace milenios por su suavidad, transpirabilidad y versatilidad. En la moda moderna de calle y deportiva, constituye la base de camisetas, sudaderas y vaqueros de primera calidad."
+    "descripcion": "Sudadera clásica confeccionada en felpa de algodón grueso con el logotipo del trébol."
   },
-
   {
-    "id": "16",
+    "id": "17",
     "nombre": "Nike Chaqueta Phoenix",
     "precio": "45.00",
-    "cat": "sudadera",
+    "cat": "Urban Essentials",
     "genero": "mujer",
-    "tipo": "ropa",
+    "tipo": "sudaderas",
     "imagen": "https://i8.amplience.net/i/jpl/jd_780556_a?qlt=92&w=750&h=957&v=1&fmt=auto",
-    "descripcion": " Con un ajuste holgado y un tejido Fleece ultrasuave, esta sudadera con capucha ofrece comodidad durante todo el día. La cremallera bidireccional ofrece diversas opciones de estilo."
+    "descripcion": "Sudadera con capucha y ajuste holgado, confeccionada en tejido Fleece ultrasuave."
+  },
+  {
+    "id": "18",
+    "nombre": "Carhartt WIP Vest Black",
+    "precio": "110.00",
+    "cat": "Techwear",
+    "genero": "hombre",
+    "tipo": "chalecos",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/a18eee678e0340c29208f08b37ae9e14/13f732381d43460aa5abc8715435827c.jpg?imwidth=1800",
+    "descripcion": "Chaleco táctico con lona repelente al agua y forro acolchado ideal para capas urbanas."
+  },
+  {
+    "id": "19",
+    "nombre": "Nike Air Force 1 Platform",
+    "precio": "120.00",
+    "cat": "Calzado",
+    "genero": "mujer",
+    "tipo": "zapatillas",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/0b6dab5f95fc42c689a9b5d5f15fca17/4bdde44ed7e247c5b893b646cf798301.jpg?imwidth=1800",
+    "descripcion": "Las icónicas Air Force 1 rediseñadas con suela de plataforma sobreelevada."
+  },
+  {
+    "id": "20",
+    "nombre": "Stussy Stock Logo Hoodie",
+    "precio": "135.00",
+    "cat": "Urban Essentials",
+    "genero": "mujer",
+    "tipo": "sudaderas",
+    "imagen": "https://static.ftshp.digital/img/p/9/9/2/6/4/7/992647-full_product.jpg",
+    "descripcion": "Sudadera pesada de Stussy con logo bordado clásico y ajuste relajado."
+  },
+  {
+    "id": "21",
+    "nombre": "New Balance 2002R Protection",
+    "precio": "160.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "zapatillas",
+    "imagen": "https://media.sivasdescalzo.com/media/catalog/product/M/2/M2002RDC_sivasdescalzo-New_Balance-M2002-1630071275-2.jpg?width=640&quality=72&optimize=high&format=auto",
+    "descripcion": "Zapatillas de estética deconstruida con paneles deshilachados y amortiguación premium."
+  },
+  {
+    "id": "22",
+    "nombre": "Casio Vintage Digital Chrome",
+    "precio": "45.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "relojes",
+    "imagen": "https://www.casio.com/content/dam/casio/product-info/locales/es/es/timepiece/product/watch/A/A1/A16/A168WEM-7/assets/A168WEM-7_01.png.transform/main-visual-pc/image.png",
+    "descripcion": "Reloj clásico digital Casio con acabado cromado, alarma y cronómetro retro."
+  },
+  {
+    "id": "23",
+    "nombre": "Nike Pro Training Leggings",
+    "precio": "55.00",
+    "cat": "ropa",
+    "genero": "mujer",
+    "tipo": "pantalones",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_780813_a?qlt=92&w=750&h=957&v=1&fmt=auto",
+    "descripcion": "Mallas elásticas de alta compresión con tecnología transpirable para rendimiento diario."
+  },
+  {
+    "id": "24",
+    "nombre": "Dickies 874 Original Work Pant",
+    "precio": "69.00",
+    "cat": "Urban Essentials",
+    "genero": "hombre",
+    "tipo": "pantalones",
+    "imagen": "https://cdn.media.amplience.net/i/carhartt_wip/I034809_2M2_4J-OF-01?%24OF%24=&fmt=auto&w=640&qlt=default",
+    "descripcion": " El pantalón tiene un corte recto y holgado con entrepierna baja. Con sutiles costuras en contraste, la prenda también tiene puntadas de remate en las zonas sujetas a tensión para una mayor durabilidad."
+  },
+  {
+    "id": "25",
+    "nombre": "The North Face Beanie Dock",
+    "precio": "28.00",
+    "cat": "Accesorios",
+    "genero": "unisex",
+    "tipo": "gorros",
+    "imagen": "https://coresurfingshop.com/cdn/shop/files/the-north-face-dock-worker-recycled-beanie-mars-dust_1.jpg?v=1752957250&width=1946",
+    "descripcion": "Gorro corto estilo marinero tejido en hilo suave con parche clásico de TNF."
+  },
+  {
+    "id": "26",
+    "nombre": "Carhartt WIP Active Jacket",
+    "precio": "185.00",
+    "cat": "Urban Essentials",
+    "genero": "hombre",
+    "tipo": "chaquetas",
+    "imagen": "https://missionsurfshop.com/media/catalog/product/cache/b3a2276fa724bcbfa02af474f2830143/c/a/cazadora-carhartt-wip-active-jacket-winter-black-rigid-hombre_4.jpg",
+    "descripcion": "Chaqueta de lona ultra resistente con forro térmico y capucha ajustable."
+  },
+  {
+    "id": "27",
+    "nombre": "Stussy Stock Bucket Hat",
+    "precio": "45.00",
+    "cat": "Accesorios",
+    "genero": "unisex",
+    "tipo": "gorros",
+    "imagen": "https://www.ln-cc.com/dw/image/v2/BGDG_PRD/on/demandware.static/-/Sites-09/default/dwb8bac021/images/zoom/sts0152068_wht_05.jpg?sw=375&sh=516",
+    "descripcion": "Gorro de pescador clásico con el logotipo bordado original de Stussy."
+  },
+  {
+    "id": "28",
+    "nombre": "Nike Air Max 90 Terrascape",
+    "precio": "150.00",
+    "cat": "Calzado",
+    "genero": "hombre",
+    "tipo": "zapatillas",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/7899c6915e824bb9a8d6aef337ad2c7d/1cc5ddfe026c4876a217ebbc0594c3e1.jpg?imwidth=762&filter=packshot",
+    "descripcion": "Rediseño sostenible de un clásico de los 90 utilizando materiales reciclados."
+  },
+  {
+    "id": "29",
+    "nombre": "Adidas Originals Track Pants",
+    "precio": "70.00",
+    "cat": "Urban Essentials",
+    "genero": "mujer",
+    "tipo": "pantalones",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/0ff1f2e96b374597bd5e1a5819ca82b7/5aa3d5215d694f7c875f43c2736d3be4.jpg?imwidth=762",
+    "descripcion": "Pantalón de chándal clásico con las tres bandas laterales y ajuste elástico."
+  },
+  {
+    "id": "30",
+    "nombre": "Patagonia Torrentshell 3L",
+    "precio": "160.00",
+    "cat": "Adidas Outdoor",
+    "genero": "unisex",
+    "tipo": "chaquetas",
+    "imagen": "https://cdn11.bigcommerce.com/s-21x65e8kfn/images/stencil/original/products/76695/405647/PAT1388_1000_1__83968.1740489619.jpg",
+    "descripcion": "Chaqueta impermeable de tres capas con un rendimiento excepcional y máxima durabilidad."
+  },
+  {
+    "id": "31",
+    "nombre": "G-Shock Tough Black Out",
+    "precio": "99.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "relojes",
+    "imagen": "https://thumb.pccomponentes.com/w-530-530/articles/1108/11083224/1155-casio-g-shock-gba-900-1aer-bluetooth-489mm-negro-resistente-al-agua-20atm.jpg",
+    "descripcion": "Edición especial completamente negra con resistencia de grado militar a impactos."
+  },
+  {
+    "id": "32",
+    "nombre": "Supreme Hanes Tagless Tees",
+    "precio": "45.00",
+    "cat": "Graphic Series",
+    "genero": "hombre",
+    "tipo": "camisetas",
+    "imagen": "https://www.titus-shop.com/cdn/shop/files/showimage_2205f8d5-267f-4f0d-bf31-88ea70a8c1b7.jpg?format=webp&v=1713461806&width=1214",
+    "descripcion": "Pack de camisetas básicas Supreme confeccionadas en algodón ligero sin etiquetas."
+  },
+  {
+    "id": "33",
+    "nombre": "Nike Tech Fleece Hoodie FullZip",
+    "precio": "120.00",
+    "cat": "Techwear",
+    "genero": "hombre",
+    "tipo": "sudaderas",
+    "imagen": "https://i8.amplience.net/i/jpl/jd_720257_b?qlt=92&w=750&h=957&v=1&fmt=auto",
+    "descripcion": "Sudadera con cremallera completa confeccionada en tejido Tech Fleece de doble cara."
+  },
+  {
+    "id": "34",
+    "nombre": "Carhartt WIP Regular Cargo",
+    "precio": "100.00",
+    "cat": "Techwear",
+    "genero": "hombre",
+    "tipo": "pantalones",
+    "imagen": "https://cdn.media.amplience.net/i/carhartt_wip/I032467_1NK_02-OF-02?%24OF%24=&fmt=auto&w=640&qlt=default",
+    "descripcion": "Pantalón cargo de corte regular fabricado en tejido ripstop de algodón resistente."
+  },
+  {
+    "id": "35",
+    "nombre": "Obey Icon Graphic T-Shirt",
+    "precio": "40.00",
+    "cat": "Graphic Series",
+    "genero": "unisex",
+    "tipo": "camisetas",
+    "imagen": "https://www.disasterskateshop.com/61434-home_default/camiseta-obey-icon-stencil-flame-black.jpg",
+    "descripcion": "Camiseta de manga corta con impresión serigráfica frontal del logotipo Icon de Obey."
+  },
+  {
+    "id": "36",
+    "nombre": "Dickies Eisenhower Unlined",
+    "precio": "85.00",
+    "cat": "Urban Essentials",
+    "genero": "hombre",
+    "tipo": "chaquetas",
+    "imagen": "https://i8.amplience.net/t/jpl/jdes_product_list?plu=jd_765232_al&qlt=85&qlt=92&w=320&h=320&v=1&fmt=auto",
+    "descripcion": "Chaqueta ligera de corte clásico inspirada en los uniformes de trabajo industriales."
+  },
+  {
+    "id": "37",
+    "nombre": "Salomon XT-6 Expanse Silver",
+    "precio": "180.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "zapatillas",
+    "imagen": "https://cdn.dam.salomon.com/e448b25c-e452-4630-8441-b2f40162aafe/L47450600/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p",
+    "descripcion": "Zapatilla de trail running adaptada a la ciudad con sistema de estabilidad avanzado."
+  },
+  {
+    "id": "38",
+    "nombre": "Asics Gel-Kayano 14 Metallic",
+    "precio": "160.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "zapatillas",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/44e3103dbd48440a84d6dd1abe5899f4/07468caaf24845f6ad6aa5f630c0081f.jpg?imwidth=762&filter=packshot",
+    "descripcion": "Estética retro de los 2000 con superposiciones de cuero sintético y tecnología GEL."
+  },
+  {
+    "id": "39",
+    "nombre": "Nike Utility Crossbody Bag",
+    "precio": "35.00",
+    "cat": "Accesorios",
+    "genero": "unisex",
+    "tipo": "bolsos",
+    "imagen": "https://cdn.mall.adeptmind.ai/https%253A%252F%252Fmedia.jdsports.com%252Fi%252Ffinishline%252FDB0456_010_P1_large.webp",
+    "descripcion": "Bandolera táctica de tamaño compacto con múltiples compartimentos con cremallera."
+  },
+  {
+    "id": "40",
+    "nombre": "Oakley Radar EV Path",
+    "precio": "190.00",
+    "cat": "Hardware",
+    "genero": "unisex",
+    "tipo": "gafas",
+    "imagen": "https://www.careofcarl.es/bilder/artiklar/zoom/26811310_2.jpg?m=1712746703",
+    "descripcion": "Gafas de sol de rendimiento superior con lentes Prizm que optimizan la visión urbana."
+  },
+  {
+    "id": "41",
+    "nombre": "Carhartt WIP Acrylic Hat",
+    "precio": "25.00",
+    "cat": "Accesorios",
+    "genero": "unisex",
+    "tipo": "gorros",
+    "imagen": "https://cdn.media.amplience.net/i/carhartt_wip/I020222_3GF_XX-OF-01?%24OF%24=&fmt=auto&w=3840&qlt=default",
+    "descripcion": "El gorro básico por excelencia de Carhartt confeccionado en punto acrílico elástico."
+  },
+  {
+    "id": "42",
+    "nombre": "Nike Sportswear Windrunner W",
+    "precio": "100.00",
+    "cat": "Nike Performance",
+    "genero": "mujer",
+    "tipo": "chaquetas",
+    "imagen": "https://es.aw-lab.com/dw/image/v2/BJTH_PRD/on/demandware.static/-/Sites-awlab-master-catalog/default/dweda8785e/images/large/9129938_0.jpg?sw=1860",
+    "descripcion": "Cortavientos clásico con el icónico panel de diseño chevron de 26 grados en el pecho."
+  },
+  {
+    "id": "43",
+    "nombre": "Adidas Ultraboost Light W",
+    "precio": "200.00",
+    "cat": "Calzado",
+    "genero": "mujer",
+    "tipo": "zapatillas",
+    "imagen": "https://img01.ztat.net/article/spp-media-p1/355421883bed40c1996e30c8458a4828/757d92b697ae476098c2ba28577cd9ce.jpg?imwidth=1800&filter=packshot",
+    "descripcion": "Zapatillas running de silueta estilizada con compuesto Light Boost ultraligero."
+  },
+  {
+    "id": "44",
+    "nombre": "The North Face Denali Fleece",
+    "precio": "150.00",
+    "cat": "Adidas Outdoor",
+    "genero": "hombre",
+    "tipo": "sudaderas",
+    "imagen": "https://assets.thenorthface.eu/images/t_img/f_auto,h_462,e_sharpen:60,w_462/dpr_2.0/v1767615113/NF0A88XHJX4-HERO/Mens-Retro-Denali-Jacket-TNF-Desert-StoneTNF-Blue-HERO.jpg",
+    "descripcion": "Chaqueta de forro polar técnico reforzado en hombros y pecho contra la abrasión."
+  },
+  {
+    "id": "45",
+    "nombre": "Stussy 8 Ball Heavy T-Shirt",
+    "precio": "50.00",
+    "cat": "Graphic Series",
+    "genero": "unisex",
+    "tipo": "camisetas",
+    "imagen": "https://www.gluestore.com.au/cdn/shop/files/ECOMGLUEMENS11JAN0107_600x.jpg?v=1707086582",
+    "descripcion": "Camiseta de alto gramaje con el legendario gráfico de la bola 8 impreso en la espalda."
+  },
+  {
+    "id": "46",
+    "nombre": "Champion Reverse Weave Hoodie",
+    "precio": "85.00",
+    "cat": "Urban Essentials",
+    "genero": "mujer",
+    "tipo": "sudaderas",
+    "imagen": "https://fiftyoutlet.com/dw/image/v2/AAYL_PRD/on/demandware.static/-/Sites-gc-spf-master-catalog/default/dw1014f2e7/images/hi-res/P_461001101D1.jpg?sw=600&sh=900&sm=fit",
+    "descripcion": "Sudadera con capucha tejida en grano transversal para evitar el encogimiento vertical."
+  },
+  {
+    "id": "47",
+    "nombre": "Levis 501 Original Straight",
+    "precio": "110.00",
+    "cat": "Urban Essentials",
+    "genero": "hombre",
+    "tipo": "pantalones",
+    "imagen": "https://images.jackjones.com/12254474/4466855/003/jackjones-jjieddiejjoriginalsbd330-azul.jpg?v=58f4f417f4639cde78c5a39cbf5d8826&format=auto&width=1100&quality=90&key=productTile_mainImage-WIDESCREEN&bg-color=%23f5f5f5&dpr=1",
+    "descripcion": "El vaquero clásico de corte recto original con la mítica bragueta de botones."
+  },
+  {
+    "id": "48",
+    "nombre": "Dr Martens 1460 Smooth Boot",
+    "precio": "200.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "botas",
+    "imagen": "https://cdn.media.amplience.net/i/drmartens/25345001.80?$smart640$&fmt=auto",
+    "descripcion": "Bota de 8 ojales con cuero liso clásico, pespunte amarillo y suela con cámara de aire."
+  },
+  {
+    "id": "49",
+    "nombre": "Vans Old Skool Classic Core",
+    "precio": "75.00",
+    "cat": "Calzado",
+    "genero": "unisex",
+    "tipo": "zapatillas",
+    "imagen": "https://cdn.deporvillage.com/cdn-cgi/image/h=785,w=628,dpr=1,f=auto,q=75,fit=contain,background=white/product-vertical/vns-vn000d3hy28_001.jpg",
+    "descripcion": "Zapatilla de skate clásica con la mítica banda lateral en combinación ante y lona."
+  },
+  {
+    "id": "50",
+    "nombre": "CP Company Goggle Lens Beanie",
+    "precio": "95.00",
+    "cat": "Techwear",
+    "genero": "hombre",
+    "tipo": "gorros",
+    "imagen": "https://dz3aw12iizk17.cloudfront.net/cache/catalog/C_P__Company/cp_company_goggle_beanie_black_1-870x1110.jpg",
+    "descripcion": "Gorro de punto de algodón premium que incorpora la icónica lente distintiva de la marca."
   }
-
 ]
-

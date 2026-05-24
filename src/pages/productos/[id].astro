@@ -1,14 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import products from '../../data/products.json';
+import { supabase } from '../../lib/supabaseClient';
 
+// 1. Astro llama a esta función para saber cuántas páginas (rutas) debe generar
 export async function getStaticPaths() {
-  return products.map((product) => ({
+  const { data: productos, error } = await supabase
+    .from('productos')
+    .select('*');
+
+  if (error) {
+    console.error("Error al obtener productos para las rutas:", error.message);
+    return [];
+  }
+
+  // 2. Creamos una ruta dinámica para cada producto basado en su ID
+  return productos.map((product) => ({
     params: { id: product.id },
-    props: { product },
+    props: { product }, // Le pasamos los datos del producto a la página
   }));
 }
 
+// 3. Recuperamos el producto actual a través de las props que hemos pasado arriba
 const { product } = Astro.props;
 ---
 
@@ -93,7 +105,6 @@ const { product } = Astro.props;
     btn.parentNode?.replaceChild(newBtn, btn);
 
     newBtn.addEventListener('click', () => {
-      // AQUÍ ESTABA EL BUG 2: Faltaba recuperar la imagen
       const item = {
         id: newBtn.getAttribute('data-id'),
         nombre: newBtn.getAttribute('data-nombre'),

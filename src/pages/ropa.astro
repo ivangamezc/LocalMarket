@@ -1,12 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import products from '../data/products.json';
+import { supabase } from '../lib/supabaseClient'; // Conexión a la nube
 
-// Filtramos inicialmente los productos de ropa
-const ropaProducts = products.filter(p => 
-    ["techwear", "urban essentials", "limited edition", "graphic series"].includes(p.cat.toLowerCase())
-);
+// 1. Pedimos a la BD todos los productos que sean prendas de ropa
+const { data: ropaProducts, error } = await supabase
+    .from('productos')
+    .select('*')
+    .in('tipo', ['pantalones', 'sudaderas', 'camisetas', 'chalecos', 'chaquetas']);
+
+if (error) {
+    console.error("Error cargando la ropa:", error.message);
+}
 ---
 
 <Layout title="Línea Textil | LocalMarket">
@@ -44,6 +49,10 @@ const ropaProducts = products.filter(p =>
                             Mujer
                             <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[#facc15] transition-transform origin-left scale-x-0"></span>
                         </button>
+                        <button class="filter-btn relative text-[11px] font-bold uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all" data-filter="genero" data-value="unisex">
+                            Unisex
+                            <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[#facc15] transition-transform origin-left scale-x-0"></span>
+                        </button>
                     </div>
                 </div>
 
@@ -66,13 +75,17 @@ const ropaProducts = products.filter(p =>
                             Pantalones
                             <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[#facc15] transition-transform origin-left scale-x-0"></span>
                         </button>
+                        <button class="filter-btn relative text-[11px] font-bold uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all" data-filter="tipo" data-value="chaquetas">
+                            Chaquetas
+                            <span class="absolute -bottom-2 left-0 w-full h-[2px] bg-[#facc15] transition-transform origin-left scale-x-0"></span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="ropa-grid">
-            {ropaProducts.map((p) => (
+            {ropaProducts?.map((p) => (
                 <div class="product-item" 
                      data-genero={p.genero?.toLowerCase()} 
                      data-tipo={p.tipo?.toLowerCase()}>

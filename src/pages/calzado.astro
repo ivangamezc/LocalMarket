@@ -1,11 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import products from '../data/products.json';
+import { supabase } from '../lib/supabaseClient';
 
-const calzadoProducts = products.filter(p => 
-    ["calzado", "sneakers"].includes(p.cat.toLowerCase())
-);
+// Consultamos a la base de datos de Supabase filtrando por tipo de calzado
+const { data: calzadoProducts, error } = await supabase
+    .from('productos')
+    .select('*')
+    .in('tipo', ['zapatillas', 'botas']);
+
+if (error) {
+    console.error("Error cargando el calzado:", error.message);
+}
 ---
 
 <Layout title="Footwear | LocalMarket">
@@ -40,7 +46,7 @@ const calzadoProducts = products.filter(p =>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {calzadoProducts.length > 0 ? (
+            {calzadoProducts && calzadoProducts.length > 0 ? (
                 calzadoProducts.map((p) => (
                     <Card id={p.id} title={p.nombre} price={p.precio} category={p.cat} image={p.imagen} />
                 ))
