@@ -54,8 +54,8 @@ const currentPath = Astro.url.pathname;
                 </div>
 
                 <div class="hidden md:flex items-center gap-5">
-                    <a href="/mi-cuenta" class="hover:text-[#facc15]">👤</a>
-                    <a href="/carrito" class="relative hover:text-[#facc15]">🛒</a>
+                    <a href="/mi-cuenta" id="user-icon" class="relative hover:text-[#facc15]">👤</a>
+                    <a href="/carrito" class="relative hover:text-[#facc15]">🛒<span id="cart-count" class="absolute -top-2 -right-2 bg-[#facc15] text-black text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span></a>
                 </div>
             </div>
         </nav>
@@ -76,6 +76,7 @@ const currentPath = Astro.url.pathname;
 
         <script>
             import { cartItems, addCartItem } from '../store/cartStore.js';
+            import { supabase } from '../lib/supabaseClient';
 
             // --- Lógica Scroll Progress ---
             window.addEventListener('scroll', () => {
@@ -165,6 +166,12 @@ const currentPath = Astro.url.pathname;
             };
 
             const startAll = () => {
+                // Lógica Logout
+                document.getElementById('logout-btn')?.addEventListener('click', async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/login';
+                });
+
                 cartItems.subscribe(items => {
                     const el = document.getElementById('cart-count');
                     if (el) {
@@ -195,12 +202,33 @@ const currentPath = Astro.url.pathname;
                     mobileMenu?.classList.toggle('hidden');
                     mobileMenu?.classList.toggle('flex');
                 });
+
+                updateAuthUI();
+            };
+
+            const updateAuthUI = async () => {
+                const userIcon = document.getElementById('user-icon');
+                if (!userIcon) return;
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    if (!document.getElementById('status-indicator')) {
+                        const indicator = document.createElement('div');
+                        indicator.id = 'status-indicator';
+                        indicator.className = 'absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-[#333333]';
+                        userIcon.classList.add('relative');
+                        userIcon.appendChild(indicator);
+                    }
+                } else {
+                    const indicator = document.getElementById('status-indicator');
+                    if (indicator) indicator.remove();
+                }
             };
 
             window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
             
             startAll();
             document.addEventListener('astro:after-swap', startAll);
+            document.addEventListener('astro:page-load', updateAuthUI);
         </script>
 
         <style is:global>

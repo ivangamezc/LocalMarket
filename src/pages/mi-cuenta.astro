@@ -21,16 +21,8 @@ import Layout from '../layouts/Layout.astro';
             
             <div class="col-span-1 md:col-span-2 bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/10">
                 <h2 class="text-xs font-black uppercase tracking-[0.3em] text-white/50 mb-6">Últimos Pedidos</h2>
-                
-                <div class="bg-black/50 border border-white/5 p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <p class="text-white font-bold text-sm uppercase">Pedido #LM-2026</p>
-                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-1">2 artículos • Entregado</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[#facc15] font-black text-lg">189.99€</p>
-                        <button class="text-white/40 hover:text-white text-[9px] uppercase tracking-widest mt-1 transition-colors">Ver factura</button>
-                    </div>
+                <div id="pedidos-container">
+                    <p class="text-gray-500 text-sm">Cargando pedidos...</p>
                 </div>
             </div>
 
@@ -68,10 +60,6 @@ import Layout from '../layouts/Layout.astro';
                                 <input type="text" id="edit-name" required class="w-full bg-black border border-white/10 rounded-lg px-3 py-2 text-white focus:border-[#facc15] outline-none text-sm">
                             </div>
                             <div>
-                                <label class="text-[9px] text-gray-500 uppercase tracking-widest ml-1">Email</label>
-                                <input type="email" id="edit-email" required class="w-full bg-black border border-white/10 rounded-lg px-3 py-2 text-white focus:border-[#facc15] outline-none text-sm">
-                            </div>
-                            <div>
                                 <label class="text-[9px] text-gray-500 uppercase tracking-widest ml-1">Dirección</label>
                                 <textarea id="edit-address" required rows="2" class="w-full bg-black border border-white/10 rounded-lg px-3 py-2 text-white focus:border-[#facc15] outline-none text-sm resize-none"></textarea>
                             </div>
@@ -93,107 +81,59 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-    const setupAccount = () => {
-        // Elementos Generales
-        const greeting = document.getElementById('user-greeting');
-        const logoutBtn = document.getElementById('logout-btn');
+    import { supabase } from '../lib/supabaseClient';
 
-        // Elementos UI Modo Vista
-        const viewMode = document.getElementById('profile-view');
-        const viewName = document.getElementById('view-name');
-        const viewEmail = document.getElementById('view-email');
-        const viewAddress = document.getElementById('view-address');
-        const editBtn = document.getElementById('edit-profile-btn');
+    const editForm = document.getElementById('profile-edit-form') as HTMLFormElement;
+    const editBtn = document.getElementById('edit-profile-btn');
+    const cancelBtn = document.getElementById('cancel-edit-btn');
+    const profileView = document.getElementById('profile-view');
+    const pedidosContainer = document.getElementById('pedidos-container');
 
-        // Elementos UI Modo Edición
-        const editMode = document.getElementById('profile-edit-form');
-        const editName = document.getElementById('edit-name') as HTMLInputElement;
-        const editEmail = document.getElementById('edit-email') as HTMLInputElement;
-        const editAddress = document.getElementById('edit-address') as HTMLTextAreaElement;
-        const cancelBtn = document.getElementById('cancel-edit-btn');
-        const saveBtn = document.getElementById('save-edit-btn');
+    editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0', 'pointer-events-none'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
+    cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0', 'pointer-events-none'); editForm?.classList.add('hidden'); editForm?.classList.remove('flex'); });
 
-        // 1. Verificación de Seguridad
-        const storedUser = localStorage.getItem('localmarket_user');
-        if (!storedUser) {
-            window.location.href = '/login';
-            return;
-        }
+    async function loadData() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return window.location.href = '/login';
 
-        // Recuperamos el usuario
-        let user = JSON.parse(storedUser);
+        // Cargar Perfil
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
         
-        // Añadimos una dirección por defecto si acaba de registrarse en la demo
-        if (!user.address) {
-            user.address = "Calle Real 42, Villanueva Mesía";
+        document.getElementById('view-name')!.innerText = profile?.name || 'Usuario';
+        (document.getElementById('edit-name') as HTMLInputElement).value = profile?.name || '';
+        document.getElementById('view-email')!.innerText = session.user.email || '';
+        document.getElementById('view-address')!.innerText = profile?.address || 'Sin dirección';
+        (document.getElementById('edit-address') as HTMLTextAreaElement).value = profile?.address || '';
+        document.getElementById('user-greeting')!.innerText = `Hola, ${profile?.name || 'Usuario'}`;
+
+        // Cargar Pedidos Dinámicos
+        const { data: pedidos } = await supabase.from('pedidos').select('*').eq('user_id', session.user.id).order('creado_el', { ascending: false });
+
+        if (pedidos && pedidos.length > 0) {
+            pedidosContainer!.innerHTML = pedidos.map(p => `
+                <div class="bg-black/50 border border-white/5 p-6 rounded-2xl flex justify-between items-center mb-4">
+                    <div>
+                        <p class="text-white font-bold text-sm uppercase">Pedido #${p.id.slice(0,8)}</p>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-1">${p.estado}</p>
+                    </div>
+                    <p class="text-[#facc15] font-black text-lg">${p.total}€</p>
+                </div>
+            `).join('');
+        } else {
+            pedidosContainer!.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
         }
+    }
 
-        // 2. Función para pintar los datos en pantalla
-        const renderData = () => {
-            if (greeting) greeting.innerText = `Hola, ${user.name}`;
-            if (viewName) viewName.innerText = user.name;
-            if (viewEmail) viewEmail.innerText = user.email;
-            if (viewAddress) viewAddress.innerText = user.address;
-        };
+    editForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const { data: { session } } = await supabase.auth.getSession();
+        const name = (document.getElementById('edit-name') as HTMLInputElement).value;
+        const address = (document.getElementById('edit-address') as HTMLTextAreaElement).value;
 
-        // Pintamos los datos al arrancar
-        renderData();
+        const { error } = await supabase.from('profiles').update({ name, address }).eq('id', session?.user.id);
+        if (error) alert(error.message);
+        else location.reload();
+    });
 
-        // 3. Activar el Modo Edición
-        editBtn?.addEventListener('click', () => {
-            // Rellenar los inputs con los datos actuales
-            if (editName) editName.value = user.name;
-            if (editEmail) editEmail.value = user.email;
-            if (editAddress) editAddress.value = user.address;
-
-            // Intercambiar pantallas
-            viewMode?.classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                editMode?.classList.remove('hidden');
-                editMode?.classList.add('flex');
-            }, 150);
-        });
-
-        // 4. Cancelar Edición
-        cancelBtn?.addEventListener('click', () => {
-            editMode?.classList.add('hidden');
-            editMode?.classList.remove('flex');
-            viewMode?.classList.remove('opacity-0', 'pointer-events-none');
-        });
-
-        // 5. Guardar Cambios (El Submit del Formulario)
-        editMode?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Efecto visual de guardado
-            if (saveBtn) saveBtn.innerText = "GUARDANDO...";
-
-            setTimeout(() => {
-                // Actualizar el objeto con los nuevos datos
-                user.name = editName.value;
-                user.email = editEmail.value;
-                user.address = editAddress.value;
-
-                // Guardarlo en la "base de datos" del navegador
-                localStorage.setItem('localmarket_user', JSON.stringify(user));
-
-                // Volver a pintar todo y cerrar el formulario
-                renderData();
-                editMode.classList.add('hidden');
-                editMode.classList.remove('flex');
-                viewMode?.classList.remove('opacity-0', 'pointer-events-none');
-                
-                if (saveBtn) saveBtn.innerText = "GUARDAR";
-            }, 400); // Pequeño retraso para dar sensación de procesamiento
-        });
-
-        // 6. Lógica de Cerrar Sesión
-        logoutBtn?.addEventListener('click', () => {
-            localStorage.removeItem('localmarket_user');
-            window.location.href = '/login';
-        });
-    };
-
-    setupAccount();
-    document.addEventListener('astro:after-swap', setupAccount);
+    loadData();
 </script>

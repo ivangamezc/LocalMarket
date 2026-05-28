@@ -68,14 +68,33 @@ import Layout from '../layouts/Layout.astro';
     import { cartItems } from '../store/cartStore.js';
 
     const finalizeOrder = () => {
-        // 1. Generar número de seguimiento aleatorio estilo industrial
+        // 1. Generar número de seguimiento
         const trackingEl = document.getElementById('tracking-number');
         if (trackingEl) {
             const randomID = Math.random().toString(36).toUpperCase().substring(2, 10);
             trackingEl.innerText = `LM-TX-${randomID}`;
         }
 
-        // 2. VACIAR EL CARRITO (Limpiamos la memoria del store)
+        // 2. Personalizar y disparar el Toast
+        const toast = document.getElementById('toast');
+        const toastText = toast?.querySelector('p');
+        
+        if (toast && toastText) {
+            // Cambiamos el texto antes de mostrarlo
+            toastText.innerText = "ORDEN PROCESADA CON ÉXITO";
+            
+            // Animación de entrada
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            // Ocultar después de 4 segundos
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 4000);
+        }
+
+        // 3. VACIAR EL CARRITO
         setTimeout(() => {
             cartItems.set([]);
             console.log("Sistema: Carrito purgado tras orden completada.");
@@ -84,6 +103,7 @@ import Layout from '../layouts/Layout.astro';
 
     // Ejecutar al cargar la página
     finalizeOrder();
-    // Re-ejecutar si se usa View Transitions
+    
+    // Si usas View Transitions, aseguramos que se ejecute al cambiar de página
     document.addEventListener('astro:after-swap', finalizeOrder);
 </script>

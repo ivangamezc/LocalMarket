@@ -11,9 +11,7 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
     <div id="cart-container" class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-      
-      <div class="lg:col-span-2 space-y-6" id="cart-items-list">
-        </div>
+      <div class="lg:col-span-2 space-y-6" id="cart-items-list"></div>
 
       <div class="lg:col-span-1">
         <div class="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 sticky top-32">
@@ -35,7 +33,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
 
           <button 
-            onclick="window.location.href='/confirmacion'"
+            id="checkout-btn"
             class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95"
           >
             Finalizar Compra
@@ -54,13 +52,12 @@ import Layout from '../layouts/Layout.astro';
             Explorar catálogo
         </a>
     </div>
-
   </section>
 </Layout>
 
 <script>
-  // ¡Importante! Ahora también importamos updateCartItemQuantity
   import { cartItems, removeCartItem, cartTotal, updateCartItemQuantity } from '../store/cartStore.js';
+  import { supabase } from '../lib/supabaseClient';
 
   const updateCartUI = () => {
     const listElement = document.getElementById('cart-items-list');
@@ -86,69 +83,56 @@ import Layout from '../layouts/Layout.astro';
       listElement.innerHTML = items.map((item: any, index: number) => {
         const qty = item.cantidad || 1;
         const totalPorItem = (parseFloat(item.precio) * qty).toFixed(2);
-        
         return `
-        <div class="flex items-center gap-6 bg-white/[0.04] border border-white/10 p-6 rounded-[1.5rem] mb-4 hover:border-white/30 transition-all shadow-sm">
+        <div class="flex items-center gap-6 bg-white/[0.04] border border-white/10 p-6 rounded-[1.5rem] mb-4">
           <img src="${item.imagen}" class="w-24 h-24 object-cover rounded-xl border border-white/5 bg-[#111]" />
           <div class="flex-grow">
-            <h3 class="font-black uppercase italic text-base md:text-lg text-white tracking-wide mb-2">${item.nombre}</h3>
-            
+            <h3 class="font-black uppercase italic text-base text-white tracking-wide mb-2">${item.nombre}</h3>
             <div class="flex items-center gap-4">
-              <p class="text-[#facc15] font-mono text-sm md:text-base font-bold">${item.precio}€</p>
-              
+              <p class="text-[#facc15] font-mono text-sm font-bold">${item.precio}€</p>
               <div class="flex items-center bg-black/40 border border-white/10 rounded-lg overflow-hidden">
-                <button class="qty-btn-minus px-3 py-1 text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-index="${index}">-</button>
-                <span class="text-white font-sans font-black text-xs w-8 text-center">${qty}</span>
-                <button class="qty-btn-plus px-3 py-1 text-white/50 hover:text-white hover:bg-white/10 transition-colors" data-index="${index}">+</button>
+                <button class="qty-btn-minus px-3 py-1 text-white/50 hover:text-white" data-index="${index}">-</button>
+                <span class="text-white font-black text-xs w-8 text-center">${qty}</span>
+                <button class="qty-btn-plus px-3 py-1 text-white/50 hover:text-white" data-index="${index}">+</button>
               </div>
             </div>
-            
-            ${qty > 1 ? `<p class="text-[11px] text-gray-300 font-bold uppercase tracking-widest mt-3">Subtotal de este artículo: <span class="text-white font-black">${totalPorItem}€</span></p>` : ''}
           </div>
-          
-          <button class="remove-item-btn flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[11px] font-black uppercase px-6 py-3 rounded-lg border border-red-500/20" data-index="${index}">
-            Eliminar
-          </button>
-        </div>
-      `}).join('');
+          <button class="remove-item-btn bg-red-500/10 text-red-500 px-6 py-3 rounded-lg border border-red-500/20" data-index="${index}">Eliminar</button>
+        </div>`;
+      }).join('');
     }
 
     const totalString = `${cartTotal.get().toFixed(2)}€`;
     if (totalDisplay) totalDisplay.innerText = totalString;
     if (subtotalDisplay) subtotalDisplay.innerText = totalString;
 
-    // Asignar eventos de borrado total
-    document.querySelectorAll('.remove-item-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLButtonElement;
-        const index = Number(target.getAttribute('data-index'));
-        removeCartItem(index);
-      });
-    });
-
-    // NUEVO: Asignar eventos para restar cantidad
-    document.querySelectorAll('.qty-btn-minus').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLButtonElement;
-        const index = Number(target.getAttribute('data-index'));
-        updateCartItemQuantity(index, -1);
-      });
-    });
-
-    // NUEVO: Asignar eventos para sumar cantidad
-    document.querySelectorAll('.qty-btn-plus').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLButtonElement;
-        const index = Number(target.getAttribute('data-index'));
-        updateCartItemQuantity(index, 1);
-      });
-    });
+    document.querySelectorAll('.remove-item-btn').forEach(btn => btn.addEventListener('click', (e) => removeCartItem(Number((e.currentTarget as HTMLButtonElement).dataset.index))));
+    document.querySelectorAll('.qty-btn-minus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), -1)));
+    document.querySelectorAll('.qty-btn-plus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), 1)));
   };
+
+  // Lógica de Finalizar Compra
+  document.getElementById('checkout-btn')?.addEventListener('click', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        alert("Debes iniciar sesión para finalizar la compra.");
+        return window.location.href = '/login';
+    }
+
+    const total = cartTotal.get();
+    const { error } = await supabase.from('pedidos').insert([{ 
+        user_id: session.user.id, 
+        total: total, 
+        estado: 'Pagado' 
+    }]);
+
+    if (error) alert("Error: " + error.message);
+    else {
+        
+        window.location.href = '/confirmacion';
+    }
+  });
 
   updateCartUI();
   cartItems.subscribe(updateCartUI);
-  document.addEventListener('astro:after-swap', () => {
-    updateCartUI();
-    cartItems.subscribe(updateCartUI);
-  });
 </script>
