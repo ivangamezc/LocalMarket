@@ -1,0 +1,37 @@
+---
+// src/components/Faq.astro
+---
+<div class="reveal mt-48 mb-32 max-w-4xl mx-auto px-6">
+    <div class="flex items-center gap-6 mb-16">
+        <h2 class="text-xl md:text-2xl font-black uppercase tracking-[0.2em] text-white italic">
+            Centro de Soporte <span class="text-[#facc15]">// FAQ</span>
+        </h2>
+        <div class="flex-grow h-[1px] bg-gradient-to-r from-white/20 to-transparent"></div>
+    </div>
+
+    <div class="space-y-6">
+        {[
+            { q: "¿Tiempo de tránsito del envío?", a: "Las entregas desde nuestro centro neurálgico en Villanueva Mesía hacia la capital de Granada se procesan en 24h. Zonas periféricas requieren 48-72h. Trazabilidad total incluida." },
+            { q: "¿Política de devoluciones?", a: "Dispones de 14 días. El producto debe conservar los sellos de seguridad térmicos intactos. Gestión prioritaria para usuarios con pase de acceso." },
+            { q: "¿Garantía de producción local?", a: "Certificación KM 0 en todo el catálogo. Auditamos personalmente cada nodo de producción para garantizar que la digitalización rural sea sostenible y de alta fidelidad." },
+            { q: "¿Cómo solicito un cambio de talla?", a: "Accede a tu panel de control, selecciona 'Gestión de Pedidos' y abre un ticket de intercambio. Nuestro equipo técnico validará el stock en tiempo real." },
+            { q: "¿Qué métodos de pago son aceptados?", a: "Operamos bajo protocolos seguros: tarjeta bancaria, pasarela digital encriptada y, exclusivamente para nodos verificados, transferencia directa al protocolo central." }
+        ].map((item) => (
+            <details class="group bg-[#0a0a0a] border border-white/10 hover:border-[#facc15]/30 rounded-2xl p-2 transition-all duration-500 hover:shadow-[0_0_30px_-10px_rgba(250,204,21,0.15)]">
+                <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+                    <span class="text-sm md:text-base font-black uppercase tracking-wider text-white group-hover:text-[#facc15] transition-colors">
+                        {item.q}
+                    </span>
+                    <div class="relative w-8 h-8 flex items-center justify-center bg-white/5 rounded-full group-open:bg-[#facc15] transition-colors">
+                        <span class="text-[#facc15] group-open:text-black transition-colors font-bold text-lg">
+                            +
+                        </span>
+                    </div>
+                </summary>
+                <div class="px-6 pb-6 pt-2 text-gray-400 text-xs md:text-sm leading-relaxed tracking-wide border-t border-white/5">
+                    <p class="pt-4 max-w-2xl">{item.a}</p>
+                </div>
+            </details>
+        ))}
+    </div>
+</div>

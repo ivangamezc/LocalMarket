@@ -1,0 +1,52 @@
+---
+// src/components/Reviews.astro
+---
+<div class="reveal mt-32 mb-32 relative">
+    <div class="text-center mb-20">
+        <h2 class="text-5xl md:text-7xl font-black italic uppercase text-white mb-6">¿Qué opinan nuestros clientes?.</h2>
+        <p class="text-[#facc15] text-[12px] tracking-[0.6em] uppercase">Feedback interceptado // Nivel de acceso: Público</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-6">
+        {[
+            { 
+                text: "El nivel de detalle en las costuras es de grado militar. La entrega fue exacta, llegó en menos de 24h al centro. Estándar superado.",
+                user: "Jose M",
+                initial: "JM",
+                stars: "★★★★★"
+            },
+            { 
+                text: "Se nota la diferencia del KM 0. Materiales premium y el empaquetado térmico es una locura. Mi nueva fuente principal para streetwear.",
+                user: "Nuria",
+                initial: "N",
+                stars: "★★★★★"
+            },
+            { 
+                text: "La calidad es innegable. Tardan un poco más en llegar a algunas zonas, pero la espera merece la pena por la exclusividad del drop.",
+                user: "Andrea",
+                initial: "A",
+                stars: "★★★★☆"
+            }
+        ].map((rev) => (
+            <div class="border border-white/10 p-10 rounded-3xl relative group hover:border-[#facc15]/40 transition-all duration-500 hover:bg-white/[0.02]">
+                <div class="absolute top-0 right-10 w-12 h-[2px] bg-[#facc15] group-hover:w-24 transition-all duration-500"></div>
+                
+                <div class="flex gap-1 mb-8 text-[#facc15] text-lg">{rev.stars}</div>
+                
+                <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-10 italic tracking-wide">
+                    "{rev.text}"
+                </p>
+                
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center font-mono text-sm text-white bg-white/5">
+                        {rev.initial}
+                    </div>
+                    <div>
+                        <p class="text-white text-xs font-bold uppercase tracking-widest">{rev.user}</p>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-1">Comprador Verificado</p>
+                    </div>
+                </div>
+            </div>
+        ))}
+    </div>
+</div>

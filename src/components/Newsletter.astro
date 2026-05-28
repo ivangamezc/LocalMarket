@@ -1,0 +1,63 @@
+---
+// src/components/Newsletter.astro
+---
+
+<div class="reveal mt-48 mb-32 py-24 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-[#facc15]"></div>
+    <h2 class="text-4xl md:text-6xl font-black italic uppercase bg-gradient-to-r from-white to-[#facc15] bg-clip-text text-transparent mb-6">Únete al Drop.</h2>
+    <p class="text-gray-500 text-[10px] tracking-[0.6em] uppercase mb-12">Protocolos exclusivos // acceso prioritario</p>
+    
+    <form id="newsletter-form" class="max-w-md mx-auto flex gap-4 px-6 relative">
+        <input 
+            type="email" 
+            id="email-input"
+            placeholder="USER@TERMINAL.COM" 
+            required
+            aria-label="Correo electrónico para suscripción"
+            class="bg-transparent border-b border-white/10 flex-grow py-4 text-[10px] tracking-widest outline-none focus:border-[#facc15] transition-colors text-white font-mono placeholder:text-white/20" 
+        />
+        <button 
+            type="submit" 
+            class="text-[#facc15] text-[10px] font-black uppercase tracking-widest hover:translate-x-3 transition-transform cursor-pointer"
+        >
+            Transmitir →
+        </button>
+
+        <div id="success-msg" class="absolute -bottom-10 left-0 right-0 text-[#facc15] text-[9px] tracking-[0.3em] uppercase opacity-0 transition-opacity duration-500 font-mono pointer-events-none">
+            [✓] Transmisión aceptada. Nodo verificado.
+        </div>
+    </form>
+</div>
+
+<script>
+    // Toda la lógica encapsulada en el componente
+    const initNewsletter = () => {
+        const form = document.getElementById('newsletter-form') as HTMLFormElement;
+        const msg = document.getElementById('success-msg');
+        const input = document.getElementById('email-input') as HTMLInputElement;
+
+        if (form && msg && input) {
+            // Quitamos eventos previos por si Astro recarga la vista
+            form.removeEventListener('submit', handleSubmit);
+            form.addEventListener('submit', handleSubmit);
+        }
+
+        function handleSubmit(e: Event) {
+            e.preventDefault(); // Evita que la página recargue de golpe
+            
+            // 1. Simulamos el éxito visualmente
+            msg?.classList.replace('opacity-0', 'opacity-100');
+            
+            // 2. Vaciamos el input como si ya hubiésemos enviado el correo a Supabase
+            if(input) input.value = '';
+            
+            // 3. Ocultamos el mensaje pasados 4 segundos
+            setTimeout(() => {
+                msg?.classList.replace('opacity-100', 'opacity-0');
+            }, 4000);
+        }
+    };
+
+    initNewsletter();
+    document.addEventListener('astro:after-swap', initNewsletter);
+</script>

@@ -1,0 +1,134 @@
+---
+// src/components/Carousel.astro
+import Card from './Card.astro';
+
+interface Props {
+    products: any[];
+}
+
+const { products } = Astro.props;
+---
+
+<div class="relative group mb-12">
+    <div class="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none"></div>
+
+    <div id="carousel-container" class="flex gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing">
+        {products?.map((p) => (
+            <div class="product-item min-w-[300px] md:min-w-[340px]">
+                <Card 
+                    id={p.id}  
+                    title={p.nombre} 
+                    price={p.precio} 
+                    category={p.cat} 
+                    image={p.imagen} 
+                />
+            </div>
+        ))}
+    </div>
+</div>
+
+<script>
+    const initCarousel = () => {
+        const container = document.getElementById('carousel-container') as HTMLElement;
+        if (!container) return;
+
+        let isPaused = false;
+        let speed = 0.5;
+        let currentScroll = container.scrollLeft; // Guardamos la posición exacta
+        let animationFrameId: number;
+
+        // AutoPlay fluido y blindado contra redondeos de navegador
+        const autoPlay = () => {
+            if (!isPaused) {
+                currentScroll += speed;
+                container.scrollLeft = currentScroll;
+
+                // Reinicio infinito suave (el -1 asegura que no se quede atascado)
+                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
+                    currentScroll = 0;
+                    container.scrollLeft = 0;
+                }
+            }
+            animationFrameId = requestAnimationFrame(autoPlay);
+        };
+
+        // Iniciar
+        autoPlay();
+
+        // Hover en ratón (Desktop)
+        container.addEventListener('mouseenter', () => isPaused = true);
+        
+        // Touch & Drag (Móvil y Escritorio)
+        let isDown = false;
+        let startX: number;
+        let startScrollLeft: number;
+
+        const startDragging = (e: any) => {
+            isDown = true;
+            isPaused = true;
+            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+            startX = pageX - container.offsetLeft;
+            startScrollLeft = container.scrollLeft;
+        };
+
+        const stopDragging = () => {
+            isDown = false;
+            isPaused = false;
+            // IMPORTANTE: Sincronizar la posición tras soltar el dedo
+            currentScroll = container.scrollLeft;
+        };
+
+        const moveDragging = (e: any) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+            const x = pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            container.scrollLeft = startScrollLeft - walk;
+        };
+
+        // Eventos Escritorio
+        container.addEventListener('mousedown', startDragging);
+        container.addEventListener('mouseup', stopDragging);
+        container.addEventListener('mouseleave', () => {
+            isDown = false;
+            isPaused = false;
+            currentScroll = container.scrollLeft;
+        });
+        container.addEventListener('mousemove', moveDragging);
+
+        // Eventos Móvil
+        container.addEventListener('touchstart', startDragging, { passive: false });
+        container.addEventListener('touchend', stopDragging);
+        container.addEventListener('touchmove', moveDragging, { passive: false });
+
+        // Limpiar animaciones previas para Astro View Transitions
+        document.addEventListener('astro:before-swap', () => {
+            cancelAnimationFrame(animationFrameId);
+        }, { once: true });
+    };
+
+    initCarousel();
+    document.addEventListener('astro:after-swap', initCarousel);
+</script>
+
+<style>
+    #carousel-container {
+        touch-action: pan-x; 
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .product-item {
+        filter: grayscale(0.2);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .product-item:hover {
+        filter: grayscale(0);
+        transform: translateY(-12px);
+    }
+</style>

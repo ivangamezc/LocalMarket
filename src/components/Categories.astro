@@ -1,0 +1,58 @@
+---
+// src/components/Categories.astro
+---
+
+<div class="flex flex-wrap items-center justify-center gap-6 mt-6 reveal">
+    <a href="/ropa" class="cat-link-primeGroup">
+        <span class="relative z-10">ROPA /</span>
+        <div class="scanner-effect"></div>
+    </a>
+    <a href="/calzado" class="cat-link-primeGroup">
+        <span class="relative z-10">CALZADO /</span>
+        <div class="scanner-effect"></div>
+    </a>
+    <a href="/accesorios" class="cat-link-primeGroup">
+        <span class="relative z-10">ACCESORIOS /</span>
+        <div class="scanner-effect"></div>
+    </a>
+</div>
+
+<style>
+    /* BOTONES PRIME */
+    .cat-link-primeGroup {
+        position: relative;
+        padding: 18px 40px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.4em;
+        color: black;
+        background-color: #facc15;
+        border-radius: 4px;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        text-decoration: none;
+        display: inline-block;
+        overflow: hidden;
+        filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4));
+    }
+
+    .scanner-effect {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        transform: translateX(-100%);
+    }
+
+    .cat-link-primeGroup:hover .scanner-effect {
+        animation: scan 0.7s forwards;
+    }
+
+    @keyframes scan {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .cat-link-primeGroup:hover {
+        transform: translateY(-4px);
+        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6));
+    }
+</style>

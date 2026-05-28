@@ -1,13 +1,18 @@
 ---
+// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
 import Lookbook from '../components/Lookbook.astro';
 import Telemetry from '../components/Telemetry.astro';
+import Hero from '../components/Hero.astro';
+import Protocols from '../components/Protocols.astro';
+import Categories from '../components/Categories.astro';
+import Carousel from '../components/Carousel.astro';
+import Newsletter from '../components/Newsletter.astro'; // 1. Lo importamos
+import Reviews from '../components/Reviews.astro';
+import Faq from '../components/Faq.astro';
 
-// 1. IMPORTAMOS EL CLIENTE DE SUPABASE
 import { supabase } from '../lib/supabaseClient';
 
-// 2. HACEMOS LA PETICIÓN A LA BASE DE DATOS
 const { data: products, error } = await supabase
     .from('productos')
     .select('*');
@@ -20,114 +25,22 @@ if (error) {
 <Layout title="LocalMarket | Urban Standards">
     <section class="px-8 py-20 max-w-7xl mx-auto overflow-hidden">
         
-        <div class="relative z-10 mb-32 text-center reveal">
-            <div class="flex items-center justify-center gap-3 mb-6">
-                <span class="w-12 h-[1px] bg-[#facc15]"></span>
-                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Urban Standards // v3.0</span>
-                <span class="w-12 h-[1px] bg-[#facc15]"></span>
-            </div>
-
-            <h1 class="text-7xl md:text-[11rem] font-black tracking-[-0.05em] leading-[0.8] uppercase italic mb-10
-                        bg-gradient-to-r from-white via-gray-100 to-[#facc15] bg-clip-text text-transparent pb-4">
-                LOCAL <br/> MARKET.
-            </h1>
-
-            <p class="max-w-2xl mx-auto text-[10px] md:text-xs uppercase tracking-[0.6em] text-white/60 font-medium leading-loose">
-                Curando lo mejor de la producción local para el estilo de vida urbano moderno. <br/>
-                Tu fuente de confianza para productos auténticos y de alta calidad.
-            </p>
-        </div>
+        <Hero />
         
-        <div class="relative group mb-12">
-            <div class="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none"></div>
-            <div class="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none"></div>
+        <Carousel products={products || []} />
 
-            <div 
-                id="carousel-container" 
-                class="flex gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing"
-            >
-                {/* 3. MAPEAMOS LOS DATOS DE SUPABASE. Usamos products?.map por si tarda en cargar */}
-                {products?.map((p) => (
-                    <div class="product-item min-w-[300px] md:min-w-[340px]">
-                        <Card 
-                            id={p.id}  
-                            title={p.nombre} 
-                            price={p.precio} 
-                            category={p.cat} 
-                            image={p.imagen} 
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-center gap-6 mt-6 reveal">
-             <a href="/ropa" class="cat-link-primeGroup">
-                <span class="relative z-10">ROPA /</span>
-                <div class="scanner-effect"></div>
-             </a>
-             <a href="/calzado" class="cat-link-primeGroup">
-                <span class="relative z-10">CALZADO /</span>
-                <div class="scanner-effect"></div>
-             </a>
-             <a href="/accesorios" class="cat-link-primeGroup">
-                <span class="relative z-10">ACCESORIOS /</span>
-                <div class="scanner-effect"></div>
-             </a>
-        </div>
+        <Categories />
 
         <div class="mt-48">
             <Lookbook />
         </div>
 
-        <div class="reveal mt-48">
-            <div class="flex items-center gap-4 mb-12">
-                <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/20 italic">Protocolos Operativos_</h2>
-                <div class="flex-grow h-[1px] bg-white/5"></div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-1 px-1 bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
-                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515]">
-                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">01_LOG</span>
-                    <div class="mb-8">
-                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Logística Avanzada</span>
-                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Envío <br/> Blindado_</h3>
-                    </div>
-                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Entrega urbana prioritaria en 24h. Sistema de embalaje reforzado contra impactos y sellado térmico.</p>
-                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
-                </div>
+        <Protocols />
 
-                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515] border-x border-white/5">
-                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">02_TEC</span>
-                    <div class="mb-8">
-                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Estándares Tech</span>
-                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Material <br/> High-Grade_</h3>
-                    </div>
-                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Selección de polímeros y fibras técnicas resistentes a la abrasión. Certificación de durabilidad grado industrial.</p>
-                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
-                </div>
+        <Reviews />
+        <Faq />
 
-                <div class="info-card group relative bg-[#111] p-12 transition-all duration-500 hover:bg-[#151515]">
-                    <span class="absolute top-8 right-8 font-mono text-[10px] text-[#facc15] opacity-20 group-hover:opacity-100 transition-opacity">03_ETH</span>
-                    <div class="mb-8">
-                        <span class="text-[#facc15] text-[10px] font-black uppercase tracking-widest block mb-2">Nodo Granada</span>
-                        <h3 class="text-3xl font-black italic uppercase text-white leading-none">Producción <br/> Local_</h3>
-                    </div>
-                    <p class="text-gray-500 text-[10px] tracking-[0.2em] leading-relaxed uppercase">Fabricación responsable KM 0. Sostenibilidad garantizada desde el centro neurálgico de Villanueva Mesía.</p>
-                    <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-[#facc15] group-hover:w-full transition-all duration-700"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="reveal mt-48 mb-32 py-24 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center relative overflow-hidden">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-[#facc15]"></div>
-            <h2 class="text-4xl md:text-6xl font-black italic uppercase text-white mb-6">Únete al Drop.</h2>
-            <p class="text-gray-500 text-[10px] tracking-[0.6em] uppercase mb-12">Protocolos exclusivos // acceso prioritario</p>
-            <div class="max-w-md mx-auto flex gap-4 px-6">
-                <input type="email" placeholder="USER@TERMINAL.COM" class="bg-transparent border-b border-white/10 flex-grow py-4 text-[10px] tracking-widest outline-none focus:border-[#facc15] transition-colors text-white font-mono" />
-                <button class="text-[#facc15] text-[10px] font-black uppercase tracking-widest hover:translate-x-3 transition-transform">Transmitir →</button>
-            </div>
-        </div>
+        <Newsletter />
 
         <div class="mt-20 -mx-8 reveal">
             <Telemetry />
@@ -136,133 +49,7 @@ if (error) {
     </section>
 </Layout>
 
-<script>
-    const setupHomeLive = () => {
-        const container = document.getElementById('carousel-container') as HTMLElement;
-        if (!container) return;
-
-        let isPaused = false;
-        let speed = 0.5;
-
-        // AutoPlay suave
-        const autoPlay = () => {
-            if (!isPaused) {
-                container.scrollLeft += speed;
-                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth)) {
-                    container.scrollLeft = 0;
-                }
-            }
-            requestAnimationFrame(autoPlay);
-        };
-        autoPlay();
-
-        container.addEventListener('mouseenter', () => isPaused = true);
-        container.addEventListener('mouseleave', () => isPaused = false);
-
-        // --- LÓGICA DE ARRASTRE ---
-        let isDown = false;
-        let startX: number;
-        let scrollLeft: number;
-
-        const startDragging = (e: any) => {
-            isDown = true;
-            isPaused = true; 
-            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-            startX = pageX - container.offsetLeft;
-            scrollLeft = container.scrollLeft;
-        };
-
-        const stopDragging = () => {
-            isDown = false;
-            isPaused = false;
-        };
-
-        const moveDragging = (e: any) => {
-            if (!isDown) return;
-            e.preventDefault(); // <-- Esto es lo que el {passive: false} permite hacer
-            const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-            const x = pageX - container.offsetLeft;
-            const walk = (x - startX) * 2;
-            container.scrollLeft = scrollLeft - walk;
-        };
-
-        // Eventos Mouse
-        container.addEventListener('mousedown', startDragging);
-        container.addEventListener('mouseleave', stopDragging);
-        container.addEventListener('mouseup', stopDragging);
-        container.addEventListener('mousemove', moveDragging);
-
-        // Eventos Touch (Asegúrate de que tengan el { passive: false })
-        container.addEventListener('touchstart', startDragging, { passive: false });
-        container.addEventListener('touchend', stopDragging);
-        container.addEventListener('touchmove', moveDragging, { passive: false });
-    };
-
-    setupHomeLive();
-    document.addEventListener('astro:after-swap', setupHomeLive);
-</script>
-
 <style>
-
-    #carousel-container {
-    /* Esto es lo que obliga al navegador a no cancelar el toque */
-    touch-action: pan-x; 
-    -webkit-overflow-scrolling: touch; /* Hace que el scroll sea fluido en iPhone/iPad */
-}
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* BOTONES PRIME */
-    .cat-link-primeGroup {
-        position: relative;
-        padding: 18px 40px;
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 0.4em;
-        color: black;
-        background-color: #facc15;
-        border-radius: 4px;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        text-decoration: none;
-        display: inline-block;
-        overflow: hidden;
-        filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4));
-    }
-
-    .scanner-effect {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-        transform: translateX(-100%);
-    }
-
-    .cat-link-primeGroup:hover .scanner-effect {
-        animation: scan 0.7s forwards;
-    }
-
-    @keyframes scan {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-
-    .cat-link-primeGroup:hover {
-        transform: translateY(-4px);
-        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6));
-    }
-
-    /* CARDS PRODUCTO */
-    .product-item {
-        filter: grayscale(0.2);
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    .product-item:hover {
-        filter: grayscale(0);
-        transform: translateY(-12px);
-    }
-
-    /* REVEAL ANIMATION */
     .reveal {
         animation: reveal-up 1s cubic-bezier(0.23, 1, 0.32, 1) both;
     }
