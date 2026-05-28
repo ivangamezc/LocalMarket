@@ -27,54 +27,29 @@ import Layout from '../layouts/Layout.astro';
             </div>
 
             <div class="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/10 relative overflow-hidden">
-                
                 <div id="profile-view" class="flex flex-col h-full justify-between transition-opacity duration-300">
                     <div>
                         <h2 class="text-xs font-black uppercase tracking-[0.3em] text-white/50 mb-6">Mis Datos</h2>
                         <div class="space-y-4">
-                            <div>
-                                <p class="text-[9px] text-gray-500 uppercase tracking-widest">Nombre</p>
-                                <p class="text-sm font-bold text-white truncate" id="view-name">...</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] text-gray-500 uppercase tracking-widest">Email</p>
-                                <p class="text-sm font-bold text-white truncate" id="view-email">...</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección de Envío</p>
-                                <p class="text-sm font-bold text-white" id="view-address">...</p>
-                            </div>
+                            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Nombre</p><p class="text-sm font-bold text-white truncate" id="view-name">...</p></div>
+                            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Email</p><p class="text-sm font-bold text-white truncate" id="view-email">...</p></div>
+                            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección de Envío</p><p class="text-sm font-bold text-white" id="view-address">...</p></div>
                         </div>
                     </div>
-                    <button id="edit-profile-btn" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#facc15] hover:text-black hover:border-[#facc15] transition-all">
-                        Editar Perfil
-                    </button>
+                    <button id="edit-profile-btn" class="w-full mt-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#facc15] hover:text-black transition-all">Editar Perfil</button>
                 </div>
 
-                <form id="profile-edit-form" class="hidden flex-col h-full justify-between absolute inset-0 bg-[#1a1a1a] p-8 z-10 transition-all duration-300">
-                    <div>
-                        <h2 class="text-xs font-black uppercase tracking-[0.3em] text-[#facc15] mb-6">Editando Perfil</h2>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-[9px] text-gray-500 uppercase tracking-widest ml-1">Nombre</label>
-                                <input type="text" id="edit-name" required class="w-full bg-black border border-white/10 rounded-lg px-3 py-2 text-white focus:border-[#facc15] outline-none text-sm">
-                            </div>
-                            <div>
-                                <label class="text-[9px] text-gray-500 uppercase tracking-widest ml-1">Dirección</label>
-                                <textarea id="edit-address" required rows="2" class="w-full bg-black border border-white/10 rounded-lg px-3 py-2 text-white focus:border-[#facc15] outline-none text-sm resize-none"></textarea>
-                            </div>
-                        </div>
+                <form id="profile-edit-form" class="hidden flex-col h-full justify-between absolute inset-0 bg-[#1a1a1a] p-8 z-10">
+                    <h2 class="text-xs font-black uppercase tracking-[0.3em] text-[#facc15] mb-6">Editando Perfil</h2>
+                    <div class="space-y-3">
+                        <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Nombre</label><input type="text" id="edit-name" required class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm"></div>
+                        <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección</label><textarea id="edit-address" required rows="2" class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm resize-none"></textarea></div>
                     </div>
                     <div class="flex gap-3 mt-4">
-                        <button type="button" id="cancel-edit-btn" class="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all">
-                            Cancelar
-                        </button>
-                        <button type="submit" id="save-edit-btn" class="flex-1 py-3 bg-[#facc15] border border-[#facc15] rounded-xl text-black text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">
-                            Guardar
-                        </button>
+                        <button type="button" id="cancel-edit-btn" class="flex-1 py-3 bg-white/5 rounded-xl text-[10px]">Cancelar</button>
+                        <button type="submit" class="flex-1 py-3 bg-[#facc15] rounded-xl text-black text-[10px] font-black">Guardar</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </section>
@@ -89,8 +64,8 @@ import Layout from '../layouts/Layout.astro';
     const profileView = document.getElementById('profile-view');
     const pedidosContainer = document.getElementById('pedidos-container');
 
-    editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0', 'pointer-events-none'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
-    cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0', 'pointer-events-none'); editForm?.classList.add('hidden'); editForm?.classList.remove('flex'); });
+    editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
+    cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0'); editForm?.classList.add('hidden'); });
 
     async function loadData() {
         const { data: { session } } = await supabase.auth.getSession();
@@ -98,27 +73,38 @@ import Layout from '../layouts/Layout.astro';
 
         // Cargar Perfil
         const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-        
         document.getElementById('view-name')!.innerText = profile?.name || 'Usuario';
         (document.getElementById('edit-name') as HTMLInputElement).value = profile?.name || '';
-        document.getElementById('view-email')!.innerText = session.user.email || '';
         document.getElementById('view-address')!.innerText = profile?.address || 'Sin dirección';
         (document.getElementById('edit-address') as HTMLTextAreaElement).value = profile?.address || '';
         document.getElementById('user-greeting')!.innerText = `Hola, ${profile?.name || 'Usuario'}`;
 
-        // Cargar Pedidos Dinámicos
+        // Cargar Pedidos Detallados
         const { data: pedidos } = await supabase.from('pedidos').select('*').eq('user_id', session.user.id).order('creado_el', { ascending: false });
 
         if (pedidos && pedidos.length > 0) {
-            pedidosContainer!.innerHTML = pedidos.map(p => `
-                <div class="bg-black/50 border border-white/5 p-6 rounded-2xl flex justify-between items-center mb-4">
-                    <div>
-                        <p class="text-white font-bold text-sm uppercase">Pedido #${p.id.slice(0,8)}</p>
-                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-1">${p.estado}</p>
+            pedidosContainer!.innerHTML = pedidos.map(p => {
+                const fecha = new Date(p.creado_el).toLocaleDateString('es-ES');
+                const productosHTML = p.productos?.map((prod: any) => `
+                    <div class="flex items-center gap-4 mt-3 bg-white/5 p-2 rounded-lg">
+                        <img src="${prod.imagen}" class="w-10 h-10 object-cover rounded-md" />
+                        <div>
+                            <p class="text-[10px] text-white font-bold uppercase">${prod.nombre}</p>
+                            <p class="text-[9px] text-gray-400">Cantidad: ${prod.cantidad || 1}</p>
+                        </div>
                     </div>
-                    <p class="text-[#facc15] font-black text-lg">${p.total}€</p>
-                </div>
-            `).join('');
+                `).join('') || '<p class="text-[10px] text-gray-500">Sin detalles de productos</p>';
+
+                return `
+                    <div class="bg-black/50 border border-white/5 p-6 rounded-2xl mb-4">
+                        <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-3">
+                            <div><p class="text-white font-bold text-sm">Pedido #${p.id.slice(0,8)}</p><p class="text-[9px] text-gray-500 uppercase">${fecha}</p></div>
+                            <p class="text-[#facc15] font-black text-lg">${p.total}€</p>
+                        </div>
+                        ${productosHTML}
+                    </div>
+                `;
+            }).join('');
         } else {
             pedidosContainer!.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
         }
@@ -129,10 +115,8 @@ import Layout from '../layouts/Layout.astro';
         const { data: { session } } = await supabase.auth.getSession();
         const name = (document.getElementById('edit-name') as HTMLInputElement).value;
         const address = (document.getElementById('edit-address') as HTMLTextAreaElement).value;
-
-        const { error } = await supabase.from('profiles').update({ name, address }).eq('id', session?.user.id);
-        if (error) alert(error.message);
-        else location.reload();
+        await supabase.from('profiles').update({ name, address }).eq('id', session?.user.id);
+        location.reload();
     });
 
     loadData();

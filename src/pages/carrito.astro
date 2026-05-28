@@ -122,7 +122,8 @@ import Layout from '../layouts/Layout.astro';
     const total = cartTotal.get();
     const { error } = await supabase.from('pedidos').insert([{ 
         user_id: session.user.id, 
-        total: total, 
+        total: cartTotal.get(), 
+        productos: cartItems.get(), 
         estado: 'Pagado' 
     }]);
 
