@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 
 interface Props {
     title: string;
@@ -18,45 +19,49 @@ const currentPath = Astro.url.pathname;
         <meta name="viewport" content="width=device-width" />
         <title>{title}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/png" href="/Logo_LocalMarket.png" />
         
         <ClientRouter />
     </head>
     <body class="bg-[#333333] text-white antialiased min-h-screen relative overflow-x-hidden">
         
+        <div id="scroll-progress" class="fixed top-0 left-0 w-0 h-[2px] bg-[#facc15] z-[200] transition-all duration-100 ease-out"></div>
+
         <canvas id="tech-bg" class="fixed inset-0 -z-20 opacity-50 pointer-events-none"></canvas>
         <div class="fixed inset-0 z-[100] pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,_#444444_0%,_transparent_75%)]"></div>
 
         <nav class="fixed top-6 inset-x-0 z-[110] flex justify-center px-4" aria-label="Navegación principal">
-    <div class="flex items-center justify-between w-full max-w-5xl px-6 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
-        
-        <a href="/" class="text-xl font-black tracking-tighter uppercase italic hover:scale-105 transition-transform outline-none z-50">
-            LOCAL<span class="text-[#facc15]">MKT</span>
-        </a>
+            <div class="flex items-center justify-between w-full max-w-5xl px-6 py-4 bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl">
+                
+                <a href="/" class="text-xl font-black tracking-tighter uppercase italic hover:scale-105 transition-transform outline-none z-50">
+                    LOCAL<span class="text-[#facc15]">MKT</span>
+                </a>
 
-        <button id="menu-toggle" class="md:hidden p-2 text-white z-50">
-            <span class="text-2xl">☰</span>
-        </button>
+                <button id="menu-toggle" class="md:hidden p-2 text-white z-50">
+                    <span class="text-2xl">☰</span>
+                </button>
 
-        <div id="mobile-menu" class="hidden md:flex absolute md:static top-24 left-4 right-4 md:top-0 bg-[#252525] md:bg-transparent p-6 md:p-0 rounded-2xl border border-white/10 md:border-none flex-col md:flex-row gap-6 md:gap-8 text-[12px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.4em] font-bold text-white/90 shadow-xl md:shadow-none">
-            <a href="/ropa" class={`transition-colors ${currentPath.includes('/ropa') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Ropa</a>
-            <a href="/calzado" class={`transition-colors ${currentPath.includes('/calzado') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Calzado</a>
-            <a href="/accesorios" class={`transition-colors ${currentPath.includes('/accesorios') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Accesorios</a>
-            
-            <div class="md:hidden flex flex-col gap-4 pt-4 border-t border-white/10">
-                <a href="/mi-cuenta" class="flex gap-2">👤 Mi Cuenta</a>
-                <a href="/carrito" class="flex gap-2">🛒 Carrito</a>
+                <div id="mobile-menu" class="hidden md:flex absolute md:static top-24 left-4 right-4 md:top-0 bg-[#252525] md:bg-transparent p-6 md:p-0 rounded-2xl border border-white/10 md:border-none flex-col md:flex-row gap-6 md:gap-8 text-[12px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.4em] font-bold text-white/90 shadow-xl md:shadow-none">
+                    <a href="/ropa" class={`transition-colors ${currentPath.includes('/ropa') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Ropa</a>
+                    <a href="/calzado" class={`transition-colors ${currentPath.includes('/calzado') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Calzado</a>
+                    <a href="/accesorios" class={`transition-colors ${currentPath.includes('/accesorios') ? 'text-[#facc15]' : 'hover:text-[#facc15]'}`}>Accesorios</a>
+                    
+                    <div class="md:hidden flex flex-col gap-4 pt-4 border-t border-white/10">
+                        <a href="/mi-cuenta" class="flex gap-2">👤 Mi Cuenta</a>
+                        <a href="/carrito" class="flex gap-2">🛒 Carrito</a>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-5">
+                    <a href="/mi-cuenta" class="hover:text-[#facc15]">👤</a>
+                    <a href="/carrito" class="relative hover:text-[#facc15]">🛒</a>
+                </div>
             </div>
-        </div>
-
-        <div class="hidden md:flex items-center gap-5">
-            <a href="/mi-cuenta" class="hover:text-[#facc15]">👤</a>
-            <a href="/carrito" class="relative hover:text-[#facc15]">🛒</a>
-        </div>
-    </div>
-</nav>
+        </nav>
 
         <main class="relative z-10 pt-32">
+            <Breadcrumbs />
             <slot />
         </main>
 
@@ -70,149 +75,133 @@ const currentPath = Astro.url.pathname;
         </div>
 
         <script>
-    import { cartItems, addCartItem } from '../store/cartStore.js';
+            import { cartItems, addCartItem } from '../store/cartStore.js';
 
-    // --- 1. LÓGICA DEL TOAST ---
-    const showToast = () => {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            toast.classList.remove('opacity-0', 'translate-y-10');
-            toast.classList.add('opacity-100', 'translate-y-0');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-10');
-                toast.classList.remove('opacity-100', 'translate-y-0');
-            }, 3000);
-        }
-    };
-
-    // --- 2. RECEPTOR DE EVENTOS (FIX X6) ---
-    const handleCartAdd = (event: any) => {
-        const { product } = event.detail;
-        addCartItem(product);
-        showToast();
-    };
-
-    // --- 3. SISTEMA DE PARTÍCULAS ---
-    let particles: any[] = [];
-    const mouse = { x: 0, y: 0, active: false };
-
-    const initParticles = () => {
-        const canvas = document.getElementById('tech-bg') as HTMLCanvasElement;
-        const ctx = canvas?.getContext('2d');
-        if (!canvas || !ctx) return;
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        particles = [];
-        for (let i = 0; i < 110; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: Math.random() * 0.4 - 0.2,
-                vy: Math.random() * 0.4 - 0.2,
-                size: 1.5
+            // --- Lógica Scroll Progress ---
+            window.addEventListener('scroll', () => {
+                const scrollProgress = document.getElementById('scroll-progress');
+                if (!scrollProgress) return;
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                scrollProgress.style.width = scrolled + "%";
             });
-        }
 
-        const draw = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            // --- 1. LÓGICA DEL TOAST ---
+            const showToast = () => {
+                const toast = document.getElementById('toast');
+                if (toast) {
+                    toast.classList.remove('opacity-0', 'translate-y-10');
+                    toast.classList.add('opacity-100', 'translate-y-0');
+                    setTimeout(() => {
+                        toast.classList.add('opacity-0', 'translate-y-10');
+                        toast.classList.remove('opacity-100', 'translate-y-0');
+                    }, 3000);
+                }
+            };
 
-                if (mouse.active) {
-                    const dx = mouse.x - p.x;
-                    const dy = mouse.y - p.y;
-                    const dist = Math.hypot(dx, dy);
-                    if (dist < 150) {
-                        const force = (150 - dist) / 150;
-                        p.x -= (dx / dist) * force * 5;
-                        p.y -= (dy / dist) * force * 5;
+            const handleCartAdd = (event: any) => {
+                const { product } = event.detail;
+                addCartItem(product);
+                showToast();
+            };
+
+            // --- 3. SISTEMA DE PARTÍCULAS ---
+            let particles: any[] = [];
+            const mouse = { x: 0, y: 0, active: false };
+
+            const initParticles = () => {
+                const canvas = document.getElementById('tech-bg') as HTMLCanvasElement;
+                const ctx = canvas?.getContext('2d');
+                if (!canvas || !ctx) return;
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                particles = [];
+                for (let i = 0; i < 110; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: Math.random() * 0.4 - 0.2,
+                        vy: Math.random() * 0.4 - 0.2,
+                        size: 1.5
+                    });
+                }
+
+                const draw = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach((p, i) => {
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                        if (mouse.active) {
+                            const dx = mouse.x - p.x;
+                            const dy = mouse.y - p.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < 150) {
+                                const force = (150 - dist) / 150;
+                                p.x -= (dx / dist) * force * 5;
+                                p.y -= (dy / dist) * force * 5;
+                            }
+                        }
+
+                        ctx.fillStyle = "rgba(250, 204, 21, 0.7)";
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const p2 = particles[j];
+                            const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                            if (d < 160) {
+                                ctx.strokeStyle = `rgba(250, 204, 21, ${0.15 - d/160})`;
+                                ctx.lineWidth = 0.6;
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                            }
+                        }
+                    });
+                    requestAnimationFrame(draw);
+                };
+                draw();
+            };
+
+            const startAll = () => {
+                cartItems.subscribe(items => {
+                    const el = document.getElementById('cart-count');
+                    if (el) {
+                        const totalItems = items.reduce((total: number, item: any) => total + (item.cantidad || 1), 0);
+                        el.innerText = totalItems.toString();
+                        el.style.display = totalItems === 0 ? 'none' : 'flex';
                     }
-                }
+                });
 
-                ctx.fillStyle = "rgba(250, 204, 21, 0.7)";
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+                document.removeEventListener('cart:add', handleCartAdd);
+                document.addEventListener('cart:add', handleCartAdd);
 
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const d = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if (d < 160) {
-                        ctx.strokeStyle = `rgba(250, 204, 21, ${0.15 - d/160})`;
-                        ctx.lineWidth = 0.6;
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(draw);
-        };
-        draw();
-    };
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    const startAll = () => {
-        cartItems.subscribe(items => {
-            const el = document.getElementById('cart-count');
-            if (el) {
-                const totalItems = items.reduce((total: number, item: any) => total + (item.cantidad || 1), 0);
-                el.innerText = totalItems.toString();
-                el.style.display = totalItems === 0 ? 'none' : 'flex';
-            }
-        });
+                initParticles();
 
-        const profileIndicator = document.getElementById('profile-indicator');
-        if (profileIndicator) {
-            const storedUser = localStorage.getItem('localmarket_user');
-            if (storedUser) {
-                profileIndicator.classList.remove('hidden');
-            } else {
-                profileIndicator.classList.add('hidden');
-            }
-        }
+                const menuToggle = document.getElementById('menu-toggle');
+                const mobileMenu = document.getElementById('mobile-menu');
+                menuToggle?.addEventListener('click', () => {
+                    mobileMenu?.classList.toggle('hidden');
+                    mobileMenu?.classList.toggle('flex');
+                });
+            };
 
-        document.removeEventListener('cart:add', handleCartAdd);
-        document.addEventListener('cart:add', handleCartAdd);
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-
-        const searchInput = document.getElementById('global-search') as HTMLInputElement;
-        const clearBtn = document.getElementById('clear-search');
-        searchInput?.addEventListener('input', (e) => {
-            const term = (e.target as HTMLInputElement).value.toLowerCase();
-            if (clearBtn) term.length > 0 ? clearBtn.classList.replace('opacity-0', 'opacity-100') : clearBtn.classList.replace('opacity-100', 'opacity-0');
-            document.querySelectorAll('.product-item').forEach((item: any) => {
-                const title = item.querySelector('h3')?.innerText.toLowerCase() || "";
-                item.style.display = title.includes(term) ? "block" : "none";
-            });
-        });
-        clearBtn?.addEventListener('click', () => { if(searchInput) { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); } });
-
-        initParticles();
-
-        // --- NUEVA LÓGICA: Menú Hamburguesa ---
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        menuToggle?.addEventListener('click', () => {
-            mobileMenu?.classList.toggle('hidden');
-            mobileMenu?.classList.toggle('flex');
-        });
-    };
-
-    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-    
-    startAll();
-    document.addEventListener('astro:after-swap', startAll);
-</script>
+            window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+            
+            startAll();
+            document.addEventListener('astro:after-swap', startAll);
+        </script>
 
         <style is:global>
             .reveal { opacity: 0; transform: translateY(30px); transition: all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1); }

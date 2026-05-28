@@ -10,6 +10,7 @@ import Carousel from '../components/Carousel.astro';
 import Newsletter from '../components/Newsletter.astro'; // 1. Lo importamos
 import Reviews from '../components/Reviews.astro';
 import Faq from '../components/Faq.astro';
+import Manifesto from '../components/Manifiesto.astro';
 
 import { supabase } from '../lib/supabaseClient';
 
@@ -28,6 +29,8 @@ if (error) {
         <Hero />
         
         <Carousel products={products || []} />
+
+        <Manifesto /> 
 
         <Categories />
 

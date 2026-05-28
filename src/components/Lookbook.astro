@@ -16,13 +16,22 @@
             <span class="w-12 h-[1px] bg-[#facc15]"></span>
             <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.6em]">CREAMOS TU ESTILO //</span>
         </div>
-        <h2 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-[0.9]">
-            TACTICAL <br/> <span class="text-white/10">OUTFIT_</span>
-        </h2>
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <h2 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-[0.9]">
+                TACTICAL <br/> <span class="text-white/10">OUTFIT_</span>
+            </h2>
+            
+            <!-- Selector de Género añadido -->
+            <div class="flex bg-[#111] p-1 rounded-full border border-white/10">
+                <button class="gen-btn px-8 py-3 rounded-full text-[10px] font-black tracking-widest uppercase transition-all bg-[#facc15] text-black" data-gen="hombre">HOMBRE</button>
+                <button class="gen-btn px-8 py-3 rounded-full text-[10px] font-black tracking-widest uppercase transition-all text-white/50" data-gen="mujer">MUJER</button>
+            </div>
+        </div>
     </div>
 
     <div class="grid md:grid-cols-3 gap-10 min-h-[580px] relative z-10" id="lookbook-grid">
-        </div>
+    </div>
 
     <div class="flex flex-col md:flex-row justify-center items-center gap-6 mt-20 relative z-20">
         <button id="generate-lookbook" class="cat-link-primeGroup group">
@@ -44,21 +53,27 @@
         const btnGen = document.getElementById('generate-lookbook');
         const btnAdd = document.getElementById('add-outfit-cart');
         const grid = document.getElementById('lookbook-grid');
+        const genBtns = document.querySelectorAll('.gen-btn');
         
         let currentCombo: any[] = [];
+        let currentGenero = 'hombre';
 
         if (!btnGen || !btnAdd || !grid) return;
 
         const generate = () => {
-            const sup = products.filter(p => ['sudaderas', 'camisetas', 'chalecos'].includes(p.tipo));
-            const inf = products.filter(p => ['pantalones'].includes(p.tipo));
-            const acc = products.filter(p => ['relojes', 'colgantes', 'gorros'].includes(p.tipo));
+            const filterBy = (tipos: string[]) => products.filter(p => 
+                tipos.includes(p.tipo) && (p.genero === currentGenero || p.genero === 'unisex')
+            );
+
+            const sup = filterBy(['sudaderas', 'camisetas', 'chalecos']);
+            const inf = filterBy(['pantalones']);
+            const acc = filterBy(['relojes', 'colgantes', 'gorros']);
 
             currentCombo = [
                 sup[Math.floor(Math.random() * sup.length)],
                 inf[Math.floor(Math.random() * inf.length)],
                 acc[Math.floor(Math.random() * acc.length)]
-            ];
+            ].filter(Boolean);
 
             grid.style.opacity = '0';
             grid.style.filter = 'blur(10px)';
@@ -67,17 +82,14 @@
                 grid.innerHTML = currentCombo.map((item, index) => `
                     <div class="premium-card group relative bg-[#151515]/80 backdrop-blur-sm rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl" 
                          style="animation-delay: ${index * 0.15}s">
-                        
                         <div class="absolute top-8 left-8 z-20 flex flex-col">
                             <span class="text-[8px] font-mono text-[#facc15] tracking-[0.2em] mb-1 uppercase">Step 0${index + 1}</span>
                             <span class="text-[10px] font-mono text-white/30 uppercase tracking-tighter">${item.tipo}</span>
                         </div>
-
                         <div class="aspect-[4/5] overflow-hidden bg-[#111] relative">
                             <img src="${item.imagen}" class="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" />
                             <div class="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-transparent opacity-80"></div>
                         </div>
-
                         <div class="p-10 border-t border-white/5">
                             <h3 class="text-xl font-black uppercase italic text-white tracking-tight leading-none mb-4">${item.nombre}</h3>
                             <div class="flex items-center justify-between">
@@ -85,8 +97,6 @@
                                 <span class="text-sm font-mono font-bold text-[#facc15]">${item.precio}€</span>
                             </div>
                         </div>
-                        
-                        <div class="absolute inset-0 border border-[#facc15]/0 group-hover:border-[#facc15]/20 rounded-[3rem] transition-all duration-700 pointer-events-none"></div>
                     </div>
                 `).join('');
                 grid.style.opacity = '1';
@@ -94,31 +104,25 @@
             }, 300);
         };
 
-        const handleAddAll = () => {
-            if (currentCombo.length === 0) return;
-            
-            currentCombo.forEach(product => {
-                document.dispatchEvent(new CustomEvent('cart:add', { detail: { product } }));
+        // Lógica de botones de género
+        genBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                genBtns.forEach(b => b.classList.remove('bg-[#facc15]', 'text-black', 'text-white/50'));
+                genBtns.forEach(b => b.classList.add('text-white/50'));
+                btn.classList.add('bg-[#facc15]', 'text-black');
+                currentGenero = btn.getAttribute('data-gen') || 'hombre';
+                generate();
             });
+        });
 
-            const span = btnAdd.querySelector('span');
-            if (span) {
-                const oldText = span.innerText;
-                span.innerText = "PROTOCOLOS AÑADIDOS ✓";
-                btnAdd.style.backgroundColor = "#facc15";
-                setTimeout(() => {
-                    span.innerText = oldText;
-                    btnAdd.style.backgroundColor = "white";
-                }, 2000);
-            }
-        };
-
-        // FIX: Limpieza de listeners para evitar duplicados (el famoso x6)
+        // Eventos originales
         btnGen.removeEventListener('click', generate);
         btnGen.addEventListener('click', generate);
 
-        btnAdd.removeEventListener('click', handleAddAll);
-        btnAdd.addEventListener('click', handleAddAll);
+        btnAdd.removeEventListener('click', () => { /*...*/ });
+        btnAdd.addEventListener('click', () => {
+            currentCombo.forEach(p => document.dispatchEvent(new CustomEvent('cart:add', { detail: { product: p } })));
+        });
 
         generate();
     };
@@ -128,61 +132,13 @@
 </script>
 
 <style>
-    #lookbook-grid { 
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .premium-card {
-        opacity: 0;
-        filter: blur(15px);
-        transform: scale(0.9) translateY(30px);
-        animation: premiumReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes premiumReveal {
-        to {
-            opacity: 1;
-            filter: blur(0px);
-            transform: scale(1) translateY(0);
-        }
-    }
-
-    .cat-link-primeGroup {
-        position: relative;
-        padding: 20px 45px;
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 0.35em;
-        color: black;
-        background-color: #facc15;
-        border: none;
-        border-radius: 4px;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        text-decoration: none;
-        display: inline-block;
-        overflow: hidden;
-        cursor: pointer;
-        filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.3));
-    }
-
-    .scanner-effect {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-        transform: translateX(-100%);
-    }
-
-    .cat-link-primeGroup:hover .scanner-effect {
-        animation: scan 0.8s forwards;
-    }
-
-    @keyframes scan {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-
-    .cat-link-primeGroup:hover {
-        transform: translateY(-3px);
-        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.5));
-    }
+    /* Tus estilos originales se mantienen igual */
+    #lookbook-grid { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+    .premium-card { opacity: 0; filter: blur(15px); transform: scale(0.9) translateY(30px); animation: premiumReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes premiumReveal { to { opacity: 1; filter: blur(0px); transform: scale(1) translateY(0); } }
+    .cat-link-primeGroup { position: relative; padding: 20px 45px; font-size: 11px; font-weight: 900; letter-spacing: 0.35em; color: black; background-color: #facc15; border: none; border-radius: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); text-decoration: none; display: inline-block; overflow: hidden; cursor: pointer; filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.3)); }
+    .scanner-effect { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: translateX(-100%); }
+    .cat-link-primeGroup:hover .scanner-effect { animation: scan 0.8s forwards; }
+    @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .cat-link-primeGroup:hover { transform: translateY(-3px); filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.5)); }
 </style>

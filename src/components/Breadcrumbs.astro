@@ -1,0 +1,28 @@
+---
+// src/components/Breadcrumbs.astro
+const pathname = Astro.url.pathname;
+const paths = pathname.split('/').filter(p => p !== '');
+
+// Capitaliza la primera letra
+const format = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+---
+
+<nav aria-label="Breadcrumb" class="mt-4 px-6 max-w-7xl mx-auto mb-8">
+    <ol class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
+        <li><a href="/" class="hover:text-[#facc15] transition-colors">INICIO</a></li>
+        {paths.map((path, index) => (
+            <>
+                <span class="text-white/20">/</span>
+                <li>
+                    {index === paths.length - 1 ? (
+                        <span class="text-[#facc15]">{format(path)}</span>
+                    ) : (
+                        <a href={`/${paths.slice(0, index + 1).join('/')}`} class="hover:text-[#facc15] transition-colors">
+                            {format(path)}
+                        </a>
+                    )}
+                </li>
+            </>
+        ))}
+    </ol>
+</nav>
