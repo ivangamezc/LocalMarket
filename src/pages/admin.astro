@@ -2,164 +2,379 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabaseClient';
 
-// Cargamos los productos inicialmente para la lista en el servidor
+// 1. En el servidor SOLO cargamos el catálogo público (Inventario)
 const { data: initialProducts } = await supabase
     .from('productos')
     .select('*')
     .order('id', { ascending: false });
+
+// Los pedidos y clientes privados los cargará el navegador (cliente) cuando valide tu sesión.
 ---
 
-<Layout title="Dashboard de Gestión | LocalMarket">
-    <section class="px-8 pt-10 pb-20 max-w-5xl mx-auto min-h-screen">
+<Layout title="ERP & Gestión Integrada | LocalMarket">
+    <section class="px-4 md:px-8 pt-10 pb-20 max-w-7xl mx-auto min-h-screen">
         
-        <div class="mb-12 text-center">
+        <div class="mb-10 text-center">
             <div class="flex items-center justify-center gap-3 mb-6">
                 <span class="w-12 h-[1px] bg-[#facc15]"></span>
-                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">Terminal de Control</span>
+                <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.5em]">ERP System</span>
                 <span class="w-12 h-[1px] bg-[#facc15]"></span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-black uppercase italic text-white pb-4" id="form-title">
-                Gestión de Inventario
+            <h1 class="text-4xl md:text-5xl font-black uppercase italic text-white pb-4">
+                Panel de Control
             </h1>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 mb-10 border-b border-white/10 pb-4">
+            <button id="btn-tab-inventario" class="tab-btn active px-6 py-3 bg-[#facc15] text-black font-black uppercase text-xs tracking-widest rounded-xl transition-all">
+                📦 Inventario
+            </button>
+            <button id="btn-tab-pedidos" class="tab-btn px-6 py-3 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-xs tracking-widest rounded-xl transition-all">
+                🛒 Pedidos
+            </button>
+            <button id="btn-tab-crm" class="tab-btn px-6 py-3 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-xs tracking-widest rounded-xl transition-all">
+                👥 Clientes (CRM)
+            </button>
         </div>
 
         <div id="status-msg" class="hidden mb-8 p-6 rounded-2xl text-center border">
             <p class="font-bold uppercase tracking-widest text-xs" id="status-text"></p>
         </div>
 
-        <div class="mb-20">
-            <form id="admin-form" class="space-y-6 bg-[#1a1a1a] p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl">
-                <input type="hidden" id="edit-mode" value="false">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">ID (Único)</label>
-                        <input type="text" id="prod-id" required placeholder="Ej: 51" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all read-only:opacity-50">
+        <!-- ================= PESTAÑA INVENTARIO ================= -->
+        <div id="tab-inventario" class="tab-content block">
+            
+            <div class="mb-12">
+                <form id="admin-form" class="space-y-6 bg-[#1a1a1a] p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+                    <input type="hidden" id="edit-mode" value="false">
+                    <h2 class="text-xl font-black text-white uppercase italic mb-6" id="form-title">Añadir Nuevo Artículo</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">ID (Único)</label>
+                            <input type="text" id="prod-id" required placeholder="Ej: 51" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all read-only:opacity-50">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Nombre del Artículo</label>
+                            <input type="text" id="prod-nombre" required placeholder="Ej: Nike Tech Fleece" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                        </div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Nombre del Artículo</label>
-                        <input type="text" id="prod-nombre" required placeholder="Ej: Nike Tech Fleece" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Precio (€)</label>
-                        <input type="number" step="0.01" id="prod-precio" required placeholder="Ej: 89.99" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Precio (€)</label>
+                            <input type="number" step="0.01" id="prod-precio" required placeholder="Ej: 89.99" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Stock</label>
+                            <input type="number" step="1" min="0" id="prod-stock" required placeholder="Ej: 10" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Género</label>
+                            <select id="prod-genero" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                                <option value="hombre">Hombre</option>
+                                <option value="mujer">Mujer</option>
+                                <option value="unisex">Unisex</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Categoría</label>
+                            <select id="prod-cat" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                                <option value="Urban Essentials">Urban Essentials</option>
+                                <option value="Techwear">Techwear</option>
+                                <option value="Calzado">Calzado</option>
+                                <option value="Accesorios">Accesorios</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Tipo</label>
+                            <input type="text" id="prod-tipo" required placeholder="Ej: sudaderas" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
+                        </div>
                     </div>
+
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Género</label>
-                        <select id="prod-genero" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
-                            <option value="hombre">Hombre</option>
-                            <option value="mujer">Mujer</option>
-                            <option value="unisex">Unisex</option>
-                        </select>
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">URL Imagen</label>
+                        <input type="url" id="prod-imagen" required placeholder="https://..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
                     </div>
+
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Categoría</label>
-                        <select id="prod-cat" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
-                            <option value="Urban Essentials">Urban Essentials</option>
-                            <option value="Techwear">Techwear</option>
-                            <option value="Graphic Series">Graphic Series</option>
-                            <option value="Nike Performance">Nike Performance</option>
-                            <option value="Adidas Outdoor">Adidas Outdoor</option>
-                            <option value="Calzado">Calzado</option>
-                            <option value="Hardware">Hardware</option>
-                            <option value="Accesorios">Accesorios</option>
-                        </select>
+                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Descripción</label>
+                        <textarea id="prod-desc" required rows="2" placeholder="Detalles técnicos..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none"></textarea>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Tipo</label>
-                        <select id="prod-tipo" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
-                            <option value="camisetas">Camisetas</option>
-                            <option value="sudaderas">Sudaderas</option>
-                            <option value="pantalones">Pantalones</option>
-                            <option value="chaquetas">Chaquetas</option>
-                            <option value="chalecos">Chalecos</option>
-                            <option value="zapatillas">Zapatillas</option>
-                            <option value="botas">Botas</option>
-                            <option value="relojes">Relojes</option>
-                            <option value="gafas">Gafas</option>
-                            <option value="gorros">Gorros</option>
-                            <option value="bolsos">Bolsos</option>
-                            <option value="colgantes">Colgantes</option>
-                        </select>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="submit" id="submit-btn" class="flex-[2] py-4 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-xl hover:bg-white transition-all duration-300">
+                            Publicar Producto
+                        </button>
+                        <button type="button" id="cancel-edit" class="hidden flex-1 py-4 bg-white/5 text-white font-black uppercase text-xs tracking-[0.3em] rounded-xl border border-white/10 hover:bg-red-500/20 transition-all duration-300">
+                            Cancelar
+                        </button>
                     </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">URL Imagen</label>
-                    <input type="url" id="prod-imagen" required placeholder="https://..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Descripción</label>
-                    <textarea id="prod-desc" required rows="3" placeholder="Detalles técnicos..." class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none"></textarea>
-                </div>
-
-                <div class="flex gap-4 pt-4">
-                    <button type="submit" id="submit-btn" class="flex-[2] py-6 bg-[#facc15] text-black font-black uppercase text-xs tracking-[0.3em] rounded-2xl hover:bg-white transition-all duration-300">
-                        Publicar Producto
-                    </button>
-                    <button type="button" id="cancel-edit" class="hidden flex-1 py-6 bg-white/5 text-white font-black uppercase text-xs tracking-[0.3em] rounded-2xl border border-white/10 hover:bg-red-500/20 transition-all duration-300">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden shadow-xl">
-            <div class="p-6 border-b border-white/10 bg-white/[0.02]">
-                <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/60">Artículos en Frankfurt (Cloud)</h2>
+                </form>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="text-[9px] uppercase tracking-widest text-gray-500 border-b border-white/5">
-                        <tr>
-                            <th class="px-6 py-4 font-black">Producto</th>
-                            <th class="px-6 py-4 font-black">Precio</th>
-                            <th class="px-6 py-4 font-black text-right min-w-[200px]">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="product-list-body">
-                        {initialProducts?.map((p) => (
-                            <tr class="border-b border-white/5 hover:bg-white/[0.01] transition-colors" id={`row-${p.id}`}>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-4">
-                                        <img src={p.imagen} class="w-12 h-12 rounded-xl object-cover bg-black" />
-                                        <div>
-                                            <p class="text-white font-bold text-sm uppercase italic">{p.nombre}</p>
-                                            <p class="text-[9px] text-gray-500 uppercase tracking-tighter">ID: {p.id} | {p.tipo}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-white font-black italic">{p.precio}€</td>
-                                <td class="px-6 py-4 text-right space-x-2">
-                                    <button 
-                                        class="edit-btn px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-500 hover:text-white transition-all"
-                                        data-product={JSON.stringify(p)}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button 
-                                        class="delete-btn px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-red-500 hover:text-white transition-all"
-                                        data-id={p.id}
-                                    >
-                                        Borrar
-                                    </button>
-                                </td>
+
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="filter-btn active px-5 py-2.5 bg-[#facc15] text-black text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" data-filter="all">Todo</button>
+                <button class="filter-btn px-5 py-2.5 bg-[#1a1a1a] text-gray-400 hover:text-white border border-white/10 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" data-filter="ropa">Ropa</button>
+                <button class="filter-btn px-5 py-2.5 bg-[#1a1a1a] text-gray-400 hover:text-white border border-white/10 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" data-filter="pantalones">Pantalones</button>
+                <button class="filter-btn px-5 py-2.5 bg-[#1a1a1a] text-gray-400 hover:text-white border border-white/10 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" data-filter="zapatillas">Zapatillas</button>
+                <button class="filter-btn px-5 py-2.5 bg-[#1a1a1a] text-gray-400 hover:text-white border border-white/10 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" data-filter="accesorios">Accesorios</button>
+            </div>
+
+            <div class="bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-white/10 bg-white/[0.02]">
+                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/60">Catálogo Activo</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-[9px] uppercase tracking-widest text-gray-500 border-b border-white/5">
+                            <tr>
+                                <th class="px-6 py-4 font-black min-w-[350px]">Producto</th>
+                                <th class="px-6 py-4 font-black">Precio</th>
+                                <th class="px-6 py-4 font-black text-right min-w-[200px]">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="product-list-body">
+                            {initialProducts?.map((p) => (
+                                <tr class="product-row border-b border-white/5 hover:bg-white/[0.01] transition-colors" id={`row-${p.id}`} data-tipo={p.tipo?.toLowerCase()} data-cat={p.cat?.toLowerCase()}>
+                                    <td class="px-6 py-6">
+                                        <div class="flex items-center gap-5">
+                                            <img src={p.imagen} class="w-16 h-16 rounded-xl object-cover bg-black border border-white/10 shadow-lg" />
+                                            <div class="space-y-2">
+                                                <p class="text-white font-black text-base uppercase italic">{p.nombre}</p>
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <span class="text-xs text-gray-400 font-mono bg-white/5 px-2 py-1 rounded-lg border border-white/10">
+                                                        ID: {p.id}
+                                                    </span>
+                                                    <span class="text-xs text-gray-400 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-lg border border-white/10">
+                                                        {p.tipo}
+                                                    </span>
+                                                    <span class={`px-3 py-1 text-xs font-black uppercase tracking-widest rounded-lg border ${p.stock >= 10 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                                                        📦 Stock: {p.stock || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-[#facc15] font-black italic text-lg">{p.precio}€</td>
+                                    <td class="px-6 py-4 text-right space-x-2">
+                                        <button class="edit-btn px-5 py-2.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-500 hover:text-white transition-all" data-product={JSON.stringify(p)}>
+                                            Editar
+                                        </button>
+                                        <button class="delete-btn px-5 py-2.5 bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-500 hover:text-white transition-all" data-id={p.id}>
+                                            Borrar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <!-- ================= PESTAÑA PEDIDOS ================= -->
+        <div id="tab-pedidos" class="tab-content hidden">
+            <div class="bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-white/10 bg-white/[0.02] flex justify-between items-center">
+                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/60">Historial de Transacciones</h2>
+                    <span id="pedidos-count" class="px-3 py-1 bg-[#facc15]/20 text-[#facc15] text-[9px] font-black rounded-full uppercase tracking-widest">Cargando...</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-[9px] uppercase tracking-widest text-gray-500 border-b border-white/5">
+                            <tr>
+                                <th class="px-6 py-4 font-black">ID Pedido / Fecha</th>
+                                <th class="px-6 py-4 font-black">Cliente ID</th>
+                                <th class="px-6 py-4 font-black">Total</th>
+                                <th class="px-6 py-4 font-black">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidos-body">
+                            <tr><td colspan="4" class="px-6 py-8 text-center text-[#facc15] text-xs uppercase tracking-widest animate-pulse">Autenticando y descargando datos seguros...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PESTAÑA CLIENTES (CRM) ================= -->
+        <div id="tab-crm" class="tab-content hidden">
+            <div class="bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-white/10 bg-white/[0.02] flex justify-between items-center">
+                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white/60">Base de Datos de Clientes</h2>
+                    <span id="clientes-count" class="px-3 py-1 bg-blue-500/20 text-blue-400 text-[9px] font-black rounded-full uppercase tracking-widest">Cargando...</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-[9px] uppercase tracking-widest text-gray-500 border-b border-white/5">
+                            <tr>
+                                <th class="px-6 py-4 font-black">Nombre del Cliente</th>
+                                <th class="px-6 py-4 font-black">Contacto</th>
+                                <th class="px-6 py-4 font-black">Dirección de Envío</th>
+                                <th class="px-6 py-4 font-black text-right">Acciones CRM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientes-body">
+                            <tr><td colspan="4" class="px-6 py-8 text-center text-blue-400 text-xs uppercase tracking-widest animate-pulse">Autenticando y descargando datos seguros...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </section>
 </Layout>
 
 <script>
     import { supabase } from '../lib/supabaseClient';
 
+    // --- LÓGICA PARA CARGAR DATOS PRIVADOS TRAS COMPROBAR SEGURIDAD ---
+    const loadSecureData = async () => {
+        console.log("Iniciando petición a Supabase...");
+
+        // 1. Cargar Pedidos de forma segura en el navegador
+        const { data: pedidos, error: errPed } = await supabase.from('pedidos').select('*').order('creado_el', { ascending: false });
+        
+        if (errPed) console.error("🛑 Error de Supabase en Pedidos:", errPed);
+        console.log("📦 Pedidos recibidos:", pedidos);
+
+        const pedidosBody = document.getElementById('pedidos-body');
+        const pedidosCount = document.getElementById('pedidos-count');
+        
+        if (pedidosBody && pedidosCount) {
+            if (pedidos && pedidos.length > 0) {
+                pedidosCount.innerText = `${pedidos.length} Pedidos`;
+                pedidosBody.innerHTML = pedidos.map(pedido => `
+                    <tr class="border-b border-white/5 hover:bg-white/[0.01]">
+                        <td class="px-6 py-4">
+                            <p class="text-white font-mono text-xs">${pedido.id.substring(0,8)}...</p>
+                            <p class="text-[9px] text-gray-500">${new Date(pedido.creado_el).toLocaleDateString()}</p>
+                        </td>
+                        <td class="px-6 py-4 text-[10px] text-gray-400 font-mono">${pedido.user_id.substring(0,8)}...</td>
+                        <td class="px-6 py-4 text-[#facc15] font-black italic">${pedido.total}€</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border ${pedido.estado === 'Pagado' || pedido.estado === 'Enviado' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20'}">
+                                ${pedido.estado || 'Pendiente'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                pedidosCount.innerText = `0 Pedidos`;
+                pedidosBody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 text-xs uppercase tracking-widest">No hay pedidos registrados</td></tr>`;
+            }
+        }
+
+        // 2. Cargar Clientes de forma segura en el navegador
+        const { data: clientes, error: errCli } = await supabase.from('profiles').select('*').order('id', { ascending: false });
+        
+        if (errCli) console.error("🛑 Error de Supabase en Clientes:", errCli);
+        console.log("👥 Clientes recibidos:", clientes);
+
+        const clientesBody = document.getElementById('clientes-body');
+        const clientesCount = document.getElementById('clientes-count');
+        
+        if (clientesBody && clientesCount) {
+            if (clientes && clientes.length > 0) {
+                clientesCount.innerText = `${clientes.length} Usuarios`;
+                clientesBody.innerHTML = clientes.map(cliente => `
+                    <tr class="border-b border-white/5 hover:bg-white/[0.01]">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-xs">
+                                    ${cliente.name ? cliente.name.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <p class="text-white font-bold text-sm">${cliente.name || 'Sin nombre'}</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-gray-300">
+                            <div class="flex flex-col">
+                                <span class="text-white font-bold">${cliente.email || 'No email'}</span>
+                                <span class="text-gray-500">${cliente.phone || 'Sin tlf'}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-gray-400 truncate max-w-xs">${cliente.address || 'No especificada'}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="px-4 py-2 bg-white/5 text-white border border-white/10 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-[#facc15] hover:text-black transition-all">
+                                Ver Ficha
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                clientesCount.innerText = `0 Usuarios`;
+                clientesBody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 text-xs uppercase tracking-widest">No hay clientes registrados</td></tr>`;
+            }
+        }
+    };
+
+    // --- LÓGICA DE PESTAÑAS (TABS PRINCIPALES) ---
+    const setupTabs = () => {
+        const tabs = [
+            { btn: document.getElementById('btn-tab-inventario'), content: document.getElementById('tab-inventario') },
+            { btn: document.getElementById('btn-tab-pedidos'), content: document.getElementById('tab-pedidos') },
+            { btn: document.getElementById('btn-tab-crm'), content: document.getElementById('tab-crm') }
+        ];
+
+        tabs.forEach(tab => {
+            tab.btn?.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.btn?.classList.remove('bg-[#facc15]', 'text-black');
+                    t.btn?.classList.add('bg-white/5', 'text-white');
+                    t.content?.classList.add('hidden');
+                    t.content?.classList.remove('block');
+                });
+                tab.btn?.classList.add('bg-[#facc15]', 'text-black');
+                tab.btn?.classList.remove('bg-white/5', 'text-white');
+                tab.content?.classList.remove('hidden');
+                tab.content?.classList.add('block');
+            });
+        });
+    };
+
+    // --- LÓGICA DE FILTROS DEL INVENTARIO ---
+    const setupFilters = () => {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const rows = document.querySelectorAll('.product-row');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-[#facc15]', 'text-black', 'active');
+                    b.classList.add('bg-[#1a1a1a]', 'text-gray-400');
+                });
+                btn.classList.remove('bg-[#1a1a1a]', 'text-gray-400');
+                btn.classList.add('bg-[#facc15]', 'text-black', 'active');
+
+                const filterValue = btn.getAttribute('data-filter');
+
+                rows.forEach(row => {
+                    const tipo = row.getAttribute('data-tipo') || '';
+                    const cat = row.getAttribute('data-cat') || '';
+                    
+                    if (filterValue === 'all') {
+                        (row as HTMLElement).style.display = '';
+                    } else if (filterValue === 'ropa') {
+                        const ropaTypes = ['camisetas', 'sudaderas', 'chaquetas', 'chalecos'];
+                        if (ropaTypes.includes(tipo) || cat === 'ropa') {
+                            (row as HTMLElement).style.display = '';
+                        } else {
+                            (row as HTMLElement).style.display = 'none';
+                        }
+                    } else {
+                        if (tipo.includes(filterValue!) || cat.includes(filterValue!)) {
+                            (row as HTMLElement).style.display = '';
+                        } else {
+                            (row as HTMLElement).style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    };
+
+    // --- LÓGICA DEL FORMULARIO DE INVENTARIO ---
     const form = document.getElementById('admin-form') as HTMLFormElement;
     const submitBtn = document.getElementById('submit-btn');
     const cancelBtn = document.getElementById('cancel-edit');
@@ -171,13 +386,11 @@ const { data: initialProducts } = await supabase
     const showMsg = (text: string, isError = false) => {
         if (!statusMsg || !statusText) return;
         statusMsg.classList.remove('hidden', 'bg-green-500/10', 'border-green-500/50', 'text-green-400', 'bg-red-500/10', 'border-red-500/50', 'text-red-400');
-        
         if (isError) {
             statusMsg.classList.add('bg-red-500/10', 'border-red-500/50', 'text-red-400');
         } else {
             statusMsg.classList.add('bg-green-500/10', 'border-green-500/50', 'text-green-400');
         }
-        
         statusText.innerText = text;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -188,7 +401,7 @@ const { data: initialProducts } = await supabase
         if (submitBtn) submitBtn.innerText = "Publicar Producto";
         cancelBtn?.classList.add('hidden');
         idInput.readOnly = false;
-        (document.getElementById('form-title') as HTMLElement).innerText = "Gestión de Inventario";
+        (document.getElementById('form-title') as HTMLElement).innerText = "Añadir Nuevo Artículo";
     };
 
     const setupDeleteButtons = () => {
@@ -196,9 +409,7 @@ const { data: initialProducts } = await supabase
             btn.addEventListener('click', async () => {
                 const id = btn.getAttribute('data-id');
                 if (!confirm(`¿Estás seguro de eliminar el producto ${id}?`)) return;
-
                 const { error } = await supabase.from('productos').delete().eq('id', id);
-                
                 if (error) {
                     showMsg("Error al eliminar: " + error.message, true);
                 } else {
@@ -213,14 +424,14 @@ const { data: initialProducts } = await supabase
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const p = JSON.parse(btn.getAttribute('data-product')!);
-                
                 idInput.value = p.id;
-                idInput.readOnly = true; // Cambiado a readOnly para que conserve el valor al enviar
+                idInput.readOnly = true;
                 (document.getElementById('prod-nombre') as HTMLInputElement).value = p.nombre;
                 (document.getElementById('prod-precio') as HTMLInputElement).value = p.precio;
+                (document.getElementById('prod-stock') as HTMLInputElement).value = p.stock || 0;
                 (document.getElementById('prod-genero') as HTMLSelectElement).value = p.genero;
                 (document.getElementById('prod-cat') as HTMLSelectElement).value = p.cat || "Urban Essentials";
-                (document.getElementById('prod-tipo') as HTMLSelectElement).value = p.tipo;
+                (document.getElementById('prod-tipo') as HTMLInputElement).value = p.tipo;
                 (document.getElementById('prod-imagen') as HTMLInputElement).value = p.imagen;
                 (document.getElementById('prod-desc') as HTMLTextAreaElement).value = p.descripcion;
 
@@ -236,14 +447,14 @@ const { data: initialProducts } = await supabase
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const isEdit = editModeInput.value === "true";
-        
         const payload = {
             id: idInput.value,
             nombre: (document.getElementById('prod-nombre') as HTMLInputElement).value,
             precio: parseFloat((document.getElementById('prod-precio') as HTMLInputElement).value),
+            stock: parseInt((document.getElementById('prod-stock') as HTMLInputElement).value),
             genero: (document.getElementById('prod-genero') as HTMLSelectElement).value,
             cat: (document.getElementById('prod-cat') as HTMLSelectElement).value,
-            tipo: (document.getElementById('prod-tipo') as HTMLSelectElement).value,
+            tipo: (document.getElementById('prod-tipo') as HTMLInputElement).value,
             imagen: (document.getElementById('prod-imagen') as HTMLInputElement).value,
             descripcion: (document.getElementById('prod-desc') as HTMLTextAreaElement).value,
         };
@@ -271,11 +482,29 @@ const { data: initialProducts } = await supabase
 
     cancelBtn?.addEventListener('click', resetForm);
 
-    const init = () => {
+    // --- LÓGICA DE SEGURIDAD (GUARDIÁN) ---
+    const checkAdminAccess = async () => {
+        document.body.style.display = 'none';
+
+        const { data: { user }, error } = await supabase.auth.getUser();
+        const ADMIN_EMAIL = "ivangamezcastro@gmail.com"; 
+
+        if (error || !user || user.email !== ADMIN_EMAIL) {
+            console.warn("Acceso denegado: Área restringida.");
+            window.location.href = "/admin-login"; 
+            return;
+        }
+
+        document.body.style.display = 'block';
+        setupTabs();
+        setupFilters(); 
         setupDeleteButtons();
         setupEditButtons();
+
+        // ¡Cargamos pedidos y clientes ahora que sabemos que eres tú!
+        await loadSecureData();
     };
 
-    init();
-    document.addEventListener('astro:after-swap', init);
+    checkAdminAccess();
+    document.addEventListener('astro:after-swap', checkAdminAccess);
 </script>

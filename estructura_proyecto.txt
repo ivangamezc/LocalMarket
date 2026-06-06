@@ -1,0 +1,47 @@
+src
+├── assets
+│   ├── astro.svg
+│   └── background.svg
+├── components
+│   ├── Breadcrumbs.astro
+│   ├── Card.astro
+│   ├── Carousel.astro
+│   ├── Categories.astro
+│   ├── Faq.astro
+│   ├── Footer.astro
+│   ├── Hero.astro
+│   ├── Lookbook.astro
+│   ├── Manifiesto.astro
+│   ├── Newsletter.astro
+│   ├── Protocols.astro
+│   ├── Reviews.astro
+│   ├── Telemetry.astro
+│   └── Welcome.astro
+├── data
+│   └── products.json
+├── layouts
+│   └── Layout.astro
+├── lib
+│   └── supabaseClient.js
+├── pages
+│   ├── accesorios.astro
+│   ├── admin.astro
+│   ├── calzado.astro
+│   ├── carrito.astro
+│   ├── confirmacion.astro
+│   ├── contacto.astro
+│   ├── devoluciones.astro
+│   ├── envios.astro
+│   ├── faq.astro
+│   ├── index.astro
+│   ├── login.astro
+│   ├── mi-cuenta.astro
+│   ├── privacidad.astro
+│   ├── productos
+│   │   └── [id].astro
+│   ├── ropa.astro
+│   └── terminos.astro
+├── store
+│   └── cartStore.js
+└── styles
+    └── global.css

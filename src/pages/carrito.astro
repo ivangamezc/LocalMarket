@@ -7,7 +7,7 @@ import Layout from '../layouts/Layout.astro';
     
     <div class="flex items-center gap-3 mb-12 animate-reveal">
       <span class="w-12 h-[1px] bg-[#facc15]"></span>
-      <h1 class="text-5xl font-black uppercase italic tracking-tighter text-white">Tu Carrito</h1>
+      <h1 class="text-5xl font-black uppercase italic text-white tracking-tighter">Tu Carrito</h1>
     </div>
 
     <div id="cart-container" class="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -32,12 +32,27 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
-          <button 
-            id="checkout-btn"
-            class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95"
-          >
+          <button id="checkout-btn" class="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95">
             Finalizar Compra
           </button>
+
+          <div id="checkout-form" class="hidden mt-8 pt-8 border-t border-white/10 space-y-4 animate-reveal">
+            <div>
+              <label class="text-[9px] text-gray-400 uppercase tracking-widest">Dirección de Envío</label>
+              <input type="text" id="ship-address" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white text-sm mt-1" placeholder="Tu calle y número">
+            </div>
+            <div>
+              <label class="text-[9px] text-gray-400 uppercase tracking-widest">Método de Pago</label>
+              <select id="pay-method" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white text-sm mt-1">
+                <option value="tarjeta">Tarjeta de Crédito</option>
+                <option value="bizum">Bizum</option>
+                <option value="reembolso">Contra Reembolso</option>
+              </select>
+            </div>
+            <button id="confirm-purchase-btn" class="w-full py-4 bg-[#facc15] text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-white transition-all">
+              Confirmar Pedido
+            </button>
+          </div>
           
           <a href="/" class="block text-center mt-6 text-[9px] uppercase tracking-widest text-white/30 hover:text-white transition-colors">
             ← Continuar comprando
@@ -80,11 +95,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     if (listElement) {
-      listElement.innerHTML = items.map((item: any, index: number) => {
-        const qty = item.cantidad || 1;
-        const totalPorItem = (parseFloat(item.precio) * qty).toFixed(2);
-        return `
-        <div class="flex items-center gap-6 bg-white/[0.04] border border-white/10 p-6 rounded-[1.5rem] mb-4">
+      listElement.innerHTML = items.map((item: any, index: number) => `
+        <div class="flex items-center gap-6 bg-white/[0.04] border border-white/10 p-6 rounded-[1.5rem]">
           <img src="${item.imagen}" class="w-24 h-24 object-cover rounded-xl border border-white/5 bg-[#111]" />
           <div class="flex-grow">
             <h3 class="font-black uppercase italic text-base text-white tracking-wide mb-2">${item.nombre}</h3>
@@ -92,14 +104,13 @@ import Layout from '../layouts/Layout.astro';
               <p class="text-[#facc15] font-mono text-sm font-bold">${item.precio}€</p>
               <div class="flex items-center bg-black/40 border border-white/10 rounded-lg overflow-hidden">
                 <button class="qty-btn-minus px-3 py-1 text-white/50 hover:text-white" data-index="${index}">-</button>
-                <span class="text-white font-black text-xs w-8 text-center">${qty}</span>
+                <span class="text-white font-black text-xs w-8 text-center">${item.cantidad || 1}</span>
                 <button class="qty-btn-plus px-3 py-1 text-white/50 hover:text-white" data-index="${index}">+</button>
               </div>
             </div>
           </div>
-          <button class="remove-item-btn bg-red-500/10 text-red-500 px-6 py-3 rounded-lg border border-red-500/20" data-index="${index}">Eliminar</button>
-        </div>`;
-      }).join('');
+          <button class="remove-item-btn bg-red-500/10 text-red-500 px-6 py-3 rounded-lg border border-red-500/20 text-[10px] font-black uppercase" data-index="${index}">Eliminar</button>
+        </div>`).join('');
     }
 
     const totalString = `${cartTotal.get().toFixed(2)}€`;
@@ -111,26 +122,44 @@ import Layout from '../layouts/Layout.astro';
     document.querySelectorAll('.qty-btn-plus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), 1)));
   };
 
-  // Lógica de Finalizar Compra
-  document.getElementById('checkout-btn')?.addEventListener('click', async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-        alert("Debes iniciar sesión para finalizar la compra.");
-        return window.location.href = '/login';
-    }
+  // Lógica de Checkout
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const checkoutForm = document.getElementById('checkout-form');
+  const confirmBtn = document.getElementById('confirm-purchase-btn');
 
-    const total = cartTotal.get();
+  checkoutBtn?.addEventListener('click', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { alert("Debes iniciar sesión."); return window.location.href = '/login'; }
+    
+    // Autocompletar dirección si existe en profile
+    const { data: profile } = await supabase.from('profiles').select('address').eq('id', session.user.id).single();
+    if (profile?.address) (document.getElementById('ship-address') as HTMLInputElement).value = profile.address;
+
+    checkoutForm?.classList.remove('hidden');
+    checkoutBtn.classList.add('hidden');
+  });
+
+  confirmBtn?.addEventListener('click', async () => {
+    const address = (document.getElementById('ship-address') as HTMLInputElement).value;
+    const payment = (document.getElementById('pay-method') as HTMLSelectElement).value;
+
+    if (!address) { alert("Introduce una dirección de envío"); return; }
+
+    const { data: { session } } = await supabase.auth.getSession();
     const { error } = await supabase.from('pedidos').insert([{ 
-        user_id: session.user.id, 
+        user_id: session?.user.id, 
         total: cartTotal.get(), 
         productos: cartItems.get(), 
-        estado: 'Pagado' 
+        estado: 'Pagado',
+        direccion_envio: address,
+        metodo_pago: payment
     }]);
 
     if (error) alert("Error: " + error.message);
     else {
-        
-        window.location.href = '/confirmacion';
+        alert("¡Pedido realizado con éxito!");
+        cartItems.set([]); // Vaciar carrito
+        window.location.href = '/mi-cuenta';
     }
   });
 

@@ -33,6 +33,7 @@ import Layout from '../layouts/Layout.astro';
                         <div class="space-y-4">
                             <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Nombre</p><p class="text-sm font-bold text-white truncate" id="view-name">...</p></div>
                             <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Email</p><p class="text-sm font-bold text-white truncate" id="view-email">...</p></div>
+                            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Teléfono</p><p class="text-sm font-bold text-white truncate" id="view-phone">...</p></div>
                             <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección de Envío</p><p class="text-sm font-bold text-white" id="view-address">...</p></div>
                         </div>
                     </div>
@@ -43,6 +44,7 @@ import Layout from '../layouts/Layout.astro';
                     <h2 class="text-xs font-black uppercase tracking-[0.3em] text-[#facc15] mb-6">Editando Perfil</h2>
                     <div class="space-y-3">
                         <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Nombre</label><input type="text" id="edit-name" required class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm"></div>
+                        <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Teléfono</label><input type="text" id="edit-phone" class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm"></div>
                         <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección</label><textarea id="edit-address" required rows="2" class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm resize-none"></textarea></div>
                     </div>
                     <div class="flex gap-3 mt-4">
@@ -63,61 +65,73 @@ import Layout from '../layouts/Layout.astro';
     const cancelBtn = document.getElementById('cancel-edit-btn');
     const profileView = document.getElementById('profile-view');
     const pedidosContainer = document.getElementById('pedidos-container');
+    const logoutBtn = document.getElementById('logout-btn');
 
     editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
     cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0'); editForm?.classList.add('hidden'); });
 
+    logoutBtn?.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/login';
+    });
+
     async function loadData() {
+        // Retraso técnico para asegurar que la sesión esté lista tras la navegación
+        await new Promise(resolve => setTimeout(resolve, 300));
+
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return window.location.href = '/login';
 
         // Cargar Perfil
         const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-        document.getElementById('view-name')!.innerText = profile?.name || 'Usuario';
-        (document.getElementById('edit-name') as HTMLInputElement).value = profile?.name || '';
-        document.getElementById('view-address')!.innerText = profile?.address || 'Sin dirección';
-        (document.getElementById('edit-address') as HTMLTextAreaElement).value = profile?.address || '';
-        document.getElementById('user-greeting')!.innerText = `Hola, ${profile?.name || 'Usuario'}`;
+        
+        if (profile) {
+            const viewName = document.getElementById('view-name');
+            const viewEmail = document.getElementById('view-email');
+            const viewPhone = document.getElementById('view-phone');
+            const viewAddress = document.getElementById('view-address');
+            const greeting = document.getElementById('user-greeting');
 
-        // Cargar Pedidos Detallados
+            if(viewName) viewName.innerText = profile.name || 'Usuario';
+            if(viewEmail) viewEmail.innerText = session.user.email || 'Sin email';
+            if(viewPhone) viewPhone.innerText = profile.phone || 'No especificado';
+            if(viewAddress) viewAddress.innerText = profile.address || 'Sin dirección';
+            if(greeting) greeting.innerText = `Hola, ${profile.name || 'Usuario'}`;
+            
+            (document.getElementById('edit-name') as HTMLInputElement).value = profile.name || '';
+            (document.getElementById('edit-phone') as HTMLInputElement).value = profile.phone || '';
+            (document.getElementById('edit-address') as HTMLTextAreaElement).value = profile.address || '';
+        }
+
+        // Cargar Pedidos
         const { data: pedidos } = await supabase.from('pedidos').select('*').eq('user_id', session.user.id).order('creado_el', { ascending: false });
 
-        if (pedidos && pedidos.length > 0) {
-            pedidosContainer!.innerHTML = pedidos.map(p => {
-                const fecha = new Date(p.creado_el).toLocaleDateString('es-ES');
-                const productosHTML = p.productos?.map((prod: any) => `
-                    <div class="flex items-center gap-4 mt-3 bg-white/5 p-2 rounded-lg">
-                        <img src="${prod.imagen}" class="w-10 h-10 object-cover rounded-md" />
-                        <div>
-                            <p class="text-[10px] text-white font-bold uppercase">${prod.nombre}</p>
-                            <p class="text-[9px] text-gray-400">Cantidad: ${prod.cantidad || 1}</p>
-                        </div>
-                    </div>
-                `).join('') || '<p class="text-[10px] text-gray-500">Sin detalles de productos</p>';
-
-                return `
+        if (pedidosContainer) {
+            if (pedidos && pedidos.length > 0) {
+                pedidosContainer.innerHTML = pedidos.map(p => `
                     <div class="bg-black/50 border border-white/5 p-6 rounded-2xl mb-4">
                         <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-3">
-                            <div><p class="text-white font-bold text-sm">Pedido #${p.id.slice(0,8)}</p><p class="text-[9px] text-gray-500 uppercase">${fecha}</p></div>
+                            <div><p class="text-white font-bold text-sm">Pedido #${p.id.slice(0,8)}</p><p class="text-[9px] text-gray-500 uppercase">${new Date(p.creado_el).toLocaleDateString('es-ES')}</p></div>
                             <p class="text-[#facc15] font-black text-lg">${p.total}€</p>
                         </div>
-                        ${productosHTML}
                     </div>
-                `;
-            }).join('');
-        } else {
-            pedidosContainer!.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
+                `).join('');
+            } else {
+                pedidosContainer.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
+            }
         }
     }
+
+    document.addEventListener('astro:page-load', loadData);
 
     editForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const { data: { session } } = await supabase.auth.getSession();
         const name = (document.getElementById('edit-name') as HTMLInputElement).value;
+        const phone = (document.getElementById('edit-phone') as HTMLInputElement).value;
         const address = (document.getElementById('edit-address') as HTMLTextAreaElement).value;
-        await supabase.from('profiles').update({ name, address }).eq('id', session?.user.id);
+        
+        await supabase.from('profiles').update({ name, phone, address }).eq('id', session?.user.id);
         location.reload();
     });
-
-    loadData();
 </script>
