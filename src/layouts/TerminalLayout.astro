@@ -1,0 +1,39 @@
+---
+// src/layouts/TerminalLayout.astro
+import '../styles/global.css';
+
+interface Props {
+    title: string;
+}
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{title}</title>
+    </head>
+    <body class="bg-[#030303] h-full m-0 p-0 text-white font-sans selection:bg-[#facc15] selection:text-black">
+        
+        <a 
+            href="/" 
+            id="back-home-btn"
+            class="fixed top-8 left-8 z-[9999] flex items-center gap-2 text-[9px] font-mono text-white/30 hover:text-[#facc15] transition-all uppercase tracking-[0.2em] cursor-pointer"
+        >
+            <span class="border border-white/20 px-2 py-1 group-hover:border-[#facc15]/50 transition-colors">←</span>
+            RETORNAR_A_ROOT
+        </a>
+
+        <slot />
+
+        <script>
+            const btn = document.getElementById('back-home-btn');
+            btn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/';
+            });
+        </script>
+    </body>
+</html>

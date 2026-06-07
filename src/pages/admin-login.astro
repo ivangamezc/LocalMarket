@@ -1,59 +1,75 @@
 ---
-import Layout from '../layouts/Layout.astro';
+// src/pages/admin-login.astro
+import TerminalLayout from '../layouts/TerminalLayout.astro';
 ---
 
-<Layout title="Terminal de Acceso | LocalMarket">
-    <section class="px-8 py-20 mx-auto min-h-screen flex flex-col justify-center items-center bg-black">
+<TerminalLayout title="TERMINAL_ACCESO // LOCALMKT">
+    <section class="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-[#030303]">
         
-        <div class="w-full max-w-sm border border-red-500/30 bg-[#0a0a0a] p-8 rounded-2xl shadow-[0_0_50px_rgba(239,68,68,0.1)]">
-            <div class="mb-8 text-center">
-                <div class="flex justify-center mb-4">
-                    <span class="px-3 py-1 bg-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-[0.4em] rounded-full border border-red-500/50">
-                        Área Restringida
-                    </span>
-                </div>
-                <h1 class="text-2xl font-black uppercase text-white tracking-widest">
-                    Acceso Admin
-                </h1>
-            </div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(250,204,21,0.05)_0%,_transparent_70%)]"></div>
 
-            <form id="admin-login-form" class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em]">Credencial (Email)</label>
-                    <input 
-                        type="email" 
-                        id="admin-email" 
-                        required 
-                        placeholder="ivangamezcastro@gmail.com" 
-                        class="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:border-red-500 outline-none transition-all font-mono text-xs"
-                    >
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em]">Código de Seguridad</label>
-                    <input 
-                        type="password" 
-                        id="admin-password" 
-                        required 
-                        placeholder="••••••" 
-                        class="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:border-red-500 outline-none transition-all font-mono text-xs"
-                    >
-                </div>
+        <div class="relative w-full max-w-md px-6">
+            <div class="absolute inset-0 bg-[#facc15]/10 blur-[120px] rounded-full"></div>
+            
+            <div class="relative bg-black/50 backdrop-blur-2xl border border-white/10 p-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                 
-                <p id="error-msg" class="hidden text-red-500 text-[10px] font-bold text-center uppercase tracking-widest mt-4"></p>
+                <div class="flex flex-col items-center mb-10">
+                    <div class="w-16 h-16 border border-[#facc15]/30 rounded-full flex items-center justify-center mb-6 bg-[#facc15]/5">
+                        <div class="w-2.5 h-2.5 bg-[#facc15] animate-pulse"></div>
+                    </div>
+                    <h1 class="text-2xl font-black uppercase italic text-white tracking-[0.2em]">ACCESO ADMIN</h1>
+                    <p class="text-[10px] text-gray-500 font-mono mt-2 tracking-[0.3em]">LOCALMKT // SECURE_NODE_01</p>
+                </div>
 
-                <button type="submit" id="admin-login-btn" class="w-full mt-6 py-4 bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.3em] rounded-lg hover:bg-red-500 transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-                    Desbloquear Terminal
-                </button>
-            </form>
+                <form id="admin-login-form" class="space-y-8">
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-[#facc15]/70 uppercase tracking-[0.3em]">Usuario / Credencial</label>
+                        <input 
+                            type="email" 
+                            id="admin-email" 
+                            required 
+                            placeholder="ADMIN_ID" 
+                            class="w-full bg-black/40 border border-white/10 rounded-lg px-5 py-4 text-white focus:border-[#facc15] outline-none transition-all font-mono text-sm placeholder:text-white/10"
+                        >
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-[#facc15]/70 uppercase tracking-[0.3em]">Código de Seguridad</label>
+                        <input 
+                            type="password" 
+                            id="admin-password" 
+                            required 
+                            placeholder="••••••" 
+                            class="w-full bg-black/40 border border-white/10 rounded-lg px-5 py-4 text-white focus:border-[#facc15] outline-none transition-all font-mono text-sm placeholder:text-white/10"
+                        >
+                    </div>
+                    
+                    <p id="error-msg" class="hidden text-[#facc15] text-[10px] font-bold uppercase tracking-widest text-center py-3 bg-[#facc15]/10 border border-[#facc15]/20 rounded"></p>
+
+                    <button 
+                        type="submit" 
+                        id="admin-login-btn" 
+                        class="w-full mt-4 py-5 bg-transparent border border-[#facc15] text-[#facc15] font-black uppercase text-[11px] tracking-[0.3em] hover:bg-[#facc15] hover:text-black transition-all shadow-[0_0_20px_rgba(250,204,21,0.15)] rounded-lg"
+                    >
+                        DESBLOQUEAR TERMINAL_
+                    </button>
+                </form>
+
+                <div class="mt-12 flex justify-between items-center text-[9px] text-white/20 font-mono">
+                    <span>V.2.0.26</span>
+                    <span>ENCRYPTED_STREAM</span>
+                </div>
+            </div>
         </div>
     </section>
-</Layout>
+</TerminalLayout>
 
 <script>
     import { supabase } from '../lib/supabaseClient';
 
     const loginForm = document.getElementById('admin-login-form') as HTMLFormElement;
-    const loginBtn = document.getElementById('admin-login-btn');
+    const loginBtn = document.getElementById('admin-login-btn') as HTMLButtonElement;
     const errorMsg = document.getElementById('error-msg');
 
     loginForm?.addEventListener('submit', async (e) => {
@@ -64,37 +80,34 @@ import Layout from '../layouts/Layout.astro';
         const ADMIN_EMAIL = "ivangamezcastro@gmail.com";
 
         if (errorMsg) errorMsg.classList.add('hidden');
-        if (loginBtn) loginBtn.innerText = "VERIFICANDO CREDENCIALES...";
+        if (loginBtn) loginBtn.innerText = "VERIFICANDO...";
 
-        // 1. Primera barrera: Comprobar que intenta usar tu correo
+        // 1. Verificación de identidad
         if (email !== ADMIN_EMAIL) {
             if (errorMsg) {
-                errorMsg.innerText = "ACCESO DENEGADO: Usuario no autorizado.";
+                errorMsg.innerText = "ACCESO DENEGADO";
                 errorMsg.classList.remove('hidden');
             }
-            if (loginBtn) loginBtn.innerText = "Desbloquear Terminal";
+            if (loginBtn) loginBtn.innerText = "DESBLOQUEAR TERMINAL_";
             return;
         }
 
-        // 2. Segunda barrera: Supabase comprueba tu contraseña real (123456)
+        // 2. Validación Supabase
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         
         if (error) {
             if (errorMsg) {
-                errorMsg.innerText = "ACCESO DENEGADO: Contraseña incorrecta.";
+                errorMsg.innerText = "CREDENCIALES INVÁLIDAS";
                 errorMsg.classList.remove('hidden');
             }
-            if (loginBtn) loginBtn.innerText = "Desbloquear Terminal";
+            if (loginBtn) loginBtn.innerText = "DESBLOQUEAR TERMINAL_";
         } else {
-            // Si todo es correcto, entras al ERP
             if (loginBtn) {
-                loginBtn.innerText = "ACCESO CONCEDIDO ✓";
-                loginBtn.classList.replace('bg-red-600', 'bg-green-600');
-                loginBtn.classList.replace('hover:bg-red-500', 'hover:bg-green-500');
+                loginBtn.innerText = "ACCESO CONCEDIDO";
+                loginBtn.classList.replace('border-[#facc15]', 'border-green-500');
+                loginBtn.classList.replace('text-[#facc15]', 'text-green-500');
             }
-            setTimeout(() => {
-                window.location.href = '/admin';
-            }, 800);
+            setTimeout(() => { window.location.href = '/admin'; }, 800);
         }
     });
 </script>
