@@ -103,8 +103,21 @@ import Layout from '../layouts/Layout.astro';
         const email = (document.getElementById('login-email') as HTMLInputElement).value;
         const password = (document.getElementById('login-password') as HTMLInputElement).value;
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) alert(error.message);
-        else window.location.href = '/mi-cuenta';
+        
+        if (error) {
+            // Disparamos Toast de Error
+            document.dispatchEvent(new CustomEvent('app:toast', { 
+                detail: { msg: 'CREDENCIALES INVÁLIDAS: Verifica tu usuario o contraseña', type: 'error' } 
+            }));
+        } else {
+            // Disparamos Toast de Éxito y damos 1 segundo de margen antes de redirigir
+            document.dispatchEvent(new CustomEvent('app:toast', { 
+                detail: { msg: 'ACCESO CONCEDIDO: Redirigiendo al sistema...', type: 'success' } 
+            }));
+            setTimeout(() => {
+                window.location.href = '/mi-cuenta';
+            }, 1000);
+        }
     });
 
     // 3. Registro Real
@@ -118,10 +131,19 @@ import Layout from '../layouts/Layout.astro';
             email, password, options: { data: { name } } 
         });
 
-        if (error) alert("Error al registrar: " + error.message);
-        else {
-            alert("Registro exitoso. Revisa tu email si es necesario.");
-            window.location.reload();
+        if (error) {
+            // Disparamos Toast de Error
+            document.dispatchEvent(new CustomEvent('app:toast', { 
+                detail: { msg: "ERROR AL REGISTRAR: " + error.message, type: 'error' } 
+            }));
+        } else {
+            // Disparamos Toast de Éxito
+            document.dispatchEvent(new CustomEvent('app:toast', { 
+                detail: { msg: "REGISTRO EXITOSO: Bienvenido a LocalMarket", type: 'success' } 
+            }));
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         }
     });
 </script>

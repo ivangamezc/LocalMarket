@@ -67,12 +67,7 @@ const currentPath = Astro.url.pathname;
 
         <Footer />
 
-        <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] pointer-events-none opacity-0 transition-all duration-500 transform translate-y-10">
-            <div class="bg-white text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/20">
-                <span class="text-[#facc15] bg-black rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold">✓</span>
-                <p class="uppercase text-[10px] font-black tracking-[0.2em]">Producto añadido al kit</p>
-            </div>
-        </div>
+        <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
 
         <script>
             import { cartItems, addCartItem } from '../store/cartStore.js';
@@ -100,23 +95,58 @@ const currentPath = Astro.url.pathname;
                 lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
             });
 
-            // --- Lógica Toast ---
-            const showToast = () => {
-                const toast = document.getElementById('toast');
-                if (toast) {
-                    toast.classList.remove('opacity-0', 'translate-y-10');
-                    toast.classList.add('opacity-100', 'translate-y-0');
-                    setTimeout(() => {
-                        toast.classList.add('opacity-0', 'translate-y-10');
-                        toast.classList.remove('opacity-100', 'translate-y-0');
-                    }, 3000);
-                }
-            };
+            // --- NUEVO: Motor Global de Toasts ---
+            document.addEventListener('app:toast', (e: any) => {
+                const toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) return;
+                
+                const { msg, type = 'success' } = e.detail;
+                const toast = document.createElement('div');
+                
+                let baseClasses = "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg border bg-[#111] backdrop-blur-md shadow-2xl transform transition-all duration-300 translate-y-10 opacity-0 min-w-[250px]";
+                
+                const typeStyles: any = {
+                    success: "border-[#facc15]/50 text-white",
+                    error: "border-red-500/50 text-white",
+                    info: "border-blue-500/50 text-white"
+                };
+                
+                const icons: any = {
+                    success: `<span class="text-[#facc15] font-black text-lg leading-none">✓</span>`,
+                    error: `<span class="text-red-500 font-black text-lg leading-none">×</span>`,
+                    info: `<span class="text-blue-500 font-black text-lg leading-none">i</span>`
+                };
+
+                toast.className = `${baseClasses} ${typeStyles[type] || typeStyles.info}`;
+                toast.innerHTML = `
+                    ${icons[type] || icons.info}
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${type === 'success' ? 'SYSTEM_LOG' : 'SYS_ALERT'}</span>
+                        <span class="text-xs font-bold font-sans tracking-wide">${msg}</span>
+                    </div>
+                `;
+
+                toastContainer.appendChild(toast);
+
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-10', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            });
 
             const handleCartAdd = (event: any) => {
                 const { product } = event.detail;
                 addCartItem(product);
-                showToast();
+                // Disparamos el nuevo evento global
+                document.dispatchEvent(new CustomEvent('app:toast', { 
+                    detail: { msg: 'Producto añadido al equipo', type: 'success' } 
+                }));
             };
 
             // --- Sistema Partículas ---

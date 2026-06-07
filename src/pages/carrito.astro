@@ -129,7 +129,11 @@ import Layout from '../layouts/Layout.astro';
 
   checkoutBtn?.addEventListener('click', async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { alert("Debes iniciar sesión."); return window.location.href = '/login'; }
+    if (!session) { 
+        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Debes iniciar sesión para comprar', type: 'error' } }));
+        setTimeout(() => window.location.href = '/login', 1500);
+        return; 
+    }
     
     // Autocompletar dirección si existe en profile
     const { data: profile } = await supabase.from('profiles').select('address').eq('id', session.user.id).single();
@@ -143,7 +147,15 @@ import Layout from '../layouts/Layout.astro';
     const address = (document.getElementById('ship-address') as HTMLInputElement).value;
     const payment = (document.getElementById('pay-method') as HTMLSelectElement).value;
 
-    if (!address) { alert("Introduce una dirección de envío"); return; }
+    if (!address) { 
+        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Introduce una dirección de envío', type: 'error' } }));
+        return; 
+    }
+
+    // Feedback visual opcional en el botón mientras procesa
+    const originalText = confirmBtn.innerText;
+    confirmBtn.innerText = "PROCESANDO...";
+    confirmBtn.classList.add('opacity-50', 'pointer-events-none');
 
     const { data: { session } } = await supabase.auth.getSession();
     const { error } = await supabase.from('pedidos').insert([{ 
@@ -155,11 +167,18 @@ import Layout from '../layouts/Layout.astro';
         metodo_pago: payment
     }]);
 
-    if (error) alert("Error: " + error.message);
-    else {
-        alert("¡Pedido realizado con éxito!");
+    if (error) {
+        confirmBtn.innerText = originalText;
+        confirmBtn.classList.remove('opacity-50', 'pointer-events-none');
+        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: "Error: " + error.message, type: 'error' } }));
+    } else {
+        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: '¡Pedido realizado con éxito!', type: 'success' } }));
         cartItems.set([]); // Vaciar carrito
-        window.location.href = '/mi-cuenta';
+        
+        // Retraso para que el usuario pueda ver el toast antes de redirigir
+        setTimeout(() => {
+            window.location.href = '/mi-cuenta';
+        }, 1500);
     }
   });
 
