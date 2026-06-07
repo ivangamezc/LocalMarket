@@ -7,10 +7,10 @@ import Hero from '../components/Hero.astro';
 import Protocols from '../components/Protocols.astro';
 import Categories from '../components/Categories.astro';
 import Carousel from '../components/Carousel.astro';
-import Newsletter from '../components/Newsletter.astro'; // 1. Lo importamos
+import Newsletter from '../components/Newsletter.astro';
 import Reviews from '../components/Reviews.astro';
 import Faq from '../components/Faq.astro';
-import Manifesto from '../components/Manifiesto.astro';
+import Manifesto from '../components/Manifiesto.astro'; // Ajusté el nombre para que coincida con tu import
 
 import { supabase } from '../lib/supabaseClient';
 
@@ -26,39 +26,97 @@ if (error) {
 <Layout title="LocalMarket | Urban Standards">
     <section class="px-8 py-20 max-w-7xl mx-auto overflow-hidden">
         
-        <Hero />
+        <div class="scroll-reveal">
+            <Hero />
+        </div>
         
-        <Carousel products={products || []} />
+        <div class="scroll-reveal delay-100">
+            <Carousel products={products || []} />
+        </div>
 
-        <Manifesto /> 
+        <div class="scroll-reveal">
+            <Manifesto /> 
+        </div>
 
-        <Categories />
+        <div class="scroll-reveal">
+            <Categories />
+        </div>
 
-        <div class="mt-48">
+        <div class="scroll-reveal mt-48">
             <Lookbook />
         </div>
 
-        <Protocols />
+        <div class="scroll-reveal">
+            <Protocols />
+        </div>
 
-        <Reviews />
-        <Faq />
+        <div class="scroll-reveal">
+            <Reviews />
+        </div>
+        
+        <div class="scroll-reveal">
+            <Faq />
+        </div>
 
-        <Newsletter />
+        <div class="scroll-reveal">
+            <Newsletter />
+        </div>
 
-        <div class="mt-20 -mx-8 reveal">
+        <div class="scroll-reveal mt-20 -mx-8">
             <Telemetry />
         </div>
 
     </section>
 </Layout>
 
+<script>
+    const initScrollReveal = () => {
+        // Configuramos el observador
+        const observerOptions = {
+            root: null, // usa el viewport del navegador
+            rootMargin: '0px',
+            threshold: 0.15 // El componente empezará a aparecer cuando el 15% de su cuerpo sea visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Cuando entra en pantalla, le añadimos la clase que dispara la animación
+                    entry.target.classList.add('revealed');
+                    
+                    // IMPORTANTE: Dejamos de observarlo para ahorrar recursos (solo se anima una vez)
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        // Buscamos todos los elementos con la clase scroll-reveal y los observamos
+        const elements = document.querySelectorAll('.scroll-reveal');
+        elements.forEach(el => observer.observe(el));
+    };
+
+    // Soportamos las View Transitions de Astro
+    document.addEventListener('astro:page-load', initScrollReveal);
+</script>
+
 <style>
-    .reveal {
-        animation: reveal-up 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+    /* 1. Estado inicial: Oculto y 40px hacia abajo */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        /* Usamos transition en lugar de animation para un rendimiento más suave con el JS */
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform; /* Le avisa a la GPU para que lo renderice fluido */
     }
 
-    @keyframes reveal-up {
-        from { opacity: 0; transform: translateY(40px); }
-        to { opacity: 1; transform: translateY(0); }
+    /* 2. Estado final: Totalmente visible y en su posición original */
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
     }
+
+    /* Clases de utilidad para hacer que elementos contiguos no aparezcan exactamente a la vez (efecto cascada) */
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
 </style>

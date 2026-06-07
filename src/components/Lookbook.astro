@@ -2,7 +2,7 @@
 // src/components/Lookbook.astro
 ---
 
-<section class="py-32 px-8 max-w-7xl mx-auto border-y border-white/5 bg-white/[0.01] relative overflow-hidden reveal">
+<section class="py-32 px-4 sm:px-8 max-w-7xl mx-auto border-y border-white/5 bg-white/[0.01] relative overflow-hidden reveal">
     
     <div class="absolute top-10 right-[-5%] select-none pointer-events-none z-0">
         <span class="text-[18rem] md:text-[28rem] font-black italic leading-none tracking-tighter 
@@ -11,35 +11,34 @@
         </span>
     </div>
 
-    <div class="relative z-10 mb-20">
+    <div class="relative z-10 mb-12 md:mb-20">
         <div class="flex items-center gap-3 mb-6">
             <span class="w-12 h-[1px] bg-[#facc15]"></span>
             <span class="text-[#facc15] text-[10px] font-black uppercase tracking-[0.6em]">CREAMOS TU ESTILO //</span>
         </div>
         
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <h2 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-[0.9]">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
+            <h2 class="text-5xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-[0.9]">
                 TACTICAL <br/> <span class="text-white/10">OUTFIT_</span>
             </h2>
             
-            <!-- Selector de Género añadido -->
-            <div class="flex bg-[#111] p-1 rounded-full border border-white/10">
-                <button class="gen-btn px-8 py-3 rounded-full text-[10px] font-black tracking-widest uppercase transition-all bg-[#facc15] text-black" data-gen="hombre">HOMBRE</button>
-                <button class="gen-btn px-8 py-3 rounded-full text-[10px] font-black tracking-widest uppercase transition-all text-white/50" data-gen="mujer">MUJER</button>
+            <div class="flex bg-[#111] p-1 rounded-full border border-white/10 w-fit">
+                <button class="gen-btn px-6 py-2.5 rounded-full text-[9px] font-black tracking-widest uppercase transition-all duration-300 bg-[#facc15] text-black shadow-[0_0_15px_rgba(250,204,21,0.2)] scale-105" data-gen="hombre">HOMBRE</button>
+                <button class="gen-btn px-6 py-2.5 rounded-full text-[9px] font-black tracking-widest uppercase transition-all duration-300 text-white/40 hover:text-white" data-gen="mujer">MUJER</button>
             </div>
         </div>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-10 min-h-[580px] relative z-10" id="lookbook-grid">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-10 min-h-[400px] md:min-h-[580px] relative z-10" id="lookbook-grid">
     </div>
 
-    <div class="flex flex-col md:flex-row justify-center items-center gap-6 mt-20 relative z-20">
-        <button id="generate-lookbook" class="cat-link-primeGroup group">
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-6 mt-12 md:mt-20 relative z-20 w-full sm:w-auto">
+        <button id="generate-lookbook" class="cat-link-primeGroup group w-full sm:w-auto text-center">
             <span class="relative z-10 font-black">CREAR OUTFIT_</span>
             <div class="scanner-effect"></div>
         </button>
 
-        <button id="add-outfit-cart" class="cat-link-primeGroup group !bg-white !text-black !filter-none hover:!bg-[#facc15] transition-colors">
+        <button id="add-outfit-cart" class="cat-link-primeGroup group w-full sm:w-auto text-center !bg-white !text-black !filter-none hover:!bg-[#facc15] transition-colors">
             <span class="relative z-10 font-black">AÑADIR LOOK COMPLETO +</span>
             <div class="scanner-effect"></div>
         </button>
@@ -80,21 +79,27 @@
             
             setTimeout(() => {
                 grid.innerHTML = currentCombo.map((item, index) => `
-                    <div class="premium-card group relative bg-[#151515]/80 backdrop-blur-sm rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl" 
+                    <div class="premium-card group relative bg-[#151515]/80 backdrop-blur-sm rounded-xl md:rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl flex flex-row md:flex-col h-28 md:h-auto w-full" 
                          style="animation-delay: ${index * 0.15}s">
-                        <div class="absolute top-8 left-8 z-20 flex flex-col">
-                            <span class="text-[8px] font-mono text-[#facc15] tracking-[0.2em] mb-1 uppercase">Step 0${index + 1}</span>
-                            <span class="text-[10px] font-mono text-white/30 uppercase tracking-tighter">${item.tipo}</span>
+                        
+                        <div class="absolute top-2.5 left-3 md:top-8 md:left-8 z-20 flex flex-col pointer-events-none">
+                            <span class="text-[7px] md:text-[8px] font-mono text-[#facc15] tracking-[0.2em] mb-1 uppercase drop-shadow-md">Step 0${index + 1}</span>
                         </div>
-                        <div class="aspect-[4/5] overflow-hidden bg-[#111] relative">
-                            <img src="${item.imagen}" class="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-transparent opacity-80"></div>
+
+                        <div class="w-24 sm:w-28 md:w-full shrink-0 md:aspect-[4/5] overflow-hidden bg-[#111] relative">
+                            <img src="${item.imagen}" class="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-transparent opacity-80 md:block hidden"></div>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent to-[#151515] block md:hidden"></div>
                         </div>
-                        <div class="p-10 border-t border-white/5">
-                            <h3 class="text-xl font-black uppercase italic text-white tracking-tight leading-none mb-4">${item.nombre}</h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] text-gray-500 uppercase tracking-widest">${item.cat}</span>
-                                <span class="text-sm font-mono font-bold text-[#facc15]">${item.precio}€</span>
+
+                        <div class="p-3 sm:p-4 md:p-10 flex flex-col justify-center flex-1 border-l md:border-l-0 md:border-t border-white/5 relative z-10 overflow-hidden">
+                            <span class="text-[8px] font-mono text-white/20 uppercase tracking-tighter mb-0.5 md:hidden">// ${item.tipo}</span>
+                            <h3 class="text-xs sm:text-sm md:text-xl font-black uppercase italic text-white tracking-tight leading-tight mb-1 md:mb-4 truncate md:white-space-normal md:line-clamp-2">${item.nombre}</h3>
+                            
+                            <div class="flex items-center justify-between mt-auto md:mt-0">
+                                <span class="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest hidden md:block">${item.cat}</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-500 uppercase tracking-widest block md:hidden">${item.cat}</span>
+                                <span class="text-xs md:text-sm font-mono font-bold text-[#facc15]">${item.precio}€</span>
                             </div>
                         </div>
                     </div>
@@ -104,22 +109,27 @@
             }, 300);
         };
 
-        // Lógica de botones de género
+        // Manejador del Conmutador de Género
         genBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                genBtns.forEach(b => b.classList.remove('bg-[#facc15]', 'text-black', 'text-white/50'));
-                genBtns.forEach(b => b.classList.add('text-white/50'));
-                btn.classList.add('bg-[#facc15]', 'text-black');
+                genBtns.forEach(b => {
+                    b.classList.remove('bg-[#facc15]', 'text-black', 'shadow-[0_0_15px_rgba(250,204,21,0.2)]', 'scale-105');
+                    b.classList.add('text-white/40');
+                });
+                
+                btn.classList.remove('text-white/40');
+                btn.classList.add('bg-[#facc15]', 'text-black', 'shadow-[0_0_15px_rgba(250,204,21,0.2)]', 'scale-105');
+                
                 currentGenero = btn.getAttribute('data-gen') || 'hombre';
                 generate();
             });
         });
 
-        // Eventos originales
+        // Registro de Eventos
         btnGen.removeEventListener('click', generate);
         btnGen.addEventListener('click', generate);
 
-        btnAdd.removeEventListener('click', () => { /*...*/ });
+        btnAdd.removeEventListener('click', () => {});
         btnAdd.addEventListener('click', () => {
             currentCombo.forEach(p => document.dispatchEvent(new CustomEvent('cart:add', { detail: { product: p } })));
         });
@@ -128,17 +138,61 @@
     };
 
     setupLookbook();
-    document.addEventListener('astro:after-swap', setupLookbook);
+    document.addEventListener('astro:page-load', setupLookbook);
 </script>
 
 <style>
-    /* Tus estilos originales se mantienen igual */
     #lookbook-grid { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-    .premium-card { opacity: 0; filter: blur(15px); transform: scale(0.9) translateY(30px); animation: premiumReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes premiumReveal { to { opacity: 1; filter: blur(0px); transform: scale(1) translateY(0); } }
-    .cat-link-primeGroup { position: relative; padding: 20px 45px; font-size: 11px; font-weight: 900; letter-spacing: 0.35em; color: black; background-color: #facc15; border: none; border-radius: 4px; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); text-decoration: none; display: inline-block; overflow: hidden; cursor: pointer; filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.3)); }
-    .scanner-effect { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: translateX(-100%); }
+    
+    .premium-card { 
+        opacity: 0; 
+        filter: blur(15px); 
+        transform: scale(0.95) translateY(20px); 
+        animation: premiumReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+    }
+    
+    @keyframes premiumReveal { 
+        to { opacity: 1; filter: blur(0px); transform: scale(1) translateY(0); } 
+    }
+    
+    .cat-link-primeGroup { 
+        position: relative; 
+        padding: 16px 36px; 
+        font-size: 10px; 
+        font-weight: 900; 
+        letter-spacing: 0.3em; 
+        color: black; 
+        background-color: #facc15; 
+        border: none; 
+        border-radius: 4px; 
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); 
+        text-decoration: none; 
+        display: inline-block; 
+        overflow: hidden; 
+        cursor: pointer; 
+        filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.25)); 
+    }
+    
+    @media (min-width: 768px) {
+        .cat-link-primeGroup {
+            padding: 20px 45px;
+            font-size: 11px;
+            letter-spacing: 0.35em;
+        }
+    }
+
+    .scanner-effect { 
+        position: absolute; 
+        inset: 0; 
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); 
+        transform: translateX(-100%); 
+    }
+    
     .cat-link-primeGroup:hover .scanner-effect { animation: scan 0.8s forwards; }
     @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-    .cat-link-primeGroup:hover { transform: translateY(-3px); filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.5)); }
+    
+    .cat-link-primeGroup:hover { 
+        transform: translateY(-3px); 
+        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.4)); 
+    }
 </style>

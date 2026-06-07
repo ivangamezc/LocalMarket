@@ -7,15 +7,18 @@ interface Props {
 }
 
 const { products } = Astro.props;
+
+// TRUCO PRO: Duplicamos el array en el servidor para crear un bucle visualmente infinito y sin cortes
+const infiniteProducts = [...products, ...products];
 ---
 
 <div class="relative group mb-12">
-    <div class="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none"></div>
-    <div class="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-y-0 left-0 w-12 sm:w-24 md:w-40 bg-gradient-to-r from-[#111] to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-y-0 right-0 w-12 sm:w-24 md:w-40 bg-gradient-to-l from-[#111] to-transparent z-10 pointer-events-none"></div>
 
-    <div id="carousel-container" class="flex gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing">
-        {products?.map((p) => (
-            <div class="product-item min-w-[300px] md:min-w-[340px]">
+    <div id="carousel-container" class="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pb-10 cursor-grab active:cursor-grabbing">
+        {infiniteProducts?.map((p) => (
+            <div class="product-item shrink-0 w-[70vw] sm:w-[280px] md:w-[340px]">
                 <Card 
                     id={p.id}  
                     title={p.nombre} 
@@ -35,17 +38,18 @@ const { products } = Astro.props;
 
         let isPaused = false;
         let speed = 0.5;
-        let currentScroll = container.scrollLeft; // Guardamos la posición exacta
+        let currentScroll = container.scrollLeft;
         let animationFrameId: number;
 
-        // AutoPlay fluido y blindado contra redondeos de navegador
+        // AutoPlay fluido y BUCLE INVISIBLE
         const autoPlay = () => {
             if (!isPaused) {
                 currentScroll += speed;
                 container.scrollLeft = currentScroll;
 
-                // Reinicio infinito suave (el -1 asegura que no se quede atascado)
-                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
+                // MEJORA 3: Bucle Perfecto. Como el array está duplicado, 
+                // cuando llegamos exactamente a la mitad, volvemos al inicio y el usuario no nota el salto.
+                if (container.scrollLeft >= container.scrollWidth / 2) {
                     currentScroll = 0;
                     container.scrollLeft = 0;
                 }
@@ -53,7 +57,6 @@ const { products } = Astro.props;
             animationFrameId = requestAnimationFrame(autoPlay);
         };
 
-        // Iniciar
         autoPlay();
 
         // Hover en ratón (Desktop)
@@ -75,13 +78,14 @@ const { products } = Astro.props;
         const stopDragging = () => {
             isDown = false;
             isPaused = false;
-            // IMPORTANTE: Sincronizar la posición tras soltar el dedo
             currentScroll = container.scrollLeft;
         };
 
         const moveDragging = (e: any) => {
             if (!isDown) return;
-            e.preventDefault();
+            // Quitamos e.preventDefault() en touch para permitir que el usuario haga scroll hacia ABAJO en la página sin atascarse
+            if(!e.type.includes('touch')) e.preventDefault(); 
+            
             const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
             const x = pageX - container.offsetLeft;
             const walk = (x - startX) * 2;
@@ -90,32 +94,33 @@ const { products } = Astro.props;
 
         // Eventos Escritorio
         container.addEventListener('mousedown', startDragging);
-        container.addEventListener('mouseup', stopDragging);
+        window.addEventListener('mouseup', stopDragging); // Mejor en window por si suelta el ratón fuera
         container.addEventListener('mouseleave', () => {
-            isDown = false;
+            if(isDown) stopDragging();
             isPaused = false;
-            currentScroll = container.scrollLeft;
         });
         container.addEventListener('mousemove', moveDragging);
 
         // Eventos Móvil
-        container.addEventListener('touchstart', startDragging, { passive: false });
-        container.addEventListener('touchend', stopDragging);
-        container.addEventListener('touchmove', moveDragging, { passive: false });
+        container.addEventListener('touchstart', startDragging, { passive: true });
+        window.addEventListener('touchend', stopDragging);
+        container.addEventListener('touchmove', moveDragging, { passive: true });
 
-        // Limpiar animaciones previas para Astro View Transitions
+        // Limpiar para Astro View Transitions
         document.addEventListener('astro:before-swap', () => {
             cancelAnimationFrame(animationFrameId);
         }, { once: true });
     };
 
+    // Ejecutar en la primera carga y en las navegaciones de Astro
     initCarousel();
     document.addEventListener('astro:after-swap', initCarousel);
 </script>
 
 <style>
     #carousel-container {
-        touch-action: pan-x; 
+        /* Permite scroll vertical nativo en móvil aunque estemos tocando el carrusel */
+        touch-action: pan-y; 
         -webkit-overflow-scrolling: touch;
     }
 
@@ -123,12 +128,18 @@ const { products } = Astro.props;
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
     .product-item {
-        filter: grayscale(0.2);
         transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    .product-item:hover {
-        filter: grayscale(0);
-        transform: translateY(-12px);
+    /* MEJORA 4: Media query para aislar los efectos solo a dispositivos con ratón.
+       En móvil las tarjetas siempre estarán en color y sin el salto vertical problemático */
+    @media (hover: hover) {
+        .product-item {
+            filter: grayscale(0.2);
+        }
+        .product-item:hover {
+            filter: grayscale(0);
+            transform: translateY(-12px);
+        }
     }
 </style>

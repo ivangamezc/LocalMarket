@@ -21,12 +21,13 @@ import Layout from '../layouts/Layout.astro';
             
             <div class="col-span-1 md:col-span-2 bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/10">
                 <h2 class="text-xs font-black uppercase tracking-[0.3em] text-white/50 mb-6">Últimos Pedidos</h2>
-                <div id="pedidos-container">
+                <div id="pedidos-container" class="flex flex-col gap-4">
                     <p class="text-gray-500 text-sm">Cargando pedidos...</p>
                 </div>
             </div>
 
-            <div class="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/10 relative overflow-hidden">
+            <div class="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/10 relative overflow-hidden h-max sticky top-32">
+                
                 <div id="profile-view" class="flex flex-col h-full justify-between transition-opacity duration-300">
                     <div>
                         <h2 class="text-xs font-black uppercase tracking-[0.3em] text-white/50 mb-6">Mis Datos</h2>
@@ -48,7 +49,7 @@ import Layout from '../layouts/Layout.astro';
                         <div><label class="text-[9px] text-gray-500 uppercase tracking-widest">Dirección</label><textarea id="edit-address" required rows="2" class="w-full bg-black border border-white/10 rounded-lg p-2 text-white text-sm resize-none"></textarea></div>
                     </div>
                     <div class="flex gap-3 mt-4">
-                        <button type="button" id="cancel-edit-btn" class="flex-1 py-3 bg-white/5 rounded-xl text-[10px]">Cancelar</button>
+                        <button type="button" id="cancel-edit-btn" class="flex-1 py-3 bg-white/5 rounded-xl text-[10px] text-white">Cancelar</button>
                         <button type="submit" class="flex-1 py-3 bg-[#facc15] rounded-xl text-black text-[10px] font-black">Guardar</button>
                     </div>
                 </form>
@@ -59,79 +60,291 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
     import { supabase } from '../lib/supabaseClient';
+    import { jsPDF } from "jspdf";
 
-    const editForm = document.getElementById('profile-edit-form') as HTMLFormElement;
-    const editBtn = document.getElementById('edit-profile-btn');
-    const cancelBtn = document.getElementById('cancel-edit-btn');
-    const profileView = document.getElementById('profile-view');
-    const pedidosContainer = document.getElementById('pedidos-container');
-    const logoutBtn = document.getElementById('logout-btn');
+    // --- LÓGICA DE FACTURA PDF PREMIUM ---
+    
+    // MEJORA DEFINITIVA: Usar Canvas para convertir cualquier formato (WebP, AVIF, PNG) a JPEG seguro para jsPDF
+    const getBase64Image = (url: string): Promise<{ data: string; format: string } | null> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous'; // Evita bloqueos de CORS de Supabase
+            
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    
+                    if (!ctx) return resolve(null);
+                    
+                    // Fondo blanco por si la imagen es un PNG transparente
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Forzamos salida JPEG al 90% de calidad. jsPDF lo lee perfecto siempre.
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                    resolve({ data: dataURL, format: 'JPEG' });
+                } catch (err) {
+                    console.warn('Error procesando imagen en canvas:', err);
+                    resolve(null);
+                }
+            };
+            
+            img.onerror = () => {
+                console.warn('Error al cargar la imagen desde la URL:', url);
+                resolve(null);
+            };
+            
+            img.src = url;
+        });
+    };
 
-    editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
-    cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0'); editForm?.classList.add('hidden'); });
+    // Renderiza y descarga la factura corporativa estilizada
+    const generateInvoice = async (pedido: any, profile: any) => {
+        const doc = new jsPDF();
+        
+        // Paleta de colores e identidades visuales
+        const brandYellow = [250, 204, 21]; // #facc15
+        const textDark = [30, 30, 30];
+        const textLight = [120, 120, 120];
 
-    logoutBtn?.addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        window.location.href = '/login';
-    });
+        // 1. Cabecera y Branding
+        const logoObj = await getBase64Image('/Logo_LocalMarket.png');
+        if (logoObj) {
+            doc.addImage(logoObj.data as string, logoObj.format, 20, 15, 45, 15);
+        } else {
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...textDark as [number, number, number]);
+            doc.text("LocalMarket", 20, 25);
+        }
 
-    async function loadData() {
-        // Retraso técnico para asegurar que la sesión esté lista tras la navegación
-        await new Promise(resolve => setTimeout(resolve, 300));
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...brandYellow as [number, number, number]);
+        doc.text("FACTURA", 190, 24, { align: 'right' });
+        
+        doc.setFontSize(10);
+        doc.setTextColor(...textLight as [number, number, number]);
+        const fecha = new Date(pedido.creado_el).toLocaleDateString('es-ES');
+        doc.text(`Nº Pedido: #${pedido.id.slice(0,8).toUpperCase()}`, 190, 32, { align: 'right' });
+        doc.text(`Fecha: ${fecha}`, 190, 38, { align: 'right' });
+
+        // Divisor superior elegante
+        doc.setDrawColor(230, 230, 230);
+        doc.line(20, 48, 190, 48);
+
+        // 2. Información del Emisor y Receptor
+        doc.setFontSize(10);
+        
+        // Emisor (LocalMarket)
+        doc.setTextColor(...textDark as [number, number, number]);
+        doc.setFont("helvetica", "bold");
+        doc.text("EMISOR", 20, 60);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...textLight as [number, number, number]);
+        doc.text("LocalMarket S.L.", 20, 67);
+        doc.text("CIF: B-999888777", 20, 72);
+        doc.text("C/ Innovación 42, 18001 Granada", 20, 77);
+
+        // Receptor (Cliente de Supabase)
+        doc.setTextColor(...textDark as [number, number, number]);
+        doc.setFont("helvetica", "bold");
+        doc.text("FACTURAR A", 120, 60);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...textLight as [number, number, number]);
+        doc.text(profile.name || "Cliente Final", 120, 67);
+        doc.text(profile.email || "Email no especificado", 120, 72);
+        
+        const splitAddress = doc.splitTextToSize(profile.address || "Dirección no especificada", 70);
+        doc.text(splitAddress, 120, 77);
+
+        // 3. Encabezados de la Tabla de Artículos
+        let y = 105;
+        doc.setFillColor(248, 248, 248);
+        doc.rect(20, y - 8, 170, 14, 'F');
+        
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...textDark as [number, number, number]);
+        doc.text("IMAGEN", 25, y + 1);
+        doc.text("DESCRIPCIÓN", 55, y + 1);
+        doc.text("CANT.", 130, y + 1, { align: 'center' });
+        doc.text("PRECIO", 155, y + 1, { align: 'right' });
+        doc.text("SUBTOTAL", 185, y + 1, { align: 'right' });
+
+        y += 15;
+
+        // 4. Bucle e inyección de Productos
+        doc.setFont("helvetica", "normal");
+        if (Array.isArray(pedido.productos)) {
+            for (const prod of pedido.productos) {
+                // Control defensivo de paginación automática
+                if (y > 260) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                // Dibujar marco e imagen de producto ya convertida por el Canvas
+                if (prod.imagen) {
+                    const imgObj = await getBase64Image(prod.imagen);
+                    if (imgObj) {
+                        doc.setDrawColor(240, 240, 240);
+                        doc.rect(25, y - 5, 16, 16);
+                        doc.addImage(imgObj.data as string, imgObj.format, 25.5, y - 4.5, 15, 15);
+                    }
+                }
+
+                // Renderizado de las columnas de texto
+                doc.setTextColor(...textDark as [number, number, number]);
+                const prodName = doc.splitTextToSize(prod.nombre || "Artículo", 65);
+                doc.text(prodName, 55, y + 3);
+                
+                doc.setTextColor(...textLight as [number, number, number]);
+                doc.text(`${prod.cantidad || 1}`, 130, y + 4, { align: 'center' });
+                doc.text(`${Number(prod.precio).toFixed(2)} €`, 155, y + 4, { align: 'right' });
+                
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(...textDark as [number, number, number]);
+                const subtotal = (Number(prod.precio) * Number(prod.cantidad || 1)).toFixed(2);
+                doc.text(`${subtotal} €`, 185, y + 4, { align: 'right' });
+                doc.setFont("helvetica", "normal");
+
+                // Línea separadora sutil de fila
+                doc.setDrawColor(245, 245, 245);
+                doc.line(20, y + 16, 190, y + 16);
+
+                y += 24; // Respiro visual del layout
+            }
+        }
+
+        // 5. Destacado Final del Total de Factura (ARREGLADO SOLAPAMIENTO)
+        y += 5;
+        doc.setFillColor(...brandYellow as [number, number, number]);
+        // Ampliamos la caja: empieza en 110 (antes 125) y tiene 80 de ancho (antes 65)
+        doc.rect(110, y, 80, 16, 'F'); 
+        
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 0, 0); 
+        // Movemos el texto a la izquierda dentro de la nueva caja
+        doc.text("TOTAL FACTURA:", 115, y + 11);
+        doc.text(`${Number(pedido.total).toFixed(2)} €`, 185, y + 11, { align: 'right' });
+
+        // 6. Pie de Página Legal
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "italic");
+        doc.setTextColor(...textLight as [number, number, number]);
+        doc.text("Gracias por confiar en el comercio local. LocalMarket.", 105, 280, { align: 'center' });
+        doc.text("Documento generado de forma automatizada. Válido como comprobante de compra.", 105, 285, { align: 'center' });
+        
+        doc.save(`Factura_LocalMarket_${pedido.id.slice(0,8)}.pdf`);
+    };
+
+    // --- MANEJADOR DEL CICLO DE VIDA DE ASTRO ---
+    async function initAccountPage() {
+        const editForm = document.getElementById('profile-edit-form') as HTMLFormElement;
+        const editBtn = document.getElementById('edit-profile-btn');
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        const profileView = document.getElementById('profile-view');
+        const pedidosContainer = document.getElementById('pedidos-container');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (!pedidosContainer) return;
+
+        editBtn?.addEventListener('click', () => { profileView?.classList.add('opacity-0'); editForm?.classList.remove('hidden'); editForm?.classList.add('flex'); });
+        cancelBtn?.addEventListener('click', () => { profileView?.classList.remove('opacity-0'); editForm?.classList.add('hidden'); });
+
+        logoutBtn?.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = '/login';
+        });
+
+        editForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data: { session } } = await supabase.auth.getSession();
+            const name = (document.getElementById('edit-name') as HTMLInputElement).value;
+            const phone = (document.getElementById('edit-phone') as HTMLInputElement).value;
+            const address = (document.getElementById('edit-address') as HTMLTextAreaElement).value;
+            
+            await supabase.from('profiles').update({ name, phone, address }).eq('id', session?.user.id);
+            location.reload();
+        });
 
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return window.location.href = '/login';
 
-        // Cargar Perfil
         const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
         
         if (profile) {
-            const viewName = document.getElementById('view-name');
-            const viewEmail = document.getElementById('view-email');
-            const viewPhone = document.getElementById('view-phone');
-            const viewAddress = document.getElementById('view-address');
-            const greeting = document.getElementById('user-greeting');
-
-            if(viewName) viewName.innerText = profile.name || 'Usuario';
-            if(viewEmail) viewEmail.innerText = session.user.email || 'Sin email';
-            if(viewPhone) viewPhone.innerText = profile.phone || 'No especificado';
-            if(viewAddress) viewAddress.innerText = profile.address || 'Sin dirección';
-            if(greeting) greeting.innerText = `Hola, ${profile.name || 'Usuario'}`;
+            (document.getElementById('view-name') as HTMLElement).innerText = profile.name || 'Usuario';
+            (document.getElementById('view-email') as HTMLElement).innerText = session.user.email || 'Sin email';
+            (document.getElementById('view-phone') as HTMLElement).innerText = profile.phone || 'No especificado';
+            (document.getElementById('view-address') as HTMLElement).innerText = profile.address || 'Sin dirección';
+            (document.getElementById('user-greeting') as HTMLElement).innerText = `Hola, ${profile.name || 'Usuario'}`;
             
             (document.getElementById('edit-name') as HTMLInputElement).value = profile.name || '';
             (document.getElementById('edit-phone') as HTMLInputElement).value = profile.phone || '';
             (document.getElementById('edit-address') as HTMLTextAreaElement).value = profile.address || '';
         }
 
-        // Cargar Pedidos
         const { data: pedidos } = await supabase.from('pedidos').select('*').eq('user_id', session.user.id).order('creado_el', { ascending: false });
 
-        if (pedidosContainer) {
-            if (pedidos && pedidos.length > 0) {
-                pedidosContainer.innerHTML = pedidos.map(p => `
-                    <div class="bg-black/50 border border-white/5 p-6 rounded-2xl mb-4">
-                        <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-3">
-                            <div><p class="text-white font-bold text-sm">Pedido #${p.id.slice(0,8)}</p><p class="text-[9px] text-gray-500 uppercase">${new Date(p.creado_el).toLocaleDateString('es-ES')}</p></div>
-                            <p class="text-[#facc15] font-black text-lg">${p.total}€</p>
+        pedidosContainer.innerHTML = '';
+        if (pedidos && pedidos.length > 0) {
+            pedidos.forEach(p => {
+                const div = document.createElement('div');
+                div.className = "group relative bg-black/40 hover:bg-[#1a1a1a] border border-white/5 hover:border-white/10 transition-all duration-300 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-5 overflow-hidden";
+                
+                const fechaFormateada = new Date(p.creado_el).toLocaleDateString('es-ES', { 
+                    year: 'numeric', month: 'short', day: 'numeric' 
+                });
+
+                const estado = p.estado || 'Completado';
+                const estadoColor = estado.toLowerCase() === 'pendiente' ? 'text-orange-400 bg-orange-500/10 border-orange-500/20' : 'text-green-400 bg-green-500/10 border-green-500/20';
+
+                div.innerHTML = `
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-transparent group-hover:bg-[#facc15] transition-colors duration-300"></div>
+                    
+                    <div class="flex items-center gap-4 pl-2">
+                        <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#facc15] group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold text-sm tracking-wider">#${p.id.slice(0,8).toUpperCase()}</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">${fechaFormateada}</p>
                         </div>
                     </div>
-                `).join('');
-            } else {
-                pedidosContainer.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
-            }
+
+                    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-end flex-1 gap-4 sm:gap-8 w-full sm:w-auto mt-2 sm:mt-0">
+                        <div class="flex items-center gap-4 sm:gap-8 flex-1 sm:flex-none justify-between sm:justify-end">
+                            <span class="px-3 py-1 ${estadoColor} border rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                                ${estado}
+                            </span>
+                            <p class="text-white font-black text-xl min-w-[80px] text-right">${p.total}€</p>
+                        </div>
+                        
+                        <button class="pdf-btn w-full sm:w-auto flex items-center justify-center gap-2 text-[10px] bg-white/5 hover:bg-[#facc15] text-white hover:text-black border border-white/10 hover:border-[#facc15] transition-all px-5 py-2.5 rounded-xl uppercase font-black tracking-widest">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>Factura</span>
+                        </button>
+                    </div>
+                `;
+                
+                div.querySelector('.pdf-btn')?.addEventListener('click', () => generateInvoice(p, profile));
+                pedidosContainer.appendChild(div);
+            });
+        } else {
+            pedidosContainer.innerHTML = "<p class='text-gray-500 text-sm'>Aún no has realizado ninguna compra.</p>";
         }
     }
 
-    document.addEventListener('astro:page-load', loadData);
-
-    editForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const { data: { session } } = await supabase.auth.getSession();
-        const name = (document.getElementById('edit-name') as HTMLInputElement).value;
-        const phone = (document.getElementById('edit-phone') as HTMLInputElement).value;
-        const address = (document.getElementById('edit-address') as HTMLTextAreaElement).value;
-        
-        await supabase.from('profiles').update({ name, phone, address }).eq('id', session?.user.id);
-        location.reload();
-    });
+    document.addEventListener('astro:page-load', initAccountPage);
 </script>
