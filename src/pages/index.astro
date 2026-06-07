@@ -10,7 +10,8 @@ import Carousel from '../components/Carousel.astro';
 import Newsletter from '../components/Newsletter.astro';
 import Reviews from '../components/Reviews.astro';
 import Faq from '../components/Faq.astro';
-import Manifesto from '../components/Manifiesto.astro'; // Ajusté el nombre para que coincida con tu import
+import Manifesto from '../components/Manifiesto.astro'; 
+import TechAnatomy from '../components/TechAnatomy.astro';
 
 import { supabase } from '../lib/supabaseClient';
 
@@ -44,6 +45,10 @@ if (error) {
 
         <div class="scroll-reveal mt-48">
             <Lookbook />
+        </div>
+
+        <div class="scroll-reveal">
+            <TechAnatomy />
         </div>
 
         <div class="scroll-reveal">
