@@ -3,61 +3,74 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Acceso | LocalMarket">
-    <section class="px-8 py-20 max-w-md mx-auto min-h-screen flex flex-col justify-center">
+    <section class="px-6 py-8 max-w-md mx-auto min-h-screen flex flex-col justify-center -mt-16 sm:-mt-24">
         
-        <div class="mb-12 text-center animate-reveal">
+        <div class="mb-10 text-center animate-reveal">
             <h1 class="text-4xl font-black uppercase italic text-white mb-2 transition-all duration-300" id="page-title">
                 Bienvenido
             </h1>
             <p class="text-xs text-gray-400 uppercase tracking-widest transition-all duration-300" id="page-subtitle">Accede a tu cuenta de LocalMarket</p>
         </div>
 
-        <div class="relative bg-white/[0.02] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden animate-reveal h-[480px]" style="animation-delay: 0.1s;">
+        <div class="relative bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] overflow-hidden animate-reveal h-[460px] sm:h-[520px]" style="animation-delay: 0.1s;">
             
-            <form id="login-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 transition-all duration-500 z-10 bg-[#1a1a1a]">
-                <div class="space-y-6">
+            <form id="login-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 sm:p-10 transition-all duration-500 ease-in-out z-10">
+                <div class="space-y-5 sm:space-y-6 mt-2 sm:mt-4">
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Email</label>
-                        <input type="email" id="login-email" required placeholder="tu@email.com" class="w-full bg-black border border-white/10 rounded-xl px-4 py-4 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
+                        <input type="email" id="login-email" required placeholder="tu@email.com" 
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white placeholder-gray-600 focus:border-[#facc15] focus:bg-black/60 hover:border-white/20 outline-none transition-all duration-300 text-sm shadow-inner">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Contraseña</label>
-                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-black border border-white/10 rounded-xl px-4 py-4 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Contraseña</label>
+                        <input type="password" id="login-password" required placeholder="••••••••" 
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white placeholder-gray-600 focus:border-[#facc15] focus:bg-black/60 hover:border-white/20 outline-none transition-all duration-300 text-sm shadow-inner">
                     </div>
                 </div>
-                <div class="mt-8">
-                    <button type="submit" id="login-btn" class="w-full py-4 bg-white text-black font-black uppercase text-[10px] tracking-[0.3em] rounded-xl hover:bg-[#facc15] transition-all shadow-xl active:scale-95">
+                
+                <div class="mt-6 mb-2 sm:mt-8 sm:mb-4">
+                    <button type="submit" id="login-btn" 
+                        class="relative w-full py-4 bg-[#facc15] text-black font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-[#eab308] hover:shadow-[0_0_20px_rgba(250,204,21,0.3)] transition-all duration-300 active:scale-[0.98]">
                         Iniciar Sesión
                     </button>
-                    <div class="text-center mt-6">
-                        <span class="text-xs text-gray-500">¿No tienes cuenta?</span>
-                        <button type="button" id="show-register-btn" class="text-xs text-white font-bold ml-2 hover:text-[#facc15] transition-colors outline-none">Regístrate</button>
+                    <div class="text-center mt-6 sm:mt-8">
+                        <span class="text-xs text-gray-500 font-medium">¿No tienes cuenta?</span>
+                        <button type="button" id="show-register-btn" class="text-xs text-[#facc15] font-bold ml-2 hover:text-white transition-colors outline-none">
+                            Regístrate
+                        </button>
                     </div>
                 </div>
             </form>
 
-            <form id="register-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 transition-all duration-500 transform translate-x-full opacity-0 z-0 bg-[#1a1a1a]">
-                <div class="space-y-4">
+            <form id="register-form" class="flex flex-col h-full justify-between absolute inset-0 p-8 sm:p-10 transition-all duration-500 ease-in-out transform translate-x-full opacity-0 z-0">
+                <div class="space-y-4 sm:space-y-5">
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Nombre completo</label>
-                        <input type="text" id="reg-name" required placeholder="Ej: Manuel" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nombre</label>
+                        <input type="text" id="reg-name" required placeholder="Ej: Manuel" 
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-3.5 text-white placeholder-gray-600 focus:border-[#facc15] focus:bg-black/60 hover:border-white/20 outline-none transition-all duration-300 text-sm shadow-inner">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Email</label>
-                        <input type="email" id="reg-email" required placeholder="tu@email.com" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
+                        <input type="email" id="reg-email" required placeholder="tu@email.com" 
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-3.5 text-white placeholder-gray-600 focus:border-[#facc15] focus:bg-black/60 hover:border-white/20 outline-none transition-all duration-300 text-sm shadow-inner">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white uppercase tracking-[0.3em] ml-2">Contraseña</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#facc15] outline-none transition-all text-sm">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Contraseña</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" 
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-3.5 text-white placeholder-gray-600 focus:border-[#facc15] focus:bg-black/60 hover:border-white/20 outline-none transition-all duration-300 text-sm shadow-inner">
                     </div>
                 </div>
-                <div class="mt-6">
-                    <button type="submit" id="register-btn" class="w-full py-4 bg-[#facc15] text-black font-black uppercase text-[10px] tracking-[0.3em] rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(250,204,21,0.1)] active:scale-95">
+                
+                <div class="mt-4 mb-2">
+                    <button type="submit" id="register-btn" 
+                        class="relative w-full py-4 bg-[#facc15] text-black font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-[#eab308] hover:shadow-[0_0_20px_rgba(250,204,21,0.3)] transition-all duration-300 active:scale-[0.98]">
                         Crear Cuenta
                     </button>
-                    <div class="text-center mt-6">
-                        <span class="text-xs text-gray-500">¿Ya tienes cuenta?</span>
-                        <button type="button" id="show-login-btn" class="text-xs text-white font-bold ml-2 hover:text-[#facc15] transition-colors outline-none">Inicia sesión</button>
+                    <div class="text-center mt-4 sm:mt-6">
+                        <span class="text-xs text-gray-500 font-medium">¿Ya tienes cuenta?</span>
+                        <button type="button" id="show-login-btn" class="text-xs text-[#facc15] font-bold ml-2 hover:text-white transition-colors outline-none">
+                            Inicia sesión
+                        </button>
                     </div>
                 </div>
             </form>

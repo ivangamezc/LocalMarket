@@ -12,7 +12,7 @@ const { data: initialProducts } = await supabase
 ---
 
 <Layout title="ERP & Gestión Integrada | LocalMarket">
-    <section class="px-4 md:px-8 pt-6 pb-10 max-w-7xl mx-auto min-h-screen">
+    <section class="px-4 md:px-8 pt-6 pb-10 max-w-7xl mx-auto min-h-screen relative">
         
         <div class="mb-6 text-center">
             <div class="flex items-center justify-center gap-3 mb-2">
@@ -35,22 +35,22 @@ const { data: initialProducts } = await supabase
             <button id="btn-tab-crm" class="tab-btn px-5 py-2.5 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-lg transition-all">
                 👥 Clientes (CRM)
             </button>
+            <button id="btn-tab-estadisticas" class="tab-btn px-5 py-2.5 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-[10px] tracking-widest rounded-lg transition-all">
+                📊 Estadísticas
+            </button>
         </div>
 
         <div id="status-msg" class="hidden mb-4 p-4 rounded-xl text-center border">
             <p class="font-bold uppercase tracking-widest text-[10px]" id="status-text"></p>
         </div>
 
-        <!-- ================= PESTAÑA INVENTARIO ================= -->
         <div id="tab-inventario" class="tab-content block">
             
             <div class="mb-8">
-                <!-- Formulario optimizado horizontalmente -->
                 <form id="admin-form" class="space-y-5 bg-[#1a1a1a] p-7 md:p-8 rounded-[1.5rem] border border-white/10 shadow-2xl">
                     <input type="hidden" id="edit-mode" value="false">
                     <h2 class="text-lg font-black text-white uppercase italic mb-2" id="form-title">Añadir Nuevo Artículo</h2>
                     
-                    <!-- Fila 1: ID y Nombre -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="space-y-2 md:col-span-1">
                             <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">ID (Único)</label>
@@ -62,7 +62,6 @@ const { data: initialProducts } = await supabase
                         </div>
                     </div>
 
-                    <!-- Fila 2: Datos técnicos -->
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-5">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">Precio (€)</label>
@@ -95,7 +94,6 @@ const { data: initialProducts } = await supabase
                         </div>
                     </div>
 
-                    <!-- Fila 3: Media y Texto (Alineadas para ahorrar 1 fila entera) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-white uppercase tracking-[0.3em]">URL Imagen</label>
@@ -178,7 +176,6 @@ const { data: initialProducts } = await supabase
             </div>
         </div>
 
-        <!-- ================= PESTAÑA PEDIDOS ================= -->
         <div id="tab-pedidos" class="tab-content hidden">
             <div class="bg-[#1a1a1a] rounded-[1.5rem] border border-white/10 overflow-hidden shadow-xl">
                 <div class="p-4 border-b border-white/10 bg-white/[0.02] flex justify-between items-center">
@@ -203,7 +200,6 @@ const { data: initialProducts } = await supabase
             </div>
         </div>
 
-        <!-- ================= PESTAÑA CLIENTES (CRM) ================= -->
         <div id="tab-crm" class="tab-content hidden">
             <div class="bg-[#1a1a1a] rounded-[1.5rem] border border-white/10 overflow-hidden shadow-xl">
                 <div class="p-4 border-b border-white/10 bg-white/[0.02] flex justify-between items-center">
@@ -228,17 +224,188 @@ const { data: initialProducts } = await supabase
             </div>
         </div>
 
+        <div id="tab-estadisticas" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-[#1a1a1a] rounded-[1.5rem] border border-white/10 shadow-xl p-6">
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-[#facc15] mb-6">Top 5 Productos Más Vendidos</h2>
+                    <div class="relative w-full aspect-video">
+                        <canvas id="chart-mas-vendidos"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-[#1a1a1a] rounded-[1.5rem] border border-white/10 shadow-xl p-6">
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-green-400 mb-6">Evolución Ingresos (Últimos Días)</h2>
+                    <div class="relative w-full aspect-video">
+                        <canvas id="chart-ingresos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="crm-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+            <div class="bg-[#1a1a1a] border border-white/10 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="crm-modal-content">
+                
+                <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">👤</span>
+                        <div>
+                            <h3 class="text-white font-black uppercase tracking-widest text-sm" id="modal-client-name">Nombre Cliente</h3>
+                            <p class="text-[9px] text-gray-500 font-mono" id="modal-client-id">ID: ...</p>
+                        </div>
+                    </div>
+                    <button id="close-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#111]">
+                    <div class="md:col-span-1 bg-gradient-to-b from-green-500/10 to-transparent p-5 rounded-2xl border border-green-500/20 text-center flex flex-col justify-center relative overflow-hidden">
+                        <span class="text-[9px] text-green-400/80 font-black uppercase tracking-widest mb-1">Lifetime Value</span>
+                        <span class="text-3xl font-black text-green-400 italic" id="modal-ltv">0.00€</span>
+                        <span class="text-[10px] text-gray-400 font-bold mt-2" id="modal-order-count">0 Pedidos</span>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <h4 class="text-[10px] text-[#facc15] font-black uppercase tracking-widest mb-3">Historial de Compras</h4>
+                        <div class="max-h-48 overflow-y-auto pr-2 space-y-2 custom-scrollbar" id="modal-history-list">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </section>
 </Layout>
 
+<style>
+    /* Estilo para la barra de scroll del modal */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #facc15; }
+</style>
+
 <script>
     import { supabase } from '../lib/supabaseClient';
+    import Chart from 'chart.js/auto';
 
-    // --- LÓGICA PARA CARGAR DATOS PRIVADOS TRAS COMPROBAR SEGURIDAD ---
+    // --- LÓGICA DE GRÁFICOS (NUEVA) ---
+    let chartBarras: any = null;
+    let chartLineas: any = null;
+
+    const loadCharts = async () => {
+        const ctxBarras = document.getElementById('chart-mas-vendidos') as HTMLCanvasElement;
+        const ctxLineas = document.getElementById('chart-ingresos') as HTMLCanvasElement;
+        
+        if (ctxBarras) {
+            const { data: topProds } = await supabase.from('top_productos_vendidos').select('*');
+            if (topProds && topProds.length > 0) {
+                if (chartBarras) chartBarras.destroy();
+                chartBarras = new Chart(ctxBarras, {
+                    type: 'bar',
+                    data: {
+                        labels: topProds.map((p: any) => p.nombre),
+                        datasets: [{
+                            label: 'Unidades',
+                            data: topProds.map((p: any) => p.total_vendido),
+                            backgroundColor: 'rgba(250, 204, 21, 0.8)',
+                            borderColor: '#facc15',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 9 } } } } }
+                });
+            }
+        }
+
+        if (ctxLineas) {
+            const { data: ingresos } = await supabase.from('ingresos_diarios').select('*');
+            if (ingresos && ingresos.length > 0) {
+                if (chartLineas) chartLineas.destroy();
+                chartLineas = new Chart(ctxLineas, {
+                    type: 'line',
+                    data: {
+                        labels: ingresos.map((i: any) => new Date(i.fecha).toLocaleDateString(undefined, { day:'2-digit', month:'short' })),
+                        datasets: [{
+                            label: 'Ingresos (€)',
+                            data: ingresos.map((i: any) => i.ingresos_totales),
+                            borderColor: '#4ade80',
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 9 } } } } }
+                });
+            }
+        }
+    };
+
+    // --- LÓGICA DEL MODAL CRM (NUEVA) ---
+    const openCrmModal = async (clientId: string, clientName: string) => {
+        const modal = document.getElementById('crm-modal');
+        const content = document.getElementById('crm-modal-content');
+        
+        (document.getElementById('modal-client-name') as HTMLElement).innerText = clientName;
+        (document.getElementById('modal-client-id') as HTMLElement).innerText = `ID: ${clientId}`;
+        (document.getElementById('modal-ltv') as HTMLElement).innerText = "Calculando...";
+        (document.getElementById('modal-history-list') as HTMLElement).innerHTML = `<p class="text-gray-500 text-xs animate-pulse">Consultando historial en Supabase...</p>`;
+        
+        modal?.classList.remove('hidden');
+        setTimeout(() => {
+            modal?.classList.remove('opacity-0');
+            content?.classList.remove('scale-95');
+        }, 10);
+
+        const { data: pedidos, error } = await supabase
+            .from('pedidos')
+            .select('*')
+            .eq('user_id', clientId)
+            .order('creado_el', { ascending: false });
+
+        if (error || !pedidos) {
+            (document.getElementById('modal-ltv') as HTMLElement).innerText = "Error";
+            return;
+        }
+
+        const ltv = pedidos.filter(p => p.estado === 'Pagado').reduce((sum, p) => sum + parseFloat(p.total), 0);
+        
+        (document.getElementById('modal-ltv') as HTMLElement).innerText = `${ltv.toFixed(2)}€`;
+        (document.getElementById('modal-order-count') as HTMLElement).innerText = `${pedidos.length} Pedidos registrados`;
+
+        const historyList = document.getElementById('modal-history-list');
+        if (pedidos.length === 0) {
+            historyList!.innerHTML = `<p class="text-gray-600 text-xs text-center py-4">Este cliente aún no ha realizado ninguna compra.</p>`;
+        } else {
+            historyList!.innerHTML = pedidos.map(p => `
+                <div class="bg-white/5 p-3 rounded-lg border border-white/5 flex justify-between items-center hover:bg-white/10 transition-colors">
+                    <div>
+                        <p class="text-white font-bold text-xs">Pedido #${p.id.substring(0,6)}</p>
+                        <p class="text-[9px] text-gray-500">${new Date(p.creado_el).toLocaleDateString()} • ${p.metodo_pago || 'Desconocido'}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[#facc15] font-black text-sm">${p.total}€</p>
+                        <p class="text-[8px] uppercase tracking-widest ${p.estado === 'Pagado' ? 'text-green-400' : 'text-orange-400'}">${p.estado}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    };
+
+    const closeCrmModal = () => {
+        const modal = document.getElementById('crm-modal');
+        const content = document.getElementById('crm-modal-content');
+        modal?.classList.add('opacity-0');
+        content?.classList.add('scale-95');
+        setTimeout(() => modal?.classList.add('hidden'), 300);
+    };
+
+    document.getElementById('close-modal')?.addEventListener('click', closeCrmModal);
+
+    // --- LÓGICA PARA CARGAR DATOS PRIVADOS ---
     const loadSecureData = async () => {
         console.log("Iniciando petición a Supabase...");
 
-        // 1. Cargar Pedidos de forma segura en el navegador
         const { data: pedidos, error: errPed } = await supabase.from('pedidos').select('*').order('creado_el', { ascending: false });
         
         if (errPed) console.error("🛑 Error de Supabase en Pedidos:", errPed);
@@ -271,7 +438,6 @@ const { data: initialProducts } = await supabase
             }
         }
 
-        // 2. Cargar Clientes de forma segura en el navegador
         const { data: clientes, error: errCli } = await supabase.from('profiles').select('*').order('id', { ascending: false });
         
         if (errCli) console.error("🛑 Error de Supabase en Clientes:", errCli);
@@ -283,6 +449,7 @@ const { data: initialProducts } = await supabase
         if (clientesBody && clientesCount) {
             if (clientes && clientes.length > 0) {
                 clientesCount.innerText = `${clientes.length} Usuarios`;
+                // NUEVO: Añadidas las clases btn-ver-ficha y los data-attributes al botón
                 clientesBody.innerHTML = clientes.map(cliente => `
                     <tr class="border-b border-white/5 hover:bg-white/[0.01]">
                         <td class="px-5 py-3">
@@ -301,12 +468,21 @@ const { data: initialProducts } = await supabase
                         </td>
                         <td class="px-5 py-3 text-[10px] text-gray-400 truncate max-w-[150px] md:max-w-xs">${cliente.address || 'No especificada'}</td>
                         <td class="px-5 py-3 text-right">
-                            <button class="px-3 py-1.5 bg-white/5 text-white border border-white/10 text-[9px] font-black uppercase tracking-widest rounded hover:bg-[#facc15] hover:text-black transition-all">
+                            <button class="btn-ver-ficha px-3 py-1.5 bg-white/5 text-white border border-white/10 text-[9px] font-black uppercase tracking-widest rounded hover:bg-[#facc15] hover:text-black transition-all" data-id="${cliente.id}" data-nombre="${cliente.name || 'Cliente sin nombre'}">
                                 Ver Ficha
                             </button>
                         </td>
                     </tr>
                 `).join('');
+
+                // NUEVO: Conectar los botones del CRM al modal
+                document.querySelectorAll('.btn-ver-ficha').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const target = e.currentTarget as HTMLElement;
+                        openCrmModal(target.getAttribute('data-id')!, target.getAttribute('data-nombre')!);
+                    });
+                });
+
             } else {
                 clientesCount.innerText = `0 Usuarios`;
                 clientesBody.innerHTML = `<tr><td colspan="4" class="px-5 py-6 text-center text-gray-500 text-[10px] uppercase tracking-widest">No hay clientes registrados</td></tr>`;
@@ -319,7 +495,9 @@ const { data: initialProducts } = await supabase
         const tabs = [
             { btn: document.getElementById('btn-tab-inventario'), content: document.getElementById('tab-inventario') },
             { btn: document.getElementById('btn-tab-pedidos'), content: document.getElementById('tab-pedidos') },
-            { btn: document.getElementById('btn-tab-crm'), content: document.getElementById('tab-crm') }
+            { btn: document.getElementById('btn-tab-crm'), content: document.getElementById('tab-crm') },
+            // NUEVO: Pestaña de estadísticas
+            { btn: document.getElementById('btn-tab-estadisticas'), content: document.getElementById('tab-estadisticas') }
         ];
 
         tabs.forEach(tab => {
@@ -501,13 +679,15 @@ const { data: initialProducts } = await supabase
         }
 
         document.body.style.display = 'block';
+        
         setupTabs();
         setupFilters(); 
         setupDeleteButtons();
         setupEditButtons();
 
-        // ¡Cargamos pedidos y clientes ahora que sabemos que eres tú!
+        // NUEVO: Cargamos los gráficos tras las verificaciones
         await loadSecureData();
+        await loadCharts();
     };
 
     checkAdminAccess();

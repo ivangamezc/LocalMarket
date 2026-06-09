@@ -73,29 +73,12 @@ const currentPath = Astro.url.pathname;
             import { cartItems, addCartItem } from '../store/cartStore.js';
             import { supabase } from '../lib/supabaseClient';
 
-            // --- Lógica Scroll Progress y Nav Fade ---
+            // Variables globales para el manejo del scroll
             let lastScrollTop = 0;
-            const nav = document.getElementById('main-nav');
-            
-            window.addEventListener('scroll', () => {
-                const scrollProgress = document.getElementById('scroll-progress');
-                if (scrollProgress) {
-                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrolled = (winScroll / height) * 100;
-                    scrollProgress.style.width = scrolled + "%";
-                }
+            // SOLUCIÓN AL ERROR DE TYPESCRIPT: Le decimos que puede ser "any" (cualquier tipo de valor)
+            let scrollHandlerActive: any = null; 
 
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop && scrollTop > 100) {
-                    nav?.classList.add('opacity-0', '-translate-y-20');
-                } else {
-                    nav?.classList.remove('opacity-0', '-translate-y-20');
-                }
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-            });
-
-            // --- NUEVO: Motor Global de Toasts ---
+            // --- Motor Global de Toasts ---
             document.addEventListener('app:toast', (e: any) => {
                 const toastContainer = document.getElementById('toast-container');
                 if (!toastContainer) return;
@@ -143,7 +126,6 @@ const currentPath = Astro.url.pathname;
             const handleCartAdd = (event: any) => {
                 const { product } = event.detail;
                 addCartItem(product);
-                // Disparamos el nuevo evento global
                 document.dispatchEvent(new CustomEvent('app:toast', { 
                     detail: { msg: 'Producto añadido al equipo', type: 'success' } 
                 }));
@@ -207,7 +189,59 @@ const currentPath = Astro.url.pathname;
                 draw();
             };
 
+            const updateAuthUI = async () => {
+                const userIcon = document.getElementById('user-icon');
+                if (!userIcon) return;
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    if (!document.getElementById('status-indicator')) {
+                        const indicator = document.createElement('div');
+                        indicator.id = 'status-indicator';
+                        indicator.className = 'absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-[#333333]';
+                        userIcon.classList.add('relative');
+                        userIcon.appendChild(indicator);
+                    }
+                } else {
+                    const indicator = document.getElementById('status-indicator');
+                    if (indicator) indicator.remove();
+                }
+            };
+
+            // =====================================
+            // LÓGICA PRINCIPAL CORREGIDA
+            // =====================================
             const startAll = () => {
+                
+                // 1. Manejo del Scroll: LIMPIEZA PREVIA Y RE-INYECCIÓN
+                if (scrollHandlerActive) {
+                    window.removeEventListener('scroll', scrollHandlerActive);
+                }
+
+                const nav = document.getElementById('main-nav');
+                const scrollProgress = document.getElementById('scroll-progress');
+                // Reiniciamos lastScrollTop al cambiar de página
+                lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                scrollHandlerActive = () => {
+                    if (scrollProgress) {
+                        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                        const scrolled = (winScroll / height) * 100;
+                        scrollProgress.style.width = scrolled + "%";
+                    }
+
+                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    if (scrollTop > lastScrollTop && scrollTop > 100) {
+                        nav?.classList.add('opacity-0', '-translate-y-20');
+                    } else {
+                        nav?.classList.remove('opacity-0', '-translate-y-20');
+                    }
+                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+                };
+
+                window.addEventListener('scroll', scrollHandlerActive);
+
+                // 2. Resto de inicializaciones
                 document.getElementById('logout-btn')?.addEventListener('click', async () => {
                     await supabase.auth.signOut();
                     window.location.href = '/login';
@@ -239,37 +273,25 @@ const currentPath = Astro.url.pathname;
 
                 const menuToggle = document.getElementById('menu-toggle');
                 const mobileMenu = document.getElementById('mobile-menu');
-                menuToggle?.addEventListener('click', () => {
-                    mobileMenu?.classList.toggle('hidden');
-                    mobileMenu?.classList.toggle('flex');
-                });
+                
+                // Clona el botón de menú para limpiar eventos si ya existían
+                if(menuToggle) {
+                    const newMenuToggle = menuToggle.cloneNode(true) as HTMLElement;
+                    menuToggle.parentNode?.replaceChild(newMenuToggle, menuToggle);
+                    
+                    newMenuToggle.addEventListener('click', () => {
+                        mobileMenu?.classList.toggle('hidden');
+                        mobileMenu?.classList.toggle('flex');
+                    });
+                }
 
                 updateAuthUI();
             };
 
-            const updateAuthUI = async () => {
-                const userIcon = document.getElementById('user-icon');
-                if (!userIcon) return;
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    if (!document.getElementById('status-indicator')) {
-                        const indicator = document.createElement('div');
-                        indicator.id = 'status-indicator';
-                        indicator.className = 'absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-[#333333]';
-                        userIcon.classList.add('relative');
-                        userIcon.appendChild(indicator);
-                    }
-                } else {
-                    const indicator = document.getElementById('status-indicator');
-                    if (indicator) indicator.remove();
-                }
-            };
-
             window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
             
-            startAll();
-            document.addEventListener('astro:after-swap', startAll);
-            document.addEventListener('astro:page-load', updateAuthUI);
+            // Usamos astro:page-load que maneja tanto carga inicial como swap
+            document.addEventListener('astro:page-load', startAll);
         </script>
 
         <style is:global>

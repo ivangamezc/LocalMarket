@@ -74,27 +74,31 @@ import Layout from '../layouts/Layout.astro';
   import { cartItems, removeCartItem, cartTotal, updateCartItemQuantity } from '../store/cartStore.js';
   import { supabase } from '../lib/supabaseClient';
 
-  const updateCartUI = () => {
-    const listElement = document.getElementById('cart-items-list');
-    const emptyMsg = document.getElementById('empty-cart-msg');
-    const container = document.getElementById('cart-container');
-    const totalDisplay = document.getElementById('total-price');
-    const subtotalDisplay = document.getElementById('subtotal');
-    
-    const items = cartItems.get();
+  // 1. Movemos toda la lógica a una función de inicialización
+  const initCart = () => {
+    const updateCartUI = () => {
+      const listElement = document.getElementById('cart-items-list');
+      const emptyMsg = document.getElementById('empty-cart-msg');
+      const container = document.getElementById('cart-container');
+      const totalDisplay = document.getElementById('total-price');
+      const subtotalDisplay = document.getElementById('subtotal');
+      
+      // Verificamos si los elementos existen (crucial para View Transitions)
+      if (!listElement) return;
 
-    if (items.length === 0) {
-      container?.classList.add('hidden');
-      emptyMsg?.classList.remove('hidden');
-      if (totalDisplay) totalDisplay.innerText = "0.00€";
-      if (subtotalDisplay) subtotalDisplay.innerText = "0.00€";
-      return;
-    } else {
-      container?.classList.remove('hidden');
-      emptyMsg?.classList.add('hidden');
-    }
+      const items = cartItems.get();
 
-    if (listElement) {
+      if (items.length === 0) {
+        container?.classList.add('hidden');
+        emptyMsg?.classList.remove('hidden');
+        if (totalDisplay) totalDisplay.innerText = "0.00€";
+        if (subtotalDisplay) subtotalDisplay.innerText = "0.00€";
+        return;
+      } else {
+        container?.classList.remove('hidden');
+        emptyMsg?.classList.add('hidden');
+      }
+
       listElement.innerHTML = items.map((item: any, index: number) => `
         <div class="flex items-center gap-6 bg-white/[0.04] border border-white/10 p-6 rounded-[1.5rem]">
           <img src="${item.imagen}" class="w-24 h-24 object-cover rounded-xl border border-white/5 bg-[#111]" />
@@ -111,77 +115,85 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <button class="remove-item-btn bg-red-500/10 text-red-500 px-6 py-3 rounded-lg border border-red-500/20 text-[10px] font-black uppercase" data-index="${index}">Eliminar</button>
         </div>`).join('');
-    }
 
-    const totalString = `${cartTotal.get().toFixed(2)}€`;
-    if (totalDisplay) totalDisplay.innerText = totalString;
-    if (subtotalDisplay) subtotalDisplay.innerText = totalString;
+      const totalString = `${cartTotal.get().toFixed(2)}€`;
+      if (totalDisplay) totalDisplay.innerText = totalString;
+      if (subtotalDisplay) subtotalDisplay.innerText = totalString;
 
-    document.querySelectorAll('.remove-item-btn').forEach(btn => btn.addEventListener('click', (e) => removeCartItem(Number((e.currentTarget as HTMLButtonElement).dataset.index))));
-    document.querySelectorAll('.qty-btn-minus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), -1)));
-    document.querySelectorAll('.qty-btn-plus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), 1)));
+      document.querySelectorAll('.remove-item-btn').forEach(btn => btn.addEventListener('click', (e) => removeCartItem(Number((e.currentTarget as HTMLButtonElement).dataset.index))));
+      document.querySelectorAll('.qty-btn-minus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), -1)));
+      document.querySelectorAll('.qty-btn-plus').forEach(btn => btn.addEventListener('click', (e) => updateCartItemQuantity(Number((e.currentTarget as HTMLButtonElement).dataset.index), 1)));
+    };
+
+    // Lógica de Checkout
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const checkoutForm = document.getElementById('checkout-form');
+    const confirmBtn = document.getElementById('confirm-purchase-btn');
+
+    checkoutBtn?.addEventListener('click', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { 
+          document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Debes iniciar sesión para comprar', type: 'error' } }));
+          setTimeout(() => window.location.href = '/login', 1500);
+          return; 
+      }
+      
+      const { data: profile } = await supabase.from('profiles').select('address').eq('id', session.user.id).single();
+      if (profile?.address) (document.getElementById('ship-address') as HTMLInputElement).value = profile.address;
+
+      checkoutForm?.classList.remove('hidden');
+      checkoutBtn.classList.add('hidden');
+    });
+
+    confirmBtn?.addEventListener('click', async () => {
+      const address = (document.getElementById('ship-address') as HTMLInputElement).value;
+      const payment = (document.getElementById('pay-method') as HTMLSelectElement).value;
+
+      if (!address) { 
+          document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Introduce una dirección de envío', type: 'error' } }));
+          return; 
+      }
+
+      const originalText = confirmBtn.innerText;
+      confirmBtn.innerText = "PROCESANDO...";
+      confirmBtn.classList.add('opacity-50', 'pointer-events-none');
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const { error } = await supabase.from('pedidos').insert([{ 
+          user_id: session?.user.id, 
+          total: cartTotal.get(), 
+          productos: cartItems.get(), 
+          estado: 'Pagado',
+          direccion_envio: address,
+          metodo_pago: payment
+      }]);
+
+      if (error) {
+          confirmBtn.innerText = originalText;
+          confirmBtn.classList.remove('opacity-50', 'pointer-events-none');
+          document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: "Error: " + error.message, type: 'error' } }));
+      } else {
+          document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: '¡Pedido realizado con éxito!', type: 'success' } }));
+          cartItems.set([]); 
+          
+          setTimeout(() => {
+              window.location.href = '/mi-cuenta';
+          }, 1500);
+      }
+    });
+
+    // 2. Ejecutar actualización inicial y suscribirse
+    updateCartUI();
+    
+  
+    const unsubscribe = cartItems.subscribe(updateCartUI);
+    
+    // Opcional pero recomendado: limpiar eventos cuando la página se destruya
+    document.addEventListener('astro:before-swap', () => {
+        unsubscribe();
+    }, { once: true });
   };
 
-  // Lógica de Checkout
-  const checkoutBtn = document.getElementById('checkout-btn');
-  const checkoutForm = document.getElementById('checkout-form');
-  const confirmBtn = document.getElementById('confirm-purchase-btn');
-
-  checkoutBtn?.addEventListener('click', async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { 
-        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Debes iniciar sesión para comprar', type: 'error' } }));
-        setTimeout(() => window.location.href = '/login', 1500);
-        return; 
-    }
-    
-    // Autocompletar dirección si existe en profile
-    const { data: profile } = await supabase.from('profiles').select('address').eq('id', session.user.id).single();
-    if (profile?.address) (document.getElementById('ship-address') as HTMLInputElement).value = profile.address;
-
-    checkoutForm?.classList.remove('hidden');
-    checkoutBtn.classList.add('hidden');
-  });
-
-  confirmBtn?.addEventListener('click', async () => {
-    const address = (document.getElementById('ship-address') as HTMLInputElement).value;
-    const payment = (document.getElementById('pay-method') as HTMLSelectElement).value;
-
-    if (!address) { 
-        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Introduce una dirección de envío', type: 'error' } }));
-        return; 
-    }
-
-    // Feedback visual opcional en el botón mientras procesa
-    const originalText = confirmBtn.innerText;
-    confirmBtn.innerText = "PROCESANDO...";
-    confirmBtn.classList.add('opacity-50', 'pointer-events-none');
-
-    const { data: { session } } = await supabase.auth.getSession();
-    const { error } = await supabase.from('pedidos').insert([{ 
-        user_id: session?.user.id, 
-        total: cartTotal.get(), 
-        productos: cartItems.get(), 
-        estado: 'Pagado',
-        direccion_envio: address,
-        metodo_pago: payment
-    }]);
-
-    if (error) {
-        confirmBtn.innerText = originalText;
-        confirmBtn.classList.remove('opacity-50', 'pointer-events-none');
-        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: "Error: " + error.message, type: 'error' } }));
-    } else {
-        document.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: '¡Pedido realizado con éxito!', type: 'success' } }));
-        cartItems.set([]); // Vaciar carrito
-        
-        // Retraso para que el usuario pueda ver el toast antes de redirigir
-        setTimeout(() => {
-            window.location.href = '/mi-cuenta';
-        }, 1500);
-    }
-  });
-
-  updateCartUI();
-  cartItems.subscribe(updateCartUI);
+  // 3. Ejecutar initCart cuando la página cargue (con o sin View Transitions)
+  document.addEventListener('astro:page-load', initCart);
 </script>
