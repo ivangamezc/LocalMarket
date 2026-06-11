@@ -6,7 +6,7 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 5 # Bajamos el timeout a 5 min para que no te consuma minutos de GitHub si algo falla
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -15,20 +15,20 @@ jobs:
       with:
         node-version: lts/*
 
-    # Activamos pnpm de forma nativa
+    # 1. Habilitamos pnpm de forma nativa con Corepack
     - name: Enable PNPM via Corepack
       run: |
         corepack enable
         corepack prepare pnpm@latest --activate
 
-    # Instalamos solo las librerías base de testing (sin ejecutar scripts pesados de Astro/Sharp)
-    - name: Install dependencies without building
+    # 2. Instalamos de forma limpia e ignorando ciclos pesados
+    - name: Install dependencies
       run: pnpm install --ignore-scripts
 
-    # Descargamos los navegadores virtuales
+    # 3. Instalamos los binarios del navegador de Playwright
     - name: Install Playwright Browsers
       run: pnpm playwright install --with-deps
 
-    # Ejecutamos las pruebas apuntando a tu URL de Vercel
-    - name: Run Playwright tests
-      run: pnpm playwright test
+    # 4. LA CLAVE: Forzamos la URL de Vercel por comando saltándonos cualquier lógica del config.ts
+    - name: Run Playwright tests against Vercel
+      run: pnpm playwright test --config=playwright.config.ts --url=https://localmarket-cinco.vercel.app
