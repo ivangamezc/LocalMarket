@@ -21,21 +21,25 @@ jobs:
         corepack enable
         corepack prepare pnpm@latest --activate
 
-    # Instalamos las dependencias
+    # SOLUCIÓN AL BLOQUEO: Configuramos pnpm para que permita los scripts de compilación en CI
+    - name: Configure PNPM build permissions
+      run: pnpm config set allowed-built-dependencies "*"
+
+    # Instalamos las dependencias (Ahora sí pasará de largo de esbuild y sharp)
     - name: Install dependencies
       run: pnpm install
 
-    # COMPILACIÓN DE ASTRO: Clave para que pnpm preview funcione
+    # Compilación de Astro
     - name: Build Astro application
       run: pnpm build
       env:
-        ASTRO_TELEMETRY_DISABLED: 1 # Desactiva prompts interactivos en CI
+        ASTRO_TELEMETRY_DISABLED: 1
 
     # Instalamos los binarios del navegador de Playwright
     - name: Install Playwright Browsers
       run: pnpm playwright install --with-deps
 
-    # Lanzamos las pruebas (Playwright ejecutará pnpm preview solo)
+    # Lanzamos las pruebas
     - name: Run Playwright tests
       run: pnpm playwright test
 
