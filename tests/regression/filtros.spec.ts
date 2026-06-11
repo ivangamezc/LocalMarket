@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Navegación a la categoría Ropa', async ({ page }) => {
-  await page.goto('http://localhost:4321/');
+  await page.goto('/');
   
   // SOLUCIÓN: Usamos un selector jerárquico. 
   // 'nav a[href="/ropa"]' le dice: "Busca un enlace dentro del NAV".

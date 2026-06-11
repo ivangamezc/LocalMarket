@@ -5,7 +5,7 @@ test.describe('E2E - Tienda Pública LocalMarket', () => {
   test('Flujo de compra completo: Añadir al carrito y verificar página de carrito', async ({ page }) => {
     
     // 1. Navegación inicial
-    await page.goto('http://localhost:4321/');
+    await page.goto('/');
 
     // 2. Ir a Calzado filtrando por el menú superior
     const menuSuperior = page.getByRole('navigation', { name: 'Navegación principal' });

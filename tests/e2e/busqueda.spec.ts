@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test('El usuario puede navegar por el menú de Accesorios', async ({ page }) => {
-  await page.goto('http://localhost:4321/');
+  await page.goto('/');
   
   // Navegamos al apartado de Accesorios
   await page.click('nav >> text=Accesorios');
