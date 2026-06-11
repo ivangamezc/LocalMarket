@@ -38,10 +38,11 @@ export default defineConfig({
   ],
 
   /* Levanta el servidor de Astro automáticamente antes de lanzar los tests */
+  /* Levanta el servidor de producción optimizado antes de lanzar los tests */
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI, // En local reutiliza la pestaña abierta, en GitHub lo levanta limpio
+    command: 'pnpm preview',               // Cambiado de dev a preview
+    url: 'http://localhost:4321',          // Asegúrate de que preview use este puerto en tu package.json
+    reuseExistingServer: !process.env.CI,
     timeout: 60 * 1000,
   },
 });

@@ -15,25 +15,31 @@ jobs:
       with:
         node-version: lts/*
 
-    # Habilitamos pnpm de forma nativa con Corepack (Evita errores de la acción externa v4)
+    # Habilitamos pnpm de forma nativa con Corepack
     - name: Enable PNPM via Corepack
       run: |
         corepack enable
         corepack prepare pnpm@latest --activate
 
-    # Instalamos dependencias tolerando sutiles variaciones del lockfile local
+    # Instalamos las dependencias
     - name: Install dependencies
       run: pnpm install
 
-    # Instalamos los binarios del navegador de Playwright con sus dependencias del sistema
+    # COMPILACIÓN DE ASTRO: Clave para que pnpm preview funcione
+    - name: Build Astro application
+      run: pnpm build
+      env:
+        ASTRO_TELEMETRY_DISABLED: 1 # Desactiva prompts interactivos en CI
+
+    # Instalamos los binarios del navegador de Playwright
     - name: Install Playwright Browsers
       run: pnpm playwright install --with-deps
 
-    # Lanzamos el proceso de testing
+    # Lanzamos las pruebas (Playwright ejecutará pnpm preview solo)
     - name: Run Playwright tests
       run: pnpm playwright test
 
-    # Subimos el reporte si se generaron pruebas
+    # Guardamos reportes pase lo que pase
     - uses: actions/upload-artifact@v4
       if: always()
       with:
