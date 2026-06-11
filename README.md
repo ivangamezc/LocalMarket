@@ -67,22 +67,21 @@ Nota sobre Integración Continua (CI): > El proyecto incluye un pipeline automat
 📂 Estructura del Proyecto
 La arquitectura del código sigue los estándares de Astro, separando claramente los componentes UI, la lógica de estado y las rutas de páginas:
 
-Plaintext
 LocalMarket
 ├── README.md                 # Documentación del proyecto
 ├── astro.config.mjs          # Configuración del framework Astro
 ├── package.json              # Manifiesto del proyecto y scripts
 ├── playwright.config.ts      # Configuración de los tests automatizados E2E
-├── public/                   # Archivos estáticos accesibles directamente (imágenes, favicons)
+├── public/                   # Archivos estáticos accesibles directamente
 │   ├── Logo_LocalMarket.png
 │   └── ...
 ├── src/                      # Código fuente de la aplicación principal
 │   ├── assets/               # Recursos vectoriales y fondos
-│   ├── components/           # Componentes UI reutilizables (Hero, Card, Footer, etc.)
+│   ├── components/           # Componentes UI reutilizables
 │   ├── data/                 # Datos estáticos o mockups (products.json)
 │   ├── layouts/              # Plantillas maestras de diseño de la web
 │   ├── lib/                  # Lógica de conexión externa (supabaseClient.js)
-│   ├── pages/                # Enrutamiento automático basado en archivos (Rutas y vistas)
+│   ├── pages/                # Enrutamiento automático basado en archivos
 │   │   ├── admin/            # Vistas del dashboard de administración
 │   │   ├── productos/        # Vistas dinámicas de productos ([id].astro)
 │   │   └── ...               # Páginas públicas (index, carrito, faq, login)
@@ -90,7 +89,6 @@ LocalMarket
 │   └── styles/               # Hojas de estilo globales (global.css)
 └── tests/                    # Ecosistema de aseguramiento de calidad (QA)
     ├── crm-erp/              # Pruebas de integración del panel de administración
-    ├── e2e/                  # Pruebas End-to-End de flujos de usuario (compra, búsqueda)
-    ├── regression/           # Pruebas de regresión para evitar reintroducir bugs
-    └── smoke/                # Pruebas de humo para validación rápida del entorno
-    
+    ├── e2e/                  # Pruebas End-to-End de flujos de usuario
+    ├── regression/           # Pruebas de regresión
+    └── smoke/                # Pruebas de humo rápidas
