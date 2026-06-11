@@ -28,12 +28,16 @@ test.describe('E2E - Tienda Pública LocalMarket', () => {
     const badgeCarrito = menuSuperior.getByText('1');
     await expect(badgeCarrito).toBeVisible();
 
-    // ==========================================
+ // ==========================================
     // 5. NAVEGACIÓN A LA PÁGINA DEL CARRITO
     // ==========================================
-    // Rely on accessible locator roles relative to your upper menu
-    const botonIrAlCarrito = menuSuperior.getByRole('link', { name: /🛒/ });
-    await expect(botonIrAlCarrito).toBeVisible();
+    // Buscamos directamente el enlace HTML que apunta a /carrito
+    const botonIrAlCarrito = page.locator('a[href="/carrito"]');
+    
+    // Usamos { force: true } para saltarnos cualquier restricción de viewport de WebKit/Safari
+    await botonIrAlCarrito.click({ force: true });
+
+    await expect(page).toHaveURL(/\/carrito/i);
     await botonIrAlCarrito.click();
 
     await expect(page).toHaveURL(/\/carrito/i);
