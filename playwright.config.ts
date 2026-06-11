@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: 'html',
   
   use: {
-    /* En GitHub (CI) atacamos Vercel; en local tu máquina */
+    /* En la nube ataca a Vercel conectada a Supabase; en tu PC usa tu localhost */
     baseURL: process.env.CI 
       ? 'https://localmarket-cinco.vercel.app' 
       : 'http://localhost:4321',
@@ -22,7 +22,6 @@ export default defineConfig({
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
 
-  /* En GitHub no levantamos ningún servidor local */
   webServer: process.env.CI ? undefined : {
     command: 'pnpm dev',
     url: 'http://localhost:4321',

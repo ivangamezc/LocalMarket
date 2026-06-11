@@ -15,21 +15,20 @@ jobs:
       with:
         node-version: lts/*
 
-    # Instalamos únicamente Playwright y las librerías del sistema del contenedor
-    - name: Install Playwright Test Runner
-      run: npm install -g @playwright/test
+    # Activamos pnpm de forma nativa
+    - name: Enable PNPM via Corepack
+      run: |
+        corepack enable
+        corepack prepare pnpm@latest --activate
 
+    # Instalamos solo las librerías base de testing (sin ejecutar scripts pesados de Astro/Sharp)
+    - name: Install dependencies without building
+      run: pnpm install --ignore-scripts
+
+    # Descargamos los navegadores virtuales
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: pnpm playwright install --with-deps
 
-    # Ejecuta las pruebas apuntando a Vercel
+    # Ejecutamos las pruebas apuntando a tu URL de Vercel
     - name: Run Playwright tests
-      run: npx playwright test
-
-    # Reporte por si acaso
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      run: pnpm playwright test
