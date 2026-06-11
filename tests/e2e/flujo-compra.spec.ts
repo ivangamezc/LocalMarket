@@ -23,26 +23,19 @@ test.describe('E2E - Tienda Pública LocalMarket', () => {
     const botonAñadir = page.getByRole('button', { name: /añadir al carrito/i });
     await botonAñadir.click();
 
-    // BEST PRACTICE: Wait explicitly for the state update or reactive badge count change.
-    // This gives your Astro client islands time to re-render layout shifts cleanly.
+    // Esperamos a que el badge del carrito dentro del menú superior cambie a '1'
     const badgeCarrito = menuSuperior.getByText('1');
     await expect(badgeCarrito).toBeVisible();
 
- // ==========================================
+    // ==========================================
     // 5. NAVEGACIÓN A LA PÁGINA DEL CARRITO
     // ==========================================
-    
-    // Filtramos explícitamente para buscar el enlace dentro de la barra de navegación superior
-    // Así ignoramos por completo el del footer o menús ocultos
+    // Buscamos el enlace a /carrito que está ÚNICAMENTE dentro de la navegación principal
     const botonIrAlCarrito = page.getByRole('navigation', { name: 'Navegación principal' })
                                  .locator('a[href="/carrito"]');
     
-    // Le hacemos click normal
     await botonIrAlCarrito.click();
-
     await expect(page).toHaveURL(/\/carrito/i);
-
-   
 
     // ==========================================
     // 6. VERIFICACIÓN DENTRO DEL CARRITO
