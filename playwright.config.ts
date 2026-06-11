@@ -9,10 +9,10 @@ export default defineConfig({
   reporter: 'html',
   
   use: {
-    /* En la nube ataca a Vercel conectada a Supabase; en tu PC usa tu localhost */
-    baseURL: process.env.CI 
-      ? 'https://localmarket-cinco.vercel.app' 
-      : 'http://localhost:4321',
+    /* Toma la URL que le inyectamos en GitHub Actions, o la de Vercel por defecto, o localhost si estás en tu PC */
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || (process.env.CI 
+      ? 'https://local-market-ten.vercel.app/' 
+      : 'http://localhost:4321'),
     trace: 'on-first-retry',
   },
 
