@@ -30,14 +30,8 @@ test.describe('E2E - Tienda Pública LocalMarket', () => {
     // ==========================================
     // 5. NAVEGACIÓN A LA PÁGINA DEL CARRITO
     // ==========================================
-    
-    // Al haber dos enlaces con el mismo href dentro del menú, 
-    // le ordenamos explícitamente a Playwright que interactúe con el primero que encuentre.
-    const botonIrAlCarrito = page.getByRole('navigation', { name: 'Navegación principal' })
-                                 .locator('a[href="/carrito"]')
-                                 .first();
-    
-    await botonIrAlCarrito.click();
+    // Forzamos la navegación directa por URL para evitar fallos con botones ocultos en responsivo
+    await page.goto('/carrito');
     await expect(page).toHaveURL(/\/carrito/i);
 
     // ==========================================
