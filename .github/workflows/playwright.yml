@@ -10,15 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
+    # Inicializa pnpm de manera oficial en la máquina de GitHub Actions
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
+    # Instala las dependencias de LocalMarket de forma estricta e hiperrápida
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
+
+    # Descarga los binarios de los navegadores necesarios para Playwright
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: pnpm playwright install --with-deps
+
+    # Ejecuta el set de pruebas (Playwright se encarga de levantar 'pnpm dev' internamente)
     - name: Run Playwright tests
-      run: npx playwright test
+      run: pnpm playwright test
+
+    # Sube el reporte HTML para que puedas descargarlo e inspeccionarlo si algo falla
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
