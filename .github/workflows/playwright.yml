@@ -15,25 +15,18 @@ jobs:
       with:
         node-version: lts/*
 
-    # Habilitamos pnpm mediante Corepack nativo para resolver las dependencias de los tests
-    - name: Enable PNPM via Corepack
-      run: |
-        corepack enable
-        corepack prepare pnpm@latest --activate
+    # Instalamos únicamente Playwright y las librerías del sistema del contenedor
+    - name: Install Playwright Test Runner
+      run: npm install -g @playwright/test
 
-    # Instalamos las dependencias necesarias de Playwright (sin compilar la app)
-    - name: Install dependencies
-      run: pnpm install
-
-    # Instalamos los navegadores requeridos y sus librerías de sistema en Linux
     - name: Install Playwright Browsers
-      run: pnpm playwright install --with-deps
+      run: npx playwright install --with-deps
 
-    # Ejecutamos las pruebas directamente contra la URL de Vercel ya desplegada
+    # Ejecuta las pruebas apuntando a Vercel
     - name: Run Playwright tests
-      run: pnpm playwright test
+      run: npx playwright test
 
-    # Guardamos y publicamos el reporte en el panel de GitHub Actions si algo falla
+    # Reporte por si acaso
     - uses: actions/upload-artifact@v4
       if: always()
       with:
