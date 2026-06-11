@@ -31,16 +31,18 @@ test.describe('E2E - Tienda Pública LocalMarket', () => {
  // ==========================================
     // 5. NAVEGACIÓN A LA PÁGINA DEL CARRITO
     // ==========================================
-    // Buscamos directamente el enlace HTML que apunta a /carrito
-    const botonIrAlCarrito = page.locator('a[href="/carrito"]');
     
-    // Usamos { force: true } para saltarnos cualquier restricción de viewport de WebKit/Safari
-    await botonIrAlCarrito.click({ force: true });
-
-    await expect(page).toHaveURL(/\/carrito/i);
+    // Filtramos explícitamente para buscar el enlace dentro de la barra de navegación superior
+    // Así ignoramos por completo el del footer o menús ocultos
+    const botonIrAlCarrito = page.getByRole('navigation', { name: 'Navegación principal' })
+                                 .locator('a[href="/carrito"]');
+    
+    // Le hacemos click normal
     await botonIrAlCarrito.click();
 
     await expect(page).toHaveURL(/\/carrito/i);
+
+   
 
     // ==========================================
     // 6. VERIFICACIÓN DENTRO DEL CARRITO
