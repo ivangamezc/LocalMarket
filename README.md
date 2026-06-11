@@ -32,7 +32,7 @@ Sigue estos pasos para arrancar el entorno de desarrollo en tu máquina:
 
 1. **Clona el repositorio:**
    ```bash
-   git clone [https://github.com/tu-usuario/LocalMarket.git](https://github.com/tu-usuario/LocalMarket.git)
+   git clone [https://github.com/tu-usuario/LocalMarket.git](https://github.com/ivangamezc/LocalMarket.git)
    cd LocalMarket
 Instala las dependencias:
 Utilizamos pnpm para garantizar la consistencia y velocidad en la instalación.
