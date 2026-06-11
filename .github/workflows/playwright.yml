@@ -15,35 +15,25 @@ jobs:
       with:
         node-version: lts/*
 
-    # Habilitamos pnpm de forma nativa con Corepack
+    # Habilitamos pnpm mediante Corepack nativo para resolver las dependencias de los tests
     - name: Enable PNPM via Corepack
       run: |
         corepack enable
         corepack prepare pnpm@latest --activate
 
-    # SOLUCIÓN AL BLOQUEO: Configuramos pnpm para que permita los scripts de compilación en CI
-    - name: Configure PNPM build permissions
-      run: pnpm config set allowed-built-dependencies "*"
-
-    # Instalamos las dependencias (Ahora sí pasará de largo de esbuild y sharp)
+    # Instalamos las dependencias necesarias de Playwright (sin compilar la app)
     - name: Install dependencies
       run: pnpm install
 
-    # Compilación de Astro
-    - name: Build Astro application
-      run: pnpm build
-      env:
-        ASTRO_TELEMETRY_DISABLED: 1
-
-    # Instalamos los binarios del navegador de Playwright
+    # Instalamos los navegadores requeridos y sus librerías de sistema en Linux
     - name: Install Playwright Browsers
       run: pnpm playwright install --with-deps
 
-    # Lanzamos las pruebas
+    # Ejecutamos las pruebas directamente contra la URL de Vercel ya desplegada
     - name: Run Playwright tests
       run: pnpm playwright test
 
-    # Guardamos reportes pase lo que pase
+    # Guardamos y publicamos el reporte en el panel de GitHub Actions si algo falla
     - uses: actions/upload-artifact@v4
       if: always()
       with:

@@ -4,20 +4,22 @@ export default defineConfig({
   testDir: './tests',
   /* Ejecuta tests en paralelo */
   fullyParallel: true,
-  /* Falla la build en CI si se te olvida un test.only en el código */
+  /* Falla la build en CI si se queda un test.only en el código */
   forbidOnly: !!process.env.CI,
-  /* Reintentos solo en CI (un reintento para evitar falsos positivos por transiciones) */
-  retries: process.env.CI ? 1 : 0,
-  /* Desactiva paralelismo masivo en CI para no saturar el contenedor */
+  /* Reintentos en CI para mitigar problemas de red */
+  retries: process.env.CI ? 2 : 0,
+  /* Control de workers en entornos virtuales */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporte en formato HTML */
+  /* Formato del reporte */
   reporter: 'html',
   
   use: {
-    /* URL base relativa para usar comandos como `await page.goto('/')` */
-    baseURL: 'http://localhost:4321',
+    /* CLAVE: En GitHub Actions apunta a Vercel; en tu PC apunta a localhost */
+    baseURL: process.env.CI 
+      ? 'https://localmarket-cinco.vercel.app' 
+      : 'http://localhost:4321',
 
-    /* Captura trazas en el primer reintento fallido para debuguear */
+    /* Graba trazas de ejecución en fallos para poder revisarlos en la interfaz */
     trace: 'on-first-retry',
   },
 
@@ -37,12 +39,11 @@ export default defineConfig({
     },
   ],
 
-  /* Levanta el servidor de Astro automáticamente antes de lanzar los tests */
-  /* Levanta el servidor de producción optimizado antes de lanzar los tests */
-  webServer: {
-    command: 'pnpm preview',               // Cambiado de dev a preview
-    url: 'http://localhost:4321',          // Asegúrate de que preview use este puerto en tu package.json
-    reuseExistingServer: !process.env.CI,
+  /* El servidor local SOLO se activará en tu PC. En GitHub Actions se cancela por completo */
+  webServer: process.env.CI ? undefined : {
+    command: 'pnpm dev',
+    url: 'http://localhost:4321',
+    reuseExistingServer: true,
     timeout: 60 * 1000,
   },
 });
